@@ -71,66 +71,132 @@ void initialize_params();
 
 int main(int argc, char ** argv)
 {
-  if (argc != 6)
+  if (argc != 7)
     {
       cerr << "Wrong number of arguments. Instead use\n"
-	   << "/path/to/data/file /path/to/output/file /path/to/maps.root\n\t[# iter] [jump-scale]\n\n";
+	   << "/path/to/1p/file /path/to/2p/file /path/to/map/file /path/to/output/file [# iter] [jump-scale]\n\n";
       return -1;
     }
-  cerr << "Loading data file " << argv[1] << " ...\n";
 
   // Read in the important info
-  int samples = atoi(argv[4]);
-  jumpscale = atoi(argv[5]);
+  TFile * outfile = new TFile(argv[4],"RECREATE");
+  int samples = atoi(argv[5]);
+  jumpscale = atoi(argv[6]);
+
+  // Initialize some histograms
+  TH2D * hist_ep_events = new TH2D("ep","ep events;p_miss [GeV];angle between p_miss and q [deg];Counts",28,0.3,1.,30,90.,180.);
+  TH2D * hist_epp_events = new TH2D("epp","epp events;p_miss [GeV];angle between p_miss and q [deg];Counts",28,0.3,1.,30,90.,180.);
+  TH2D * hist_epp_recoils = new TH2D("epp_rec","epp events;p_rec [GeV];angle between p_rec and q [deg];Counts",28,0.3,1.,30,0.,180.);
+  TH2D * hist_epp_cm_lon = new TH2D("cm_lon","epp events;p_miss [GeV];p_cm_lon [GeV];Counts",7,0.3,1.,24,-1.2,1.2);
+  TH2D * hist_epp_cm_inp = new TH2D("cm_inp","epp events;p_miss [GeV];p_cm_inp [GeV];Counts",7,0.3,1.,24,-1.2,1.2);
+  TH2D * hist_epp_cm_oop = new TH2D("cm_oop","epp events;p_miss [GeV];p_cm_oop [GeV];Counts",7,0.3,1.,24,-1.2,1.2);
 
   // Initialize random guess
   prand = new TRandom3(0);
 
-  // Read in e'p and e'pp events
-  TFile * f = new TFile(argv[1]);
-  TTree * t = (TTree*)f->Get("T_all_cuts");
-  double qx,qy,qz,p_miss_x,p_miss_y,p_miss_z,p_cm_lon, p_cm_oop, p_cm_inp;
-  int nr;
-  t->SetBranchAddress("qx",&qx);
-  t->SetBranchAddress("qy",&qy);
-  t->SetBranchAddress("qz",&qz);
-  t->SetBranchAddress("px_p_miss",&p_miss_x);
-  t->SetBranchAddress("py_p_miss",&p_miss_y);
-  t->SetBranchAddress("pz_p_miss",&p_miss_z);
-  t->SetBranchAddress("poofp_p_cm", &p_cm_oop);
-  t->SetBranchAddress("ptrans_p_cm",&p_cm_inp);
-  t->SetBranchAddress("plong_p_cm", &p_cm_lon);
-  t->SetBranchAddress("n_p_r",&nr);
-  for (int i=0 ; i<t->GetEntries() ; i++)
+  // Read in e'p events
+  cerr << "Loading 1p data file " << argv[1] << " ...\n";
+
+  TFile * fep = new TFile(argv[1]);
+  TTree * tep = (TTree*)fep->Get("T");
+  Float_t p_p[2]; // Magnitude of the proton momenta
+  Float_t vertices[2][3]; // position 3 vectors of proton vertices
+  Float_t p_init[2][3]; // Initial momentum of p_miss ([0]), and p_rec ([1])
+  Float_t qVec[3]; // 3-vector of q
+  tep->SetBranchAddress("q",qVec);
+  tep->SetBranchAddress("Pmiss",p_init);
+  tep->SetBranchAddress("Rp",vertices);
+  tep->SetBranchAddress("Pp_size",p_p);
+  for (int i=0 ; i<tep->GetEntries() ; i++)
     {
-      t->GetEvent(i);
+      tep->GetEvent(i);
       
-      TVector3 pmiss(p_miss_x,p_miss_y,p_miss_z);
+      // Make Or's cuts on vertex position
+      if(!((fabs(vertices[0][2]+22.25)<2.25) && (p_p[0] < 2.4)))
+	continue;
+
+      TVector3 pmiss(p_init[0][0],p_init[0][1],p_init[0][2]);
       ep_pmiss_list.push_back(pmiss);
 
       // Form the rotated basis
-      TVector3 q(qx,qy,qz);
+      TVector3 q(qVec[0],qVec[1],qVec[2]);
       TVector3 lon = pmiss.Unit();
-      TVector3 oop = q.Cross(lon).Unit();
+      TVector3 oop = lon.Cross(TVector3(0.,0.,1.)).Unit();
       TVector3 inp = lon.Cross(oop).Unit();
       ep_lon_list.push_back(lon);
       ep_inp_list.push_back(inp);
       ep_oop_list.push_back(oop);
 
-      // Insist on e'pp events
-      if (nr == 1)
-        {
-	  epp_pmiss_list.push_back(pmiss.Mag());
-	  epp_pcm_lon_list.push_back(p_cm_lon);
-	  epp_pcm_oop_list.push_back(p_cm_oop);
-	  epp_pcm_inp_list.push_back(p_cm_inp);
-
-	}
+      hist_ep_events->Fill(pmiss.Mag(),pmiss.Angle(q)*180./M_PI);
     }
+  fep->Close();
+
+  // Read in epp file
+  TFile *fepp = new TFile(argv[2]);
+  TTree *tepp = (TTree*)fepp->Get("T");
+  tepp->SetBranchAddress("q",qVec);
+  tepp->SetBranchAddress("Pmiss",p_init);
+  tepp->SetBranchAddress("Rp",vertices);
+  tepp->SetBranchAddress("Pp_size",p_p);
+  for (int i=0 ; i<tepp->GetEntries() ; i++)
+    {
+      tepp->GetEvent(i);  
+
+      // Make Or's cut on vertex position
+      if (!((fabs(vertices[0][2]+22.25)<2.25) && (p_p[0] < 2.4)))
+	continue;
+
+      TVector3 pmiss(p_init[0][0],p_init[0][1],p_init[0][2]);
+      ep_pmiss_list.push_back(pmiss);
+      double pmiss_mag = pmiss.Mag();
+
+      // Form the rotated basis
+      TVector3 q(qVec[0],qVec[1],qVec[2]);
+      TVector3 lon = pmiss.Unit();
+      TVector3 oop = lon.Cross(TVector3(0.,0.,1.)).Unit();
+      TVector3 inp = lon.Cross(oop).Unit();
+
+      ep_lon_list.push_back(lon);
+      ep_inp_list.push_back(inp);
+      ep_oop_list.push_back(oop);
+
+      hist_ep_events->Fill(pmiss_mag,pmiss.Angle(q)*180./M_PI);
+
+      // Now address recoils
+      // Make Or's cut on recoil vertex position
+      if (!((fabs(vertices[1][2]+22.25)<2.25) && (p_p[1] > 0.35)))
+	continue;
+
+      TVector3 prec(p_init[1][0]+qVec[0],p_init[1][1]+qVec[1],p_init[1][2]+qVec[2]);
+      TVector3 pcm = prec + pmiss;
+
+      double pcm_lon = pcm.Dot(lon);
+      double pcm_inp = pcm.Dot(inp);
+      double pcm_oop = pcm.Dot(oop);
+
+      epp_pmiss_list.push_back(pmiss_mag);
+      epp_pcm_lon_list.push_back(pcm_lon);
+      epp_pcm_inp_list.push_back(pcm_inp);
+      epp_pcm_oop_list.push_back(pcm_oop);
+
+      hist_epp_cm_lon->Fill(pmiss_mag,pcm_lon);
+      hist_epp_cm_inp->Fill(pmiss_mag,pcm_inp);
+      hist_epp_cm_oop->Fill(pmiss_mag,pcm_oop);
+      hist_epp_events->Fill(pmiss_mag,pmiss.Angle(q)*180./M_PI);
+      hist_epp_recoils->Fill(prec.Mag(),prec.Angle(q)*180./M_PI);
+    }
+  fepp->Close();
+
   n_ep_events = ep_pmiss_list.size();
   n_epp_events = epp_pmiss_list.size();
-  f->Close();
   cerr << "Done reading input data.\n";
+  cerr << "Read in " << n_ep_events << " ep events.\n";
+  cerr << "Read in " << n_epp_events << " epp events.\n";
+
+  // Load the acceptance maps
+  TFile * mapFile = new TFile(argv[3]);
+  genHist = (TH3D*)mapFile->Get("proton_gen_3D");
+  accHist = (TH3D*)mapFile->Get("proton_acc_3D");
 
   // Create new memory for parameter guesses
   new_params = new double[5];
@@ -139,15 +205,9 @@ int main(int argc, char ** argv)
   for (int i=0 ; i<n_ep_events*3*n_trials ; i++)
     random_gauss[i] = prand->Gaus();
 
-  // Load the acceptance maps
-  TFile * mapFile = new TFile(argv[3]);
-  genHist = (TH3D*)mapFile->Get("proton_gen_3D");
-  accHist = (TH3D*)mapFile->Get("proton_acc_3D");
-
-  double log_current_post;
   // Create output rootfile and output tree
-  cerr << "Creating output file " << argv[2] << " ...\n\n";
-  TFile * outfile = new TFile(argv[2],"RECREATE");
+  double log_current_post;
+  outfile->cd();
   TTree * outtree = new TTree("mcmc","MCMC Samples");
   outtree->Branch("a1",current_params,"a1/D");
   outtree->Branch("a2",current_params+1,"a2/D");
@@ -180,14 +240,25 @@ int main(int argc, char ** argv)
       log_current_post = log(current_post);
       outtree->Fill();
     }
-  outfile->Write();
 
-  //cout << "Acceptance percentage for model jumpscale of " << jumpscale << " is " << (count_true/samples)*100 << endl;
-  TVectorT <double> acceptance_percentage(1);
-  acceptance_percentage[0] = (count_true/samples)*100;
-  acceptance_percentage.Write("acceptance_percentage");
-  delete outfile;
-  delete mapFile;
+  cerr << "Accept % = " << 100.*count_true/samples << "\n";
+  TVectorT <double> acc_pct(1);
+  acc_pct[0] = 100.*count_true/samples;
+  acc_pct.Write("acc_pct");
+
+  // Write out histograms
+  outfile->cd();
+  hist_ep_events->Write();
+  hist_epp_cm_lon->Write();
+  hist_epp_cm_inp->Write();
+  hist_epp_cm_oop->Write();
+  hist_epp_events->Write();
+  hist_epp_recoils->Write();
+  outfile->Write();
+  outfile->Close();
+
+  // Clean up
+  mapFile->Close();
   delete prand;
   delete[] new_params;
   delete[] current_params;
