@@ -394,12 +394,6 @@ bool accept_new_step()
     }
 }
 
-double resMom(double p)
-{
-  //The specific parameter values denoted here are obtained by fitting Barak's momentum resolution curve.
-  return (.312273 + .287917*p + .550425/(p-.093406))/100;
-}
-
 double acceptance_map(TVector3 p)
 {
   double mom = p.Mag();
@@ -412,13 +406,27 @@ double acceptance_map(TVector3 p)
   int cosBin = genHist->GetYaxis()->FindBin(cosTheta);
   int phiBin = genHist->GetZaxis()->FindBin(phi);
 
-  double gen = genHist->GetBinContent(momBin,cosBin,phiBin);
-  double acc = accHist->GetBinContent(momBin,cosBin,phiBin);
+  double gen=0.;
+  double acc=0.;
+  int exp_size=-1;
 
-  if (gen <= 0.)
+  while ((gen <= 0.)&&(exp_size<3))
+    {
+      exp_size++;
+      gen = acc = 0.;
+      for (int mB = momBin-exp_size; mB<=momBin+exp_size ; mB++) 
+	for (int cB = cosBin-exp_size; cB<=cosBin+exp_size ; cB++) 
+	  for (int pB = phiBin-exp_size; pB<=phiBin+exp_size ; pB++) 
+	    {
+	      gen += genHist->GetBinContent(mB,cB,pB);
+	      acc += accHist->GetBinContent(mB,cB,pB);
+	    }
+    }
+
+  if (gen>0.)
+    return acc/gen;
+  else
     return 1.;
-
-  return acc/gen;
 }
 
 double acceptance_fake(TVector3 p)
@@ -438,9 +446,9 @@ double acceptance_fake(TVector3 p)
 
 inline double acceptance(TVector3 p)
 {
-  //return acceptance_map(p);
-  return 1;
+  return acceptance_map(p);
   //return acceptance_fake(p);
+  //return 1;
 }
 
 void initialize_params()
