@@ -195,8 +195,13 @@ int main(int argc, char ** argv)
 
   // Load the acceptance maps
   TFile * mapFile = new TFile(argv[3]);
-  genHist = (TH3D*)mapFile->Get("proton_gen_3D");
-  accHist = (TH3D*)mapFile->Get("proton_acc_3D");
+  genHist = (TH3D*)mapFile->Get("solid_p_gen");
+  accHist = (TH3D*)mapFile->Get("solid_p_acc");
+  if ((!genHist)||(!accHist))
+    {
+      cerr << "The acceptance maps were not loaded properly. Check the histogram names.\n";
+      return -2;
+    }
 
   // Create new memory for parameter guesses
   new_params = new double[5];
