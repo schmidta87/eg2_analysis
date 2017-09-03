@@ -24,6 +24,7 @@ int n_ep_events;
 double * current_params;
 double * new_params;
 int n_trials = 200.;
+const int nBins=120;
 double * random_gauss;
 
 // Vectors which describe all of the useful info for the e'p events
@@ -54,10 +55,10 @@ long double current_post;
 //Starting values for a1, a2, etc
 const double a1_bound = .4;
 const double a2_bound = .8;
-const double b1_bound = .2;
-const double b2_bound = .2;
-const double sigPerp_bound = .2;
-const double pcm_bound = 0.6;
+const double b1_bound = .4;
+const double b2_bound = .4;
+const double sigPerp_bound = .4;
+const double pcm_bound = 1.;
 
 // Helper functions
 long double posterior(double * param_set);
@@ -99,27 +100,29 @@ int main(int argc, char ** argv)
 
   TFile * fep = new TFile(argv[1]);
   TTree * tep = (TTree*)fep->Get("T");
-  Float_t p_p[2]; // Magnitude of the proton momenta
+  Float_t pPVec[2][3]; // Proton momenta
+  Float_t qVec[3]; // q
+  Float_t pMissVec[2][3];
   Float_t vertices[2][3]; // position 3 vectors of proton vertices
-  Float_t p_init[2][3]; // Initial momentum of p_miss ([0]), and p_rec ([1])
-  Float_t qVec[3]; // 3-vector of q
   tep->SetBranchAddress("q",qVec);
-  tep->SetBranchAddress("Pmiss",p_init);
+  tep->SetBranchAddress("Pmiss",pMissVec);
   tep->SetBranchAddress("Rp",vertices);
-  tep->SetBranchAddress("Pp_size",p_p);
+  tep->SetBranchAddress("Pp",pPVec);
   for (int i=0 ; i<tep->GetEntries() ; i++)
     {
       tep->GetEvent(i);
       
+      TVector3 pLead(pPVec[0][0],pPVec[0][1], pPVec[0][2]);      
+      TVector3 pmiss(pMissVec[0][0],pMissVec[0][1],pMissVec[0][2]);
+      TVector3 q(qVec[0],qVec[1],qVec[2]);
+
       // Make Or's cuts on vertex position
-      if(!((fabs(vertices[0][2]+22.25)<2.25) && (p_p[0] < 2.4)))
+      if(!((fabs(vertices[0][2]+22.25)<2.25) && (pLead.Mag() < 2.4)))
 	continue;
 
-      TVector3 pmiss(p_init[0][0],p_init[0][1],p_init[0][2]);
       ep_pmiss_list.push_back(pmiss);
 
       // Form the rotated basis
-      TVector3 q(qVec[0],qVec[1],qVec[2]);
       TVector3 lon = pmiss.Unit();
       TVector3 oop = lon.Cross(TVector3(0.,0.,1.)).Unit();
       TVector3 inp = lon.Cross(oop).Unit();
@@ -132,26 +135,30 @@ int main(int argc, char ** argv)
   fep->Close();
 
   // Read in epp file
+  cerr << "Loading 2p data file " << argv[2] << " ...\n";
+
   TFile *fepp = new TFile(argv[2]);
   TTree *tepp = (TTree*)fepp->Get("T");
   tepp->SetBranchAddress("q",qVec);
-  tepp->SetBranchAddress("Pmiss",p_init);
+  tepp->SetBranchAddress("Pmiss",pMissVec);
   tepp->SetBranchAddress("Rp",vertices);
-  tepp->SetBranchAddress("Pp_size",p_p);
+  tepp->SetBranchAddress("Pp",pPVec);
   for (int i=0 ; i<tepp->GetEntries() ; i++)
     {
-      tepp->GetEvent(i);  
+      tepp->GetEvent(i);
+     
+      TVector3 plead(pPVec[0][0],pPVec[0][1], pPVec[0][2]);      
+      TVector3 pmiss(pMissVec[0][0],pMissVec[0][1],pMissVec[0][2]);
+      TVector3 q(qVec[0],qVec[1],qVec[2]);
 
       // Make Or's cut on vertex position
-      if (!((fabs(vertices[0][2]+22.25)<2.25) && (p_p[0] < 2.4)))
+      if (!((fabs(vertices[0][2]+22.25)<2.25) && (plead.Mag() < 2.4)))
 	continue;
 
-      TVector3 pmiss(p_init[0][0],p_init[0][1],p_init[0][2]);
       ep_pmiss_list.push_back(pmiss);
       double pmiss_mag = pmiss.Mag();
 
       // Form the rotated basis
-      TVector3 q(qVec[0],qVec[1],qVec[2]);
       TVector3 lon = pmiss.Unit();
       TVector3 oop = lon.Cross(TVector3(0.,0.,1.)).Unit();
       TVector3 inp = lon.Cross(oop).Unit();
@@ -163,11 +170,15 @@ int main(int argc, char ** argv)
       hist_ep_events->Fill(pmiss_mag,pmiss.Angle(q)*180./M_PI);
 
       // Now address recoils
-      // Make Or's cut on recoil vertex position
-      if (!((fabs(vertices[1][2]+22.25)<2.25) && (p_p[1] > 0.35)))
-	continue;
+      TVector3 prec(pPVec[1][0],pPVec[1][1], pPVec[1][2]);
 
-      TVector3 prec(p_init[1][0]+qVec[0],p_init[1][1]+qVec[1],p_init[1][2]+qVec[2]);
+      // Make Or's cut on recoil vertex position
+      if (!((fabs(vertices[1][2]+22.25)<2.25) && (prec.Mag() > 0.35)))
+	{
+	  cout << "epp fail\n";
+	  continue;
+	}
+
       TVector3 pcm = prec + pmiss;
 
       double pcm_lon = pcm.Dot(lon);
@@ -221,6 +232,7 @@ int main(int argc, char ** argv)
   outtree->Branch("sigPerp",current_params+4,"sigPerp/D");
   outtree->Branch("logposterior",&log_current_post,"logposterior/D");
 
+  cerr << "Initializing parameters...\n";
   do
     {
       initialize_params();
@@ -259,7 +271,7 @@ int main(int argc, char ** argv)
   hist_epp_cm_oop->Write();
   hist_epp_events->Write();
   hist_epp_recoils->Write();
-  outfile->Write();
+  outtree->Write();
   outfile->Close();
 
   // Clean up
@@ -278,7 +290,6 @@ long double posterior(double * param_set)
     return 0.;
 
   // Make pseudo-data set
-  int nBins=20;
   TH2D pcm_lon_hist("lon","Longitudinal",4,0.3,0.7,nBins,-pcm_bound,pcm_bound);
   TH2D pcm_inp_hist("inp","Tr. in-plane",4,0.3,0.7,nBins,-pcm_bound,pcm_bound);
   TH2D pcm_oop_hist("oop","Out-of-plane",4,0.3,0.7,nBins,-pcm_bound,pcm_bound);
@@ -303,6 +314,10 @@ long double posterior(double * param_set)
 	  TVector3 pcm = pcm_lon * ep_lon_list[i] + pcm_inp * ep_inp_list[i] + pcm_oop * ep_oop_list[i];
 	  TVector3 prec = pcm - ep_pmiss_list[i];
 	  
+	  // Make sure the recoils have sufficient momentum
+	  if (prec.Mag()<0.35)
+	    continue;
+
 	  // Fill the histograms with the appropriate acceptance weights
 	  if (pmiss < 0.7)
 	    {
@@ -451,9 +466,9 @@ double acceptance_fake(TVector3 p)
 
 inline double acceptance(TVector3 p)
 {
-  return acceptance_map(p);
+  //return acceptance_map(p);
   //return acceptance_fake(p);
-  //return 1;
+  return 1.;
 }
 
 void initialize_params()
