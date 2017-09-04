@@ -10,7 +10,7 @@ project (eg2)
 
 # ADD SUBDIRECTORIES
 
-include_directories(${ROOT_INCLUDE_DIR})
+include_directories(${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include )
 
 # Add executable for acceptance corrections
 add_executable(acc_corr acc_corr.cpp)

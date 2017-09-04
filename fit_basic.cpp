@@ -4,15 +4,17 @@
 
 #include "TFile.h"
 #include "TTree.h"
+#include "TF1.h"
 #include "TVector3.h"
-#include "TRandom3.h"
 #include "TMath.h"
 #include "TH1.h"
 #include "TH2.h"
-#include "TH3.h"
-#include "TVectorT.h"
+#include "TGraphErrors.h"
 
 using namespace std;
+
+double constrainedGauss(double *x, double *p);
+double specialLine(double *x, double *p);
 
 int main(int argc, char ** argv)
 {
@@ -80,13 +82,100 @@ int main(int argc, char ** argv)
 
   cerr << "Done reading input data.\n";
 
+  // Fit the inp and oop histograms
+  TH1D * histSumInpOop =  hist_epp_cm_inp->ProjectionY("histSumInpOop");
+  TH1D * histTemp = hist_epp_cm_oop->ProjectionY("temp");
+  TF1 * fInpOop = new TF1("fInpOop",constrainedGauss,-1.2,1.2,2);
+  fInpOop->SetParameter(0,histSumInpOop->GetMaximum());
+  fInpOop->SetParameter(1,0.1);
+  histSumInpOop->Add(histTemp);
+  histSumInpOop->Fit("fInpOop","Q");
+
+  // Loop over slices
+  double bins[5];
+  double binErrs[5];
+  double means[5];
+  double meanErrs[5];
+  double sigs[5];
+  double sigErrs[5];
+  TF1 * fGauss = new TF1("fGauss","gaus(0)",-1.2,1.2);
+  int startBins[5]={1,2,3,4,5};
+  int stopBins[5]={1,2,3,4,7};
+  for (int i=0 ; i<5 ; i++)
+    {
+      bins[i] = 0.5*(hist_epp_cm_lon->GetXaxis()->GetBinCenter(startBins[i]) + 
+			    hist_epp_cm_lon->GetXaxis()->GetBinCenter(stopBins[i]) );
+      binErrs[i] =0.;
+
+      // Create the projection
+      char tempString[100];
+      sprintf(tempString,"temp_%d",i);
+      TH1D * histLon =  hist_epp_cm_lon->ProjectionY(tempString,startBins[i],stopBins[i]);
+
+      // Set the initial guesses
+      fGauss->SetParameter(0,histLon->GetMaximum());
+      fGauss->SetParameter(1,histLon->GetBinCenter(histLon->GetMaximumBin()));
+      fGauss->SetParameter(2,0.2);
+
+      // Fit and extract results
+      histLon->Fit("fGauss","Q");
+      means[i] = fGauss->GetParameter(1);
+      meanErrs[i] = fGauss->GetParError(1);
+      sigs[i] = fabs(fGauss->GetParameter(2));
+      sigErrs[i] = fGauss->GetParError(2);	
+    }
+
+  // Now do a fit to the longitudinal means and sigmas!
+  TF1 * fLine = new TF1("fLine",specialLine,-1.2,1.2,2);
+  TGraphErrors * meanGraph = new TGraphErrors(5,bins,means,binErrs,meanErrs);
+  TGraphErrors * sigGraph = new TGraphErrors(5,bins,sigs,binErrs,sigErrs);
+  fLine->SetParameter(0,0.1);
+  fLine->SetParameter(1,0.1);
+  meanGraph->Fit("fLine","Q");
+  double b1 = fLine->GetParameter(0);
+  double b1_err = fLine->GetParError(0);
+  double b2 = fLine->GetParameter(1);
+  double b2_err = fLine->GetParError(1);
+  fLine->SetParameter(0,0.1);
+  fLine->SetParameter(1,0.1);
+  sigGraph->Fit("fLine","Q");
+  double a1 = fLine->GetParameter(0);
+  double a1_err = fLine->GetParError(0);
+  double a2 = fLine->GetParameter(1);
+  double a2_err = fLine->GetParError(1);
+
+  // Print out fit results
+  cout << "\n\na1 was fit to be " << a1 << " +/- " << a1_err << "\n";
+  cout << "a2 was fit to be " << a2 << " +/- " << a2_err << "\n";
+  cout << "b1 was fit to be " << b1 << " +/- " << b1_err << "\n";
+  cout << "b2 was fit to be " << b2 << " +/- " << b2_err << "\n";
+  cout << "SigPerp was fit to be " << fInpOop->GetParameter(1) << " +/- " << fInpOop->GetParError(1) << "\n\n\n";
+
   // Write out histograms
   outfile->cd();
   hist_epp_cm_lon->Write();
   hist_epp_cm_inp->Write();
   hist_epp_cm_oop->Write();
+  histSumInpOop->Write();
+  meanGraph->Write("means");
+  sigGraph->Write("sigmas");
   outfile->Close();
 
   // Clean up
   return 0;
+}
+
+double constrainedGauss(double *x, double *p)
+{
+  double amp = p[0];
+  double sig = p[1];
+  double xOverSig = *x/sig;
+  return amp*exp(-0.5 * xOverSig*xOverSig);
+}
+
+double specialLine(double *x, double *p)
+{
+  double a1 = p[0];
+  double a2 = p[1];
+  return a1*(*x - 0.6) + a2;
 }

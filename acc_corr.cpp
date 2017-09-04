@@ -12,6 +12,8 @@
 #include "TH3.h"
 #include "TVectorT.h"
 
+#include "constants.h"
+
 using namespace std;
 
 // Useful math
@@ -21,11 +23,16 @@ double logGaus(double x, double s, double m);
 // Global variables for the parameters
 int n_epp_events; 
 int n_ep_events;
+int n_ep_events_per_slice[n_slices];
+int n_pseudo_per_ep[n_slices];
 double * current_params;
 double * new_params;
 int n_trials = 200.;
-const int nBins=120;
 double * random_gauss;
+long double bestPosterior;
+TH2D * bestLonModel;
+TH2D * bestInpModel;
+TH2D * bestOopModel;
 
 // Vectors which describe all of the useful info for the e'p events
 vector<TVector3> ep_pmiss_list;
@@ -43,14 +50,10 @@ vector <double> epp_pcm_inp_list;
 TH3D * genHist;
 TH3D * accHist;
 
-// Counters for acceptance ratio. To see if our hyper parameters are tuned finely enough
-double count_true = 0;
-double count_false = 0;
 // Random number generator
 TRandom3 * prand;
 
 double jumpscale;
-long double current_post;
 
 //Starting values for a1, a2, etc
 const double a1_bound = .4;
@@ -63,12 +66,10 @@ const double pcm_bound = 1.;
 // Helper functions
 long double posterior(double * param_set);
 void pick_new_step();
-bool accept_new_step();
 double acceptance_map(TVector3 p);
 inline double acceptance(TVector3 p);
 double acceptance_fake(TVector3 p);
 void initialize_params();
-
 
 int main(int argc, char ** argv)
 {
@@ -85,12 +86,16 @@ int main(int argc, char ** argv)
   jumpscale = atoi(argv[6]);
 
   // Initialize some histograms
-  TH2D * hist_ep_events = new TH2D("ep","ep events;p_miss [GeV];angle between p_miss and q [deg];Counts",28,0.3,1.,30,90.,180.);
-  TH2D * hist_epp_events = new TH2D("epp","epp events;p_miss [GeV];angle between p_miss and q [deg];Counts",28,0.3,1.,30,90.,180.);
-  TH2D * hist_epp_recoils = new TH2D("epp_rec","epp events;p_rec [GeV];angle between p_rec and q [deg];Counts",28,0.3,1.,30,0.,180.);
+  TH2D * hist_ep_events = new TH2D("ep","ep events;p_miss [GeV];angle between p_miss and q [deg];Counts",n_slices,0.3,1.,30,90.,180.);
+  TH2D * hist_epp_events = new TH2D("epp","epp events;p_miss [GeV];angle between p_miss and q [deg];Counts",n_slices,0.3,1.,30,90.,180.);
+  TH2D * hist_epp_recoils = new TH2D("epp_rec","epp events;p_rec [GeV];angle between p_rec and q [deg];Counts",n_slices,0.3,1.,30,0.,180.);
   TH2D * hist_epp_cm_lon = new TH2D("cm_lon","epp events;p_miss [GeV];p_cm_lon [GeV];Counts",7,0.3,1.,24,-1.2,1.2);
   TH2D * hist_epp_cm_inp = new TH2D("cm_inp","epp events;p_miss [GeV];p_cm_inp [GeV];Counts",7,0.3,1.,24,-1.2,1.2);
   TH2D * hist_epp_cm_oop = new TH2D("cm_oop","epp events;p_miss [GeV];p_cm_oop [GeV];Counts",7,0.3,1.,24,-1.2,1.2);
+  bestPosterior = 0.;
+  bestLonModel = NULL;
+  bestInpModel = NULL;
+  bestOopModel = NULL;
 
   // Initialize random guess
   prand = new TRandom3(0);
@@ -204,6 +209,15 @@ int main(int argc, char ** argv)
   cerr << "Read in " << n_ep_events << " ep events.\n";
   cerr << "Read in " << n_epp_events << " epp events.\n";
 
+  TH1D * hist_ep_pmiss = hist_ep_events->ProjectionX("ep_pmiss");
+  int total_samples=0;
+  for (int i=0 ; i < n_slices ; i++)
+    {
+      n_ep_events_per_slice[i] = hist_ep_pmiss->GetBinContent(i+1);
+      n_pseudo_per_ep[i] = samples_per_slice / n_ep_events_per_slice[i];
+      total_samples += n_pseudo_per_ep[i] * n_ep_events_per_slice[i];
+    }
+
   // Load the acceptance maps
   TFile * mapFile = new TFile(argv[3]);
   genHist = (TH3D*)mapFile->Get("solid_p_gen");
@@ -217,8 +231,8 @@ int main(int argc, char ** argv)
   // Create new memory for parameter guesses
   new_params = new double[5];
   current_params = new double[5];
-  random_gauss = new double[n_ep_events * 3 * n_trials];
-  for (int i=0 ; i<n_ep_events*3*n_trials ; i++)
+  random_gauss = new double[3 * total_samples];
+  for (int i=0 ; i<3*total_samples ; i++)
     random_gauss[i] = prand->Gaus();
 
   // Create output rootfile and output tree
@@ -233,6 +247,7 @@ int main(int argc, char ** argv)
   outtree->Branch("logposterior",&log_current_post,"logposterior/D");
 
   cerr << "Initializing parameters...\n";
+  long double current_post;
   do
     {
       initialize_params();
@@ -240,27 +255,35 @@ int main(int argc, char ** argv)
     } while((current_post <= 0) || (isnan(current_post) == true));
 
   // Loop through MCMC
+  int count_true =0;
   for (int i=0; i<samples; i++)
     {
       if (i%5 == 0)
 	cerr << "Working on iteration " << i << endl;
 
       pick_new_step();
+      long double new_post = posterior(new_params);
 
-      if (accept_new_step() == true)
+      long double post_ratio = new_post/current_post;
+      long double proposal_ratio = 1.;
+      long double acceptance = post_ratio*proposal_ratio;
+
+      if (acceptance >= prand->Rndm())
 	{
+	  // Accept this new step
+	  count_true++;
+	  current_post = new_post;
 	  for (int i = 0; i<5; i++)
-	    {
-	      current_params[i] = new_params[i];
-	    }
+	    current_params[i] = new_params[i];
 	}
+
       log_current_post = log(current_post);
       outtree->Fill();
     }
 
   cerr << "Accept % = " << 100.*count_true/samples << "\n";
   TVectorT <double> acc_pct(1);
-  acc_pct[0] = 100.*count_true/samples;
+  acc_pct[0] = 100.*((double)count_true)/((double)samples);
   acc_pct.Write("acc_pct");
 
   // Write out histograms
@@ -271,6 +294,9 @@ int main(int argc, char ** argv)
   hist_epp_cm_oop->Write();
   hist_epp_events->Write();
   hist_epp_recoils->Write();
+  bestLonModel->Write();
+  bestInpModel->Write();
+  bestOopModel->Write();
   outtree->Write();
   outfile->Close();
 
@@ -290,12 +316,11 @@ long double posterior(double * param_set)
     return 0.;
 
   // Make pseudo-data set
-  TH2D pcm_lon_hist("lon","Longitudinal",4,0.3,0.7,nBins,-pcm_bound,pcm_bound);
-  TH2D pcm_inp_hist("inp","Tr. in-plane",4,0.3,0.7,nBins,-pcm_bound,pcm_bound);
-  TH2D pcm_oop_hist("oop","Out-of-plane",4,0.3,0.7,nBins,-pcm_bound,pcm_bound);
-  TH1D pcm_lon_hist1d("lon1d","Longitudinal",nBins,-pcm_bound,pcm_bound);
-  TH1D pcm_inp_hist1d("inp1d","Tr. in-plane",nBins,-pcm_bound,pcm_bound);
-  TH1D pcm_oop_hist1d("oop1d","Out-of-plane",nBins,-pcm_bound,pcm_bound);
+  TH2D pcm_lon_hist("lon","Longitudinal",n_slices,0.3,1.,n_bins,-pcm_bound,pcm_bound);
+  TH2D pcm_inp_hist("inp","Tr. in-plane",n_slices,0.3,1.,n_bins,-pcm_bound,pcm_bound);
+  TH2D pcm_oop_hist("oop","Out-of-plane",n_slices,0.3,1.,n_bins,-pcm_bound,pcm_bound);
+
+  int sample_number=0;
   for (int i=0 ; i<n_ep_events ; i++)
     {
       // Establish sigma and mu for the pcm distributions
@@ -305,11 +330,13 @@ long double posterior(double * param_set)
       double mu_perp = 0.;
       double sig_perp = param_set[4];
 
-      for (int j=0 ; j<n_trials ; j++)
+      int slice = pcm_lon_hist.GetXaxis()->FindBin(pmiss) - 1;
+
+      for (int j=0 ; j<n_pseudo_per_ep[slice] ; j++, sample_number++)
 	{
-	  double pcm_lon = mu_par + sig_par*random_gauss[3*(n_trials*i + j) + 0];
-	  double pcm_inp = mu_perp+sig_perp*random_gauss[3*(n_trials*i + j) + 1];
-	  double pcm_oop = mu_perp+sig_perp*random_gauss[3*(n_trials*i + j) + 2];
+	  double pcm_lon = mu_par + sig_par*random_gauss[3*sample_number + 0];
+	  double pcm_inp = mu_perp+sig_perp*random_gauss[3*sample_number + 1];
+	  double pcm_oop = mu_perp+sig_perp*random_gauss[3*sample_number + 2];
 
 	  TVector3 pcm = pcm_lon * ep_lon_list[i] + pcm_inp * ep_inp_list[i] + pcm_oop * ep_oop_list[i];
 	  TVector3 prec = pcm - ep_pmiss_list[i];
@@ -319,29 +346,17 @@ long double posterior(double * param_set)
 	    continue;
 
 	  // Fill the histograms with the appropriate acceptance weights
-	  if (pmiss < 0.7)
-	    {
-	      pcm_lon_hist.Fill(pmiss,pcm_lon,acceptance(prec));
-	      pcm_inp_hist.Fill(pmiss,pcm_inp,acceptance(prec));
-	      pcm_oop_hist.Fill(pmiss,pcm_oop,acceptance(prec));
-	    }
-	  else
-	    {
-	      pcm_lon_hist1d.Fill(pcm_lon,acceptance(prec));
-	      pcm_inp_hist1d.Fill(pcm_inp,acceptance(prec));
-	      pcm_oop_hist1d.Fill(pcm_oop,acceptance(prec));
-	    }
+	  pcm_lon_hist.Fill(pmiss,pcm_lon,acceptance(prec));
+	  pcm_inp_hist.Fill(pmiss,pcm_inp,acceptance(prec));
+	  pcm_oop_hist.Fill(pmiss,pcm_oop,acceptance(prec));
 	}
     }
 
-  const double scale = ((double) n_epp_events)/(((double) n_trials)*((double)n_ep_events));
+  const double scale = ((double) n_epp_events)/((double) sample_number);
 
   pcm_lon_hist.Scale(scale);
   pcm_inp_hist.Scale(scale);
   pcm_oop_hist.Scale(scale);
-  pcm_lon_hist1d.Scale(scale);
-  pcm_inp_hist1d.Scale(scale);
-  pcm_oop_hist1d.Scale(scale);
 
   // pcm_lon_hist.Write();
   //pcm_inp_hist.Write();
@@ -357,24 +372,36 @@ long double posterior(double * param_set)
       double pcm_oop = epp_pcm_oop_list[i];
       
       // Get the model probabilities of pcm
-      double pcm_lon_model, pcm_inp_model, pcm_oop_model;
-      pcm_lon_model = (pmiss < 0.7)? pcm_lon_hist.GetBinContent(pcm_lon_hist.FindBin(pmiss,pcm_lon)) : 
-	pcm_lon_hist1d.GetBinContent(pcm_lon_hist.FindBin(pcm_lon));
-      pcm_inp_model = (pmiss < 0.7)? pcm_inp_hist.GetBinContent(pcm_inp_hist.FindBin(pmiss,pcm_inp)) : 
-	pcm_inp_hist1d.GetBinContent(pcm_inp_hist.FindBin(pcm_inp));
-      pcm_oop_model = (pmiss < 0.7)? pcm_oop_hist.GetBinContent(pcm_oop_hist.FindBin(pmiss,pcm_oop)) : 
-	pcm_oop_hist1d.GetBinContent(pcm_oop_hist.FindBin(pcm_oop));
+      double pcm_lon_prob = pcm_lon_hist.GetBinContent(pcm_lon_hist.FindBin(pmiss,pcm_lon));
+      double pcm_inp_prob = pcm_inp_hist.GetBinContent(pcm_inp_hist.FindBin(pmiss,pcm_inp));
+      double pcm_oop_prob = pcm_oop_hist.GetBinContent(pcm_oop_hist.FindBin(pmiss,pcm_oop));
 
       // Update the result
       if (fabs(pcm_lon) < pcm_bound)
-	result *= pcm_lon_model;
+	result *= pcm_lon_prob;
       
       if (fabs(pcm_inp) < pcm_bound)
-	result *= pcm_inp_model;
+	result *= pcm_inp_prob;
       
       if (fabs(pcm_oop) < pcm_bound)
-	result *= pcm_oop_model;
+	result *= pcm_oop_prob;
     }
+  
+  // Test if this one is the best so far
+  if (result > bestPosterior)
+    {
+      bestPosterior=result;
+      if (bestLonModel)
+	{
+	  delete bestLonModel;
+	  delete bestInpModel;
+	  delete bestOopModel;
+	}
+      bestLonModel = (TH2D*)pcm_lon_hist.Clone();
+      bestInpModel = (TH2D*)pcm_inp_hist.Clone();
+      bestOopModel = (TH2D*)pcm_oop_hist.Clone();
+    }
+
   return result;
 }
 
@@ -385,33 +412,6 @@ void pick_new_step()
   new_params[2] = prand->Gaus(current_params[2], b1_bound/jumpscale);
   new_params[3] = prand->Gaus(current_params[3], b2_bound/jumpscale);
   new_params[4] = prand->Gaus(current_params[4], sigPerp_bound/jumpscale);
-}
-
-bool accept_new_step()
-{
-  current_post = posterior(current_params);
-  long double new_post = posterior(new_params);
-  long double post_ratio = new_post/current_post;
-  //cout << current_post << " -> " << new_post << "    ratio: "<< post_ratio << endl;
-
-  long double proposal_ratio = 1.;
-  long double acceptance = post_ratio*proposal_ratio;
-  //cout << "Acceptance is: " << acceptance << "\n\n";
-
-  double acceptance_chance = prand->Uniform(1);
-  if (acceptance >= acceptance_chance)
-    {
-      //cout << "True" << endl;
-      count_true++;
-      current_post = new_post;
-      return true;
-    }
-  else
-    {
-      //cout << "False" << endl;
-      count_false++;
-      return false;
-    }
 }
 
 double acceptance_map(TVector3 p)
