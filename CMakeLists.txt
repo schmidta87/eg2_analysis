@@ -24,6 +24,10 @@ target_link_libraries(gen_pseudo ${ROOT_LIBRARIES})
 add_executable(print_tree print_tree.cpp)
 target_link_libraries(print_tree ${ROOT_LIBRARIES})
 
+# Add executable for processing burn-in and autocorrelation
+add_executable(process_tree process_tree.cpp)
+target_link_libraries(process_tree ${ROOT_LIBRARIES})
+
 # Add executable for doing basic fits
 add_executable(fit_basic fit_basic.cpp)
 target_link_libraries(fit_basic ${ROOT_LIBRARIES})
