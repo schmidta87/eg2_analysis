@@ -25,6 +25,7 @@ int n_epp_events;
 int n_ep_events;
 int n_ep_events_per_slice[n_slices];
 int n_pseudo_per_ep[n_slices];
+int this_sample;
 double * current_params;
 double * new_params;
 int n_trials = 200.;
@@ -248,27 +249,28 @@ int main(int argc, char ** argv)
 
   cerr << "Initializing parameters...\n";
   long double current_post;
+  this_sample=-1000;
   do
     {
       initialize_params();
       current_post = posterior(current_params);
+      cout << "Attempted initialization: posterior = " << current_post << "\n";
     } while((current_post <= 0) || (isnan(current_post) == true));
 
   // Loop through MCMC
   int count_true =0;
-  for (int i=0; i<samples; i++)
+  for (this_sample=0; this_sample<samples; this_sample++)
     {
-      if (i%5 == 0)
-	cerr << "Working on iteration " << i << endl;
+      if (this_sample%5 == 0)
+	cerr << "Working on iteration " << this_sample << endl;
 
       pick_new_step();
       long double new_post = posterior(new_params);
 
       long double post_ratio = new_post/current_post;
       long double proposal_ratio = 1.;
-      long double acceptance = post_ratio*proposal_ratio;
 
-      if (acceptance >= prand->Rndm())
+      if (post_ratio*proposal_ratio >= prand->Rndm())
 	{
 	  // Accept this new step
 	  count_true++;
@@ -346,13 +348,14 @@ long double posterior(double * param_set)
 	    continue;
 
 	  // Fill the histograms with the appropriate acceptance weights
-	  pcm_lon_hist.Fill(pmiss,pcm_lon,acceptance(prec));
-	  pcm_inp_hist.Fill(pmiss,pcm_inp,acceptance(prec));
-	  pcm_oop_hist.Fill(pmiss,pcm_oop,acceptance(prec));
+	  double weight = acceptance(prec)/((double)n_pseudo_per_ep[slice]);       
+	  pcm_lon_hist.Fill(pmiss,pcm_lon,weight);
+	  pcm_inp_hist.Fill(pmiss,pcm_inp,weight);
+	  pcm_oop_hist.Fill(pmiss,pcm_oop,weight);
 	}
     }
 
-  const double scale = ((double) n_epp_events)/((double) sample_number);
+  const double scale = ((double) n_epp_events)/((double) n_ep_events);
 
   pcm_lon_hist.Scale(scale);
   pcm_inp_hist.Scale(scale);
@@ -397,9 +400,13 @@ long double posterior(double * param_set)
 	  delete bestInpModel;
 	  delete bestOopModel;
 	}
-      bestLonModel = (TH2D*)pcm_lon_hist.Clone();
-      bestInpModel = (TH2D*)pcm_inp_hist.Clone();
-      bestOopModel = (TH2D*)pcm_oop_hist.Clone();
+      char temp_name[100];
+      sprintf(temp_name,"lon_%d",this_sample);
+      bestLonModel = (TH2D*)pcm_lon_hist.Clone(temp_name);
+      sprintf(temp_name,"inp_%d",this_sample);
+      bestInpModel = (TH2D*)pcm_inp_hist.Clone(temp_name);
+      sprintf(temp_name,"oop_%d",this_sample);
+      bestOopModel = (TH2D*)pcm_oop_hist.Clone(temp_name);
     }
 
   return result;
