@@ -58,7 +58,7 @@ const double sigPerp_bound = .4;
 const double pcm_bound = 1.;
 
 // Helper functions
-long double posterior(double * param_set);
+long double posterior(double * param_set, double &recoil_acc);
 void pick_new_step();
 double acceptance_map(TVector3 p);
 inline double acceptance(TVector3 p);
@@ -225,7 +225,7 @@ int main(int argc, char ** argv)
     random_gauss[i] = prand->Gaus();
 
   // Create output rootfile and output tree
-  double log_current_post;
+  double log_current_post, recoil_acc;
   outfile->cd();
   TTree * outtree = new TTree("mcmc","MCMC Samples");
   outtree->Branch("a1",current_params,"a1/D");
@@ -234,6 +234,7 @@ int main(int argc, char ** argv)
   outtree->Branch("b2",current_params+3,"b2/D");
   outtree->Branch("sigPerp",current_params+4,"sigPerp/D");
   outtree->Branch("logposterior",&log_current_post,"logposterior/D");
+  outtree->Branch("recoil_acc",&recoil_acc,"recoil_acc/D");
 
   cerr << "Initializing parameters...\n";
   long double current_post;
@@ -241,7 +242,7 @@ int main(int argc, char ** argv)
   do
     {
       initialize_params();
-      current_post = posterior(current_params);
+      current_post = posterior(current_params,recoil_acc);
       cout << "Attempted initialization: posterior = " << current_post << "\n";
     } while((current_post <= 0) || (isnan(current_post) == true));
 
@@ -253,7 +254,8 @@ int main(int argc, char ** argv)
 	cerr << "Working on iteration " << this_sample << endl;
 
       pick_new_step();
-      long double new_post = posterior(new_params);
+      double new_recoil_acc;
+      long double new_post = posterior(new_params,new_recoil_acc);
 
       long double post_ratio = new_post/current_post;
       long double proposal_ratio = 1.;
@@ -262,6 +264,7 @@ int main(int argc, char ** argv)
 	{
 	  // Accept this new step
 	  count_true++;
+	  recoil_acc = new_recoil_acc;
 	  current_post = new_post;
 	  for (int i = 0; i<5; i++)
 	    current_params[i] = new_params[i];
@@ -301,8 +304,10 @@ double logGaus(double x, double m, double s)
   return -0.5 * sq((x-m)/s);
 }
 
-long double posterior(double * param_set)
-{     
+long double posterior(double * param_set, double &recoil_acc)
+{ 
+  recoil_acc = 0.;
+  
   // Safe guard in case a1 or a2 are incorrect
   if((-0.3*param_set[0] + param_set[1]<=0.)||(0.4*param_set[0]+param_set[1]<=0.))
     return 0.;
@@ -313,7 +318,7 @@ long double posterior(double * param_set)
   vector<double> pmiss_list;
   vector<double> weight_list;
 
-  for (int i=0 ; i<n_ep_events ; i++)
+    for (int i=0 ; i<n_ep_events ; i++)
     {
       // Establish sigma and mu for the pcm distributions
       const double pmiss = ep_pmiss_list[i].Mag();
@@ -344,8 +349,10 @@ long double posterior(double * param_set)
           pcm_oop_list.push_back(pcm_oop);
           pmiss_list.push_back(pmiss);
           weight_list.push_back(weight);	  
+	  recoil_acc += weight;
 	}
     }
+  recoil_acc = recoil_acc / (n_ep_events*n_pseudo);
 
   long double sums[n_epp_events];
 
