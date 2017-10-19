@@ -23,17 +23,10 @@ double logGaus(double x, double s, double m);
 // Global variables for the parameters
 int n_epp_events; 
 int n_ep_events;
-int n_ep_events_per_slice[n_slices];
-int n_pseudo_per_ep[n_slices];
 int this_sample;
 double * current_params;
 double * new_params;
-int n_trials = 200.;
 double * random_gauss;
-long double bestPosterior;
-TH2D * bestLonModel;
-TH2D * bestInpModel;
-TH2D * bestOopModel;
 
 // Vectors which describe all of the useful info for the e'p events
 vector<TVector3> ep_pmiss_list;
@@ -85,7 +78,7 @@ int main(int argc, char ** argv)
   TFile * outfile = new TFile(argv[4],"RECREATE");
   int samples = atoi(argv[5]);
   jumpscale = atoi(argv[6]);
-
+  
   // Initialize some histograms
   TH2D * hist_ep_events = new TH2D("ep","ep events;p_miss [GeV];angle between p_miss and q [deg];Counts",n_slices,0.3,1.,30,90.,180.);
   TH2D * hist_epp_events = new TH2D("epp","epp events;p_miss [GeV];angle between p_miss and q [deg];Counts",n_slices,0.3,1.,30,90.,180.);
@@ -93,13 +86,15 @@ int main(int argc, char ** argv)
   TH2D * hist_epp_cm_lon = new TH2D("cm_lon","epp events;p_miss [GeV];p_cm_lon [GeV];Counts",7,0.3,1.,24,-1.2,1.2);
   TH2D * hist_epp_cm_inp = new TH2D("cm_inp","epp events;p_miss [GeV];p_cm_inp [GeV];Counts",7,0.3,1.,24,-1.2,1.2);
   TH2D * hist_epp_cm_oop = new TH2D("cm_oop","epp events;p_miss [GeV];p_cm_oop [GeV];Counts",7,0.3,1.,24,-1.2,1.2);
-  bestPosterior = 0.;
-  bestLonModel = NULL;
-  bestInpModel = NULL;
-  bestOopModel = NULL;
 
   // Initialize random guess
-  prand = new TRandom3(0);
+  // int seed=0;
+  int seed = 777766;
+  prand = new TRandom3(seed);
+  //prand = new TRandom3(0);
+  //seed = prand->Rndm()*1000000;
+  //prand->SetSeed(seed);
+  cout << "Chosen seed is " << seed << "\n";
 
   // Read in e'p events
   cerr << "Loading 1p data file " << argv[1] << " ...\n";
@@ -211,13 +206,6 @@ int main(int argc, char ** argv)
   cerr << "Read in " << n_epp_events << " epp events.\n";
 
   TH1D * hist_ep_pmiss = hist_ep_events->ProjectionX("ep_pmiss");
-  int total_samples=0;
-  for (int i=0 ; i < n_slices ; i++)
-    {
-      n_ep_events_per_slice[i] = hist_ep_pmiss->GetBinContent(i+1);
-      n_pseudo_per_ep[i] = samples_per_slice / n_ep_events_per_slice[i];
-      total_samples += n_pseudo_per_ep[i] * n_ep_events_per_slice[i];
-    }
 
   // Load the acceptance maps
   TFile * mapFile = new TFile(argv[3]);
@@ -232,8 +220,8 @@ int main(int argc, char ** argv)
   // Create new memory for parameter guesses
   new_params = new double[5];
   current_params = new double[5];
-  random_gauss = new double[3 * total_samples];
-  for (int i=0 ; i<3*total_samples ; i++)
+  random_gauss = new double[3 * n_ep_events * n_pseudo];
+  for (int i=0 ; i<3*n_ep_events*n_pseudo ; i++)
     random_gauss[i] = prand->Gaus();
 
   // Create output rootfile and output tree
@@ -296,9 +284,6 @@ int main(int argc, char ** argv)
   hist_epp_cm_oop->Write();
   hist_epp_events->Write();
   hist_epp_recoils->Write();
-  bestLonModel->Write();
-  bestInpModel->Write();
-  bestOopModel->Write();
   outtree->Write();
   outfile->Close();
 
@@ -311,103 +296,81 @@ int main(int argc, char ** argv)
   return 0;
 }
 
+double logGaus(double x, double m, double s)
+{
+  return -0.5 * sq((x-m)/s);
+}
+
 long double posterior(double * param_set)
 {     
   // Safe guard in case a1 or a2 are incorrect
   if((-0.3*param_set[0] + param_set[1]<=0.)||(0.4*param_set[0]+param_set[1]<=0.))
     return 0.;
 
-  // Make pseudo-data set
-  TH2D pcm_lon_hist("lon","Longitudinal",n_slices,0.3,1.,n_bins,-pcm_bound,pcm_bound);
-  TH2D pcm_inp_hist("inp","Tr. in-plane",n_slices,0.3,1.,n_bins,-pcm_bound,pcm_bound);
-  TH2D pcm_oop_hist("oop","Out-of-plane",n_slices,0.3,1.,n_bins,-pcm_bound,pcm_bound);
+  vector<double> pcm_lon_list;
+  vector<double> pcm_inp_list;
+  vector<double> pcm_oop_list;
+  vector<double> pmiss_list;
+  vector<double> weight_list;
 
-  int sample_number=0;
   for (int i=0 ; i<n_ep_events ; i++)
     {
       // Establish sigma and mu for the pcm distributions
-      double pmiss = ep_pmiss_list[i].Mag();
-      double sig_par = param_set[0] * (pmiss - 0.6) + param_set[1];
-      double mu_par = param_set[2] * (pmiss - 0.6) + param_set[3];
-      double mu_perp = 0.;
-      double sig_perp = param_set[4];
+      const double pmiss = ep_pmiss_list[i].Mag();
+      const double sig_par = param_set[0] * (pmiss - 0.6) + param_set[1];
+      const double mu_par = param_set[2] * (pmiss - 0.6) + param_set[3];
+      const double mu_perp = 0.;
+      const double sig_perp = param_set[4];
 
-      int slice = pcm_lon_hist.GetXaxis()->FindBin(pmiss) - 1;
-
-      for (int j=0 ; j<n_pseudo_per_ep[slice] ; j++, sample_number++)
+      for (int j=0 ; j<n_pseudo ; j++)
 	{
-	  double pcm_lon = mu_par + sig_par*random_gauss[3*sample_number + 0];
-	  double pcm_inp = mu_perp+sig_perp*random_gauss[3*sample_number + 1];
-	  double pcm_oop = mu_perp+sig_perp*random_gauss[3*sample_number + 2];
+	  double pcm_lon = mu_par + sig_par*random_gauss[3*n_pseudo*i + 3*j + 0];
+	  double pcm_inp = mu_perp+sig_perp*random_gauss[3*n_pseudo*i + 3*j + 1];
+	  double pcm_oop = mu_perp+sig_perp*random_gauss[3*n_pseudo*i + 3*j + 2];
 
 	  TVector3 pcm = pcm_lon * ep_lon_list[i] + pcm_inp * ep_inp_list[i] + pcm_oop * ep_oop_list[i];
 	  TVector3 prec = pcm - ep_pmiss_list[i];
 	  
-	  // Make sure the recoils have sufficient momentum
+	  // Calculate the weight, makin sure the recoils have sufficient momentum
+	  double weight;
 	  if (prec.Mag()<0.35)
-	    continue;
+	    weight=0;
+	  else
+	    weight = acceptance(prec);
 
-	  // Fill the histograms with the appropriate acceptance weights
-	  double weight = acceptance(prec)/((double)n_pseudo_per_ep[slice]);       
-	  pcm_lon_hist.Fill(pmiss,pcm_lon,weight);
-	  pcm_inp_hist.Fill(pmiss,pcm_inp,weight);
-	  pcm_oop_hist.Fill(pmiss,pcm_oop,weight);
+	  // Store the pseudo-events in the lists
+          pcm_lon_list.push_back(pcm_lon);
+          pcm_inp_list.push_back(pcm_inp);
+          pcm_oop_list.push_back(pcm_oop);
+          pmiss_list.push_back(pmiss);
+          weight_list.push_back(weight);	  
 	}
     }
 
-  const double scale = ((double) n_epp_events)/((double) n_ep_events);
+  long double sums[n_epp_events];
 
-  pcm_lon_hist.Scale(scale);
-  pcm_inp_hist.Scale(scale);
-  pcm_oop_hist.Scale(scale);
-
-  // pcm_lon_hist.Write();
-  //pcm_inp_hist.Write();
-  //pcm_oop_hist.Write();
-  
-  long double result = 1.;
+  #pragma omp parallel for
   for (int i=0 ; i<n_epp_events ; i++)
     {
-      // Get the measured values of pcm
-      double pmiss = epp_pmiss_list[i];
-      double pcm_lon = epp_pcm_lon_list[i];
-      double pcm_inp = epp_pcm_inp_list[i];
-      double pcm_oop = epp_pcm_oop_list[i];
-      
-      // Get the model probabilities of pcm
-      double pcm_lon_prob = pcm_lon_hist.GetBinContent(pcm_lon_hist.FindBin(pmiss,pcm_lon));
-      double pcm_inp_prob = pcm_inp_hist.GetBinContent(pcm_inp_hist.FindBin(pmiss,pcm_inp));
-      double pcm_oop_prob = pcm_oop_hist.GetBinContent(pcm_oop_hist.FindBin(pmiss,pcm_oop));
+      sums[i] = 0.;
+      for (int j=0; j<n_pseudo*n_ep_events; j++)
+        {
+	  // Don't waste time on the exponential if out of acceptance
+	  if (weight_list[j] <= 0.)
+	    continue;
 
-      // Update the result
-      if (fabs(pcm_lon) < pcm_bound)
-	result *= pcm_lon_prob;
-      
-      if (fabs(pcm_inp) < pcm_bound)
-	result *= pcm_inp_prob;
-      
-      if (fabs(pcm_oop) < pcm_bound)
-	result *= pcm_oop_prob;
-    }
-  
-  // Test if this one is the best so far
-  if (result > bestPosterior)
-    {
-      bestPosterior=result;
-      if (bestLonModel)
-	{
-	  delete bestLonModel;
-	  delete bestInpModel;
-	  delete bestOopModel;
+          //Gaussian KDE. No cutoff.
+          sums[i] += weight_list[j]*(exp(logGaus(epp_pmiss_list[i],pmiss_list[j],kde_width) + 
+					 logGaus(epp_pcm_lon_list[i],pcm_lon_list[j],kde_width) + 
+					 logGaus(epp_pcm_inp_list[i],pcm_inp_list[j],kde_width) + 
+					 logGaus(epp_pcm_oop_list[i],pcm_oop_list[j],kde_width)));
 	}
-      char temp_name[100];
-      sprintf(temp_name,"lon_%d",this_sample);
-      bestLonModel = (TH2D*)pcm_lon_hist.Clone(temp_name);
-      sprintf(temp_name,"inp_%d",this_sample);
-      bestInpModel = (TH2D*)pcm_inp_hist.Clone(temp_name);
-      sprintf(temp_name,"oop_%d",this_sample);
-      bestOopModel = (TH2D*)pcm_oop_hist.Clone(temp_name);
     }
+
+  // Assemble the result from the product of the sums
+  long double result = 1.;
+  for (int i=0 ; i<n_epp_events ; i++)
+    result *= sums[i];
 
   return result;
 }
@@ -493,4 +456,3 @@ void initialize_params()
       current_params[1] = prand->Uniform(a2_bound);
     }
 }
- 
