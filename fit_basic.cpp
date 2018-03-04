@@ -122,7 +122,14 @@ int main(int argc, char ** argv)
       means[i] = fGauss->GetParameter(1);
       meanErrs[i] = fGauss->GetParError(1);
       sigs[i] = fabs(fGauss->GetParameter(2));
-      sigErrs[i] = fGauss->GetParError(2);	
+      sigErrs[i] = fGauss->GetParError(2);
+
+      // Let's artificially blow up the errors if there aren't that many counts
+      if (histLon->Integral()<5)
+	{
+	  meanErrs[i]=10.*fabs(means[i]);
+	  sigErrs[i]=10.*fabs(sigs[i]);
+	}
     }
 
   // Now do a fit to the longitudinal means and sigmas!

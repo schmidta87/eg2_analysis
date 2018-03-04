@@ -3,12 +3,26 @@
 # Set up
 cmake_minimum_required (VERSION 2.6)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules")
+
+# OpenMP
+ENABLE_LANGUAGE(CXX)
+OPTION (USE_OpenMP "Use OpenMP" ON)
+IF(USE_OpenMP)
+  FIND_PACKAGE(OpenMP)
+  IF(OPENMP_FOUND)
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+  ENDIF()
+ENDIF()
+
+# ROOT
 find_package(ROOT REQUIRED)
 
 # Project name
 project (eg2)
 
 # ADD SUBDIRECTORIES
+add_subdirectory(acceptance)
 
 include_directories(${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include )
 
@@ -16,11 +30,11 @@ include_directories(${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include )
 add_executable(acc_corr acc_corr.cpp)
 target_link_libraries(acc_corr ${ROOT_LIBRARIES})
 add_executable(acc_corr_bin acc_corr_bin.cpp)
-target_link_libraries(acc_corr_bin ${ROOT_LIBRARIES})
+target_link_libraries(acc_corr_bin ${ROOT_LIBRARIES} AccMap)
 
 # Add executable for generating pseudo data
 add_executable(gen_pseudo gen_pseudo.cpp)
-target_link_libraries(gen_pseudo ${ROOT_LIBRARIES})
+target_link_libraries(gen_pseudo ${ROOT_LIBRARIES} AccMap)
 
 # Add executable for printing the tree from mcmc
 add_executable(print_tree print_tree.cpp)
@@ -34,3 +48,6 @@ target_link_libraries(process_tree ${ROOT_LIBRARIES})
 add_executable(fit_basic fit_basic.cpp)
 target_link_libraries(fit_basic ${ROOT_LIBRARIES})
 
+# Add executable for calculating the pp/p correction
+add_executable(find_correction find_correction.cpp)
+target_link_libraries(find_correction ${ROOT_LIBRARIES} AccMap)
