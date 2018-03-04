@@ -20,7 +20,7 @@ int main(int argc, char **argv)
   int keep_one = atoi(argv[2]);
 
   // Create the output file
-  double a1, a2, b1, b2, sigPerp, logP, recoil_acc;
+  double a1, a2, b1, b2, sigPerp, logP;
   TFile * outfile = new TFile(argv[3],"RECREATE");
   TTree * outtree = new TTree("mcmc","Processed mcmc results");
   outtree->Branch("a1",&a1,"a1/D");
@@ -29,7 +29,6 @@ int main(int argc, char **argv)
   outtree->Branch("b2",&b2,"b2/D");
   outtree->Branch("sigPerp",&sigPerp,"sigPerp/D");
   outtree->Branch("logposterior",&logP,"logP/D");
-  outtree->Branch("recoil_acc",&recoil_acc,"recoil_acc/D");
 
   // Loop over the input files
   for (int j=4 ; j<argc ; j++)
