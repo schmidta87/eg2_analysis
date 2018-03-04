@@ -65,8 +65,8 @@ int main(int argc, char ** argv)
 
       // Form the rotated basis
       TVector3 lon = pmiss.Unit();
-      TVector3 oop = lon.Cross(TVector3(0.,0.,1.)).Unit();
-      TVector3 inp = lon.Cross(oop).Unit();
+      TVector3 oop = q.Cross(lon).Unit();
+      TVector3 inp = oop.Cross(lon).Unit();
 
       TVector3 pcm = prec + pmiss;
       double pcm_lon = pcm.Dot(lon);

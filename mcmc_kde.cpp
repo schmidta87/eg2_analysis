@@ -125,8 +125,8 @@ int main(int argc, char ** argv)
 
       // Form the rotated basis
       TVector3 lon = pmiss.Unit();
-      TVector3 oop = lon.Cross(TVector3(0.,0.,1.)).Unit();
-      TVector3 inp = lon.Cross(oop).Unit();
+      TVector3 oop = q.Cross(lon).Unit();
+      TVector3 inp = oop.Cross(lon).Unit();
       ep_lon_list.push_back(lon);
       ep_inp_list.push_back(inp);
       ep_oop_list.push_back(oop);
@@ -161,8 +161,8 @@ int main(int argc, char ** argv)
 
       // Form the rotated basis
       TVector3 lon = pmiss.Unit();
-      TVector3 oop = lon.Cross(TVector3(0.,0.,1.)).Unit();
-      TVector3 inp = lon.Cross(oop).Unit();
+      TVector3 oop = q.Cross(lon).Unit();
+      TVector3 inp = oop.Cross(lon).Unit();
 
       ep_lon_list.push_back(lon);
       ep_inp_list.push_back(inp);
