@@ -311,6 +311,7 @@ long double posterior(double * param_set)
   TH2D pcm_lon_hist("lon","Longitudinal",n_slices,0.3,1.,n_bins,-pcm_bound,pcm_bound);
   TH2D pcm_inp_hist("inp","Tr. in-plane",n_slices,0.3,1.,n_bins,-pcm_bound,pcm_bound);
   TH2D pcm_oop_hist("oop","Out-of-plane",n_slices,0.3,1.,n_bins,-pcm_bound,pcm_bound);
+  TH1D total_acc("acc","Total Accepted",n_slices,0.3,1.);
 
   int sample_number=0;
   for (int i=0 ; i<n_ep_events ; i++)
@@ -338,6 +339,7 @@ long double posterior(double * param_set)
 	  pcm_lon_hist.Fill(pmiss,pcm_lon,weight);
 	  pcm_inp_hist.Fill(pmiss,pcm_inp,weight);
 	  pcm_oop_hist.Fill(pmiss,pcm_oop,weight);
+	  total_acc.Fill(pmiss,weight);
 	}
     }
 
@@ -346,6 +348,7 @@ long double posterior(double * param_set)
   pcm_lon_hist.Scale(scale);
   pcm_inp_hist.Scale(scale);
   pcm_oop_hist.Scale(scale);
+  total_acc.Scale(scale);
 
   // pcm_lon_hist.Write();
   //pcm_inp_hist.Write();
@@ -360,10 +363,13 @@ long double posterior(double * param_set)
       double pcm_inp = epp_pcm_inp_list[i];
       double pcm_oop = epp_pcm_oop_list[i];
       
+      // Get the normalization coefficient
+      double norm=total_acc.GetBinContent(total_acc.FindBin(pmiss));
+
       // Get the model probabilities of pcm
-      double pcm_lon_prob = pcm_lon_hist.GetBinContent(pcm_lon_hist.FindBin(pmiss,pcm_lon));
-      double pcm_inp_prob = pcm_inp_hist.GetBinContent(pcm_inp_hist.FindBin(pmiss,pcm_inp));
-      double pcm_oop_prob = pcm_oop_hist.GetBinContent(pcm_oop_hist.FindBin(pmiss,pcm_oop));
+      double pcm_lon_prob = pcm_lon_hist.GetBinContent(pcm_lon_hist.FindBin(pmiss,pcm_lon))/norm;
+      double pcm_inp_prob = pcm_inp_hist.GetBinContent(pcm_inp_hist.FindBin(pmiss,pcm_inp))/norm;
+      double pcm_oop_prob = pcm_oop_hist.GetBinContent(pcm_oop_hist.FindBin(pmiss,pcm_oop))/norm;
 
       // Update the result
       if (fabs(pcm_lon) < pcm_bound)
