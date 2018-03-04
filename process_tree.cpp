@@ -42,7 +42,6 @@ int main(int argc, char **argv)
       intree->SetBranchAddress("b2",&b2);
       intree->SetBranchAddress("sigPerp",&sigPerp);
       intree->SetBranchAddress("logposterior",&logP);
-      intree->SetBranchAddress("recoil_acc",&recoil_acc);
 
       // Loop over the tree
       for (int i=0 ; i<intree->GetEntries() ; i++)
