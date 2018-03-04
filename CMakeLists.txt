@@ -27,10 +27,10 @@ add_subdirectory(acceptance)
 include_directories(${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include )
 
 # Add executable for acceptance corrections
-add_executable(acc_corr acc_corr.cpp)
-target_link_libraries(acc_corr ${ROOT_LIBRARIES})
-add_executable(acc_corr_bin acc_corr_bin.cpp)
-target_link_libraries(acc_corr_bin ${ROOT_LIBRARIES} AccMap)
+add_executable(mcmc_kde mcmc_kde.cpp)
+target_link_libraries(mcmc_kde ${ROOT_LIBRARIES})
+add_executable(mcmc_bin mcmc_bin.cpp)
+target_link_libraries(mcmc_bin ${ROOT_LIBRARIES} AccMap)
 
 # Add executable for generating pseudo data
 add_executable(gen_pseudo gen_pseudo.cpp)
