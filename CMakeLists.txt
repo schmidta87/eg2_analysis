@@ -23,6 +23,7 @@ project (eg2)
 
 # ADD SUBDIRECTORIES
 add_subdirectory(acceptance)
+add_subdirectory(fiducials)
 
 include_directories(${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include )
 
@@ -51,3 +52,7 @@ target_link_libraries(fit_basic ${ROOT_LIBRARIES})
 # Add executable for calculating the pp/p correction
 add_executable(find_correction find_correction.cpp)
 target_link_libraries(find_correction ${ROOT_LIBRARIES} AccMap)
+
+# Add executable for calculating the pp/p correction
+add_executable(find_corr_single find_corr_single.cpp)
+target_link_libraries(find_corr_single ${ROOT_LIBRARIES} AccMap)
