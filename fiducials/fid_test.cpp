@@ -21,10 +21,10 @@ int main(int argc, char ** argv)
   ofstream outfile(argv[1]);
   TRandom3 myRand(0);
 
-  for (int i=0 ; i < 100000 ; i++)
+  for (int i=0 ; i < 10000 ; i++)
     {
       double theta = myRand.Rndm()*M_PI;
-      double phi = myRand.Rndm()*2.*M_PI - M_PI/12.;
+      double phi = myRand.Rndm()*2.*M_PI - M_PI/6.;
       double mom = 2.;
 
       TVector3 p(mom*sin(theta)*cos(phi), mom*sin(theta)*sin(phi), mom*cos(theta));

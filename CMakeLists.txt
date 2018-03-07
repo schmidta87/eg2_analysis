@@ -56,3 +56,7 @@ target_link_libraries(find_correction ${ROOT_LIBRARIES} AccMap)
 # Add executable for calculating the pp/p correction
 add_executable(find_corr_single find_corr_single.cpp)
 target_link_libraries(find_corr_single ${ROOT_LIBRARIES} AccMap)
+
+# Add executable for calculating the pp/p ratio from data
+add_executable(pp_to_p pp_to_p.cpp)
+target_link_libraries(pp_to_p ${ROOT_LIBRARIES} Fid)
