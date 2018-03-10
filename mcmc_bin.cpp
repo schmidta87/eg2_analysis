@@ -55,12 +55,17 @@ TRandom3 * prand;
 
 double jumpscale;
 
-//Starting values for a1, a2, etc
-const double a1_bound = .4;
-const double a2_bound = .8;
-const double b1_bound = .8;
-const double b2_bound = .4;
-const double sigPerp_bound = .4;
+//Box size for the five-dimensional space
+const double min_a1 = -0.2;
+const double min_a2 = 0.;
+const double min_b1 = -0.5;
+const double min_b2 = 0.;
+const double min_sigPerp = 0.;
+const double max_a1 = 0.8;
+const double max_a2 = 0.4;
+const double max_b1 = 1.5;
+const double max_b2 = 0.5;
+const double max_sigPerp = 0.4;
 const double pcm_bound = 1.;
 
 // Helper functions
@@ -409,26 +414,26 @@ long double posterior(double * param_set)
 
 void pick_new_step()
 {
-  new_params[0] = prand->Gaus(current_params[0], a1_bound/jumpscale);
-  new_params[1] = prand->Gaus(current_params[1], a2_bound/jumpscale);
-  new_params[2] = prand->Gaus(current_params[2], b1_bound/jumpscale);
-  new_params[3] = prand->Gaus(current_params[3], b2_bound/jumpscale);
-  new_params[4] = prand->Gaus(current_params[4], sigPerp_bound/jumpscale);
+  new_params[0] = prand->Gaus(current_params[0], (max_a1-min_a1)/jumpscale);
+  new_params[1] = prand->Gaus(current_params[1], (max_a2-min_a2)/jumpscale);
+  new_params[2] = prand->Gaus(current_params[2], (max_b1-min_b1)/jumpscale);
+  new_params[3] = prand->Gaus(current_params[3], (max_b2-min_b2)/jumpscale);
+  new_params[4] = prand->Gaus(current_params[4], (max_sigPerp - min_sigPerp)/jumpscale);
 }
 
 void initialize_params()
 {
-  current_params[0] = prand->Uniform(a1_bound);
-  current_params[1] = prand->Uniform(a2_bound);
-  current_params[2] = prand->Uniform(b1_bound);
-  current_params[3] = prand->Uniform(b2_bound);
-  current_params[4] = prand->Uniform(sigPerp_bound);
+  current_params[0] = prand->Uniform(min_a1,max_a1);
+  current_params[1] = prand->Uniform(min_a2,max_a2);
+  current_params[2] = prand->Uniform(min_b1,max_b1);
+  current_params[3] = prand->Uniform(min_b2,max_b2);
+  current_params[4] = prand->Uniform(min_sigPerp,max_sigPerp);
 
   // First make sure that a1 and a2 are reasonable values
   while((-0.3*current_params[0] + current_params[1]<=0.)||(0.4*current_params[0]+current_params[1]<=0.))
     {
-      current_params[0] = prand->Uniform(a1_bound);
-      current_params[1] = prand->Uniform(a2_bound);
+      current_params[0] = prand->Uniform(min_a1,max_a1);
+      current_params[1] = prand->Uniform(min_a2,max_a2);
     }
 }
  
