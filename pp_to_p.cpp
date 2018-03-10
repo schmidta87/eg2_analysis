@@ -7,6 +7,7 @@
 #include "TGraphAsymmErrors.h"
 
 #include "fiducials.h"
+#include "constants.h"
 
 using namespace std;
 
@@ -61,7 +62,7 @@ int main(int argc, char ** argv)
       hist_ep_fine->Fill(pmiss.Mag());
 
       // Make Or's cut on recoil proton
-      if (!((fabs(vertices[1][2]+22.25)<2.25) && (prec.Mag() > 0.35)))
+      if (!((fabs(vertices[1][2]+22.25)<2.25) && (prec.Mag() > min_prec)))
 	continue;
 
       hist_epp_nofid->Fill(pmiss.Mag());

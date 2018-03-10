@@ -9,6 +9,8 @@
 #include "TTree.h"
 #include "TFile.h"
 
+#include "constants.h"
+
 using namespace std;
 
 int main(int argc, char ** argv)
@@ -44,7 +46,7 @@ int main(int argc, char ** argv)
         continue;
 
       // Make Or's cut on recoil proton
-      if (!((fabs(vertices[1][2]+22.25)<2.25) && (prec.Mag() > 0.35)))
+      if (!((fabs(vertices[1][2]+22.25)<2.25) && (prec.Mag() > min_prec)))
         continue;
 
       int fid = accept_proton(prec)? 1: 0;

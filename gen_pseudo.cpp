@@ -18,9 +18,6 @@
 
 using namespace std;
 
-// Useful math
-double sq(double x){return x*x;};
-
 // Global variables for the parameters
 int n_trials = 200.;
 

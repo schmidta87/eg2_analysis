@@ -18,7 +18,6 @@
 using namespace std;
 
 // Useful math
-double sq(double x){return x*x;};
 double logGaus(double x, double s, double m);
 
 // Global variables for the parameters
@@ -176,7 +175,7 @@ int main(int argc, char ** argv)
       TVector3 prec(pPVec[1][0],pPVec[1][1], pPVec[1][2]);
 
       // Make Or's cut on recoil vertex position
-      if (!((fabs(vertices[1][2]+22.25)<2.25) && (prec.Mag() > 0.35)))
+      if (!((fabs(vertices[1][2]+22.25)<2.25) && (prec.Mag() > min_prec)))
 	{
 	  cout << "epp fail\n";
 	  continue;

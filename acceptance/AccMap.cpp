@@ -6,6 +6,9 @@
 #include "TFile.h"
 #include "TH3.h"
 
+#include "fiducials.h"
+#include "constants.h"
+
 AccMap::AccMap(const char * filename)
 {
   mapfile = new TFile(filename);
@@ -20,8 +23,9 @@ AccMap::~AccMap()
 
 double AccMap::recoil_accept(TVector3 p)
 {
-  if (p.Mag() > 0.35)
-    return accept(p);
+  if (accept_proton(p))
+    if (p.Mag() > min_prec)
+      return accept(p);
   return 0.;
 }
 

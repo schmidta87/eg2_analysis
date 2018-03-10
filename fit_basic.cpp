@@ -11,6 +11,8 @@
 #include "TH2.h"
 #include "TGraphErrors.h"
 
+#include "constants.h"
+
 using namespace std;
 
 double constrainedGauss(double *x, double *p);
@@ -58,7 +60,7 @@ int main(int argc, char ** argv)
 	continue;
 
       // Make Or's cut on recoil proton
-      if (!((fabs(vertices[1][2]+22.25)<2.25) && (prec.Mag() > 0.35)))
+      if (!((fabs(vertices[1][2]+22.25)<2.25) && (prec.Mag() > min_prec)))
 	continue;
 
       double pmiss_mag = pmiss.Mag();

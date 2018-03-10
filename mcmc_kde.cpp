@@ -13,11 +13,11 @@
 #include "TVectorT.h"
 
 #include "constants.h"
+#include "helpers.h"
 
 using namespace std;
 
 // Useful math
-double sq(double x){return x*x;};
 double logGaus(double x, double s, double m);
 
 // Global variables for the parameters

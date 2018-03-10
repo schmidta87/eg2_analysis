@@ -22,6 +22,7 @@ find_package(ROOT REQUIRED)
 project (eg2)
 
 # ADD SUBDIRECTORIES
+add_subdirectory(helpers)
 add_subdirectory(acceptance)
 add_subdirectory(fiducials)
 
@@ -29,9 +30,9 @@ include_directories(${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include )
 
 # Add executable for acceptance corrections
 add_executable(mcmc_kde mcmc_kde.cpp)
-target_link_libraries(mcmc_kde ${ROOT_LIBRARIES})
+target_link_libraries(mcmc_kde ${ROOT_LIBRARIES} Helpers)
 add_executable(mcmc_bin mcmc_bin.cpp)
-target_link_libraries(mcmc_bin ${ROOT_LIBRARIES} AccMap)
+target_link_libraries(mcmc_bin ${ROOT_LIBRARIES} AccMap Helpers)
 
 # Add executable for generating pseudo data
 add_executable(gen_pseudo gen_pseudo.cpp)

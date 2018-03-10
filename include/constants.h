@@ -1,6 +1,9 @@
 #ifndef __CONSTANTS_H__
 #define __CONSTANTS_H__
 
+// Minimum recoil momenum
+const double min_prec=0.35;
+
 // For the binned acceptance correction
 const int n_bins = 60;
 const int n_slices = 56;
