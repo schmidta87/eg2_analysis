@@ -12,6 +12,7 @@
 #include "TGraphErrors.h"
 
 #include "constants.h"
+#include "fiducials.h"
 
 using namespace std;
 
@@ -61,6 +62,10 @@ int main(int argc, char ** argv)
 
       // Make Or's cut on recoil proton
       if (!((fabs(vertices[1][2]+22.25)<2.25) && (prec.Mag() > min_prec)))
+	continue;
+
+      // Apply fiducial cuts, which Or has not yet made
+      if (!accept_proton(prec))
 	continue;
 
       double pmiss_mag = pmiss.Mag();

@@ -13,6 +13,7 @@
 #include "TVectorT.h"
 
 #include "constants.h"
+#include "fiducials.h"
 #include "AccMap.h"
 
 using namespace std;
@@ -28,7 +29,6 @@ int n_pseudo_per_ep[n_slices];
 int this_sample;
 double * current_params;
 double * new_params;
-int n_trials = 200.;
 double * random_gauss;
 long double bestPosterior;
 TH2D * bestLonModel;
@@ -180,6 +180,10 @@ int main(int argc, char ** argv)
 	  cout << "epp fail\n";
 	  continue;
 	}
+
+      // Apply Fiducial cuts on the recoil proton
+      if (!accept_proton(prec))
+	continue;
 
       TVector3 pcm = prec + pmiss;
 

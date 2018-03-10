@@ -32,7 +32,7 @@ include_directories(${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include )
 add_executable(mcmc_kde mcmc_kde.cpp)
 target_link_libraries(mcmc_kde ${ROOT_LIBRARIES} Helpers)
 add_executable(mcmc_bin mcmc_bin.cpp)
-target_link_libraries(mcmc_bin ${ROOT_LIBRARIES} AccMap Helpers)
+target_link_libraries(mcmc_bin ${ROOT_LIBRARIES} AccMap Helpers Fid)
 
 # Add executable for generating pseudo data
 add_executable(gen_pseudo gen_pseudo.cpp)
@@ -48,7 +48,7 @@ target_link_libraries(process_tree ${ROOT_LIBRARIES})
 
 # Add executable for doing basic fits
 add_executable(fit_basic fit_basic.cpp)
-target_link_libraries(fit_basic ${ROOT_LIBRARIES})
+target_link_libraries(fit_basic ${ROOT_LIBRARIES} Fid)
 
 # Add executable for calculating the pp/p correction
 add_executable(find_correction find_correction.cpp)
