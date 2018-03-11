@@ -132,9 +132,12 @@ int main(int argc, char **argv)
 
   // Output file
   TFile * outfile = new TFile(argv[5],"RECREATE");
-  TH2D * h2Corr = new TH2D("corr","Correction;pmiss [GeV];Acceptance [%];Counts",n_pmiss_bins,0.3,1.0,100,0.,100.);
+  TH2D * h2Corr = new TH2D("corr","Correction;pmiss [GeV];Acceptance [%];Counts",n_pmiss_bins,0.3,1.0,100,0.,1.);
+  TH2D * h2Corr_coarse = new TH2D("corr","Correction;pmiss [GeV];Acceptance [%];Counts",n_pmiss_bins_coarse,coarse_bin_edges,100,0.,1.);
   TH1D * h1Gen = new TH1D("gen","Generated;pmiss [GeV];Counts",n_pmiss_bins,0.3,1.);
   TH1D * h1Acc = new TH1D("acc","Accepted;pmiss [GeV];Counts",n_pmiss_bins,0.3,1.);
+  TH1D * h1Gen_coarse = new TH1D("gen","Generated;pmiss [GeV];Counts",n_pmiss_bins_coarse,coarse_bin_edges);
+  TH1D * h1Acc_coarse = new TH1D("acc","Accepted;pmiss [GeV];Counts",n_pmiss_bins_coarse,coarse_bin_edges);
   // Loop over the tree
   for (int i=0 ; i<intree->GetEntries() ; i++)
     {
@@ -146,6 +149,8 @@ int main(int argc, char **argv)
       // Clear the previous event's histograms
       h1Gen->Reset();
       h1Acc->Reset();
+      h1Gen_coarse->Reset();
+      h1Acc_coarse->Reset();
 
       // Generate a pseudo data sample for each e'p event
       // Loop over e'p
@@ -154,6 +159,7 @@ int main(int argc, char **argv)
 	  // Find pmiss, add to generated histogram
 	  double pmiss = ep_pmiss_list[j].Mag();
 	  h1Gen->Fill(pmiss,n_recoils);
+	  h1Gen_coarse->Fill(pmiss,n_recoils);
 
 	  // Get the Longitudinal Gaussian parameters given pmiss
 	  double muLong = b1 * (pmiss - 0.6) + b2;
@@ -170,6 +176,7 @@ int main(int argc, char **argv)
 
 	      // Test acceptance, add to accepted histogram
 	      h1Acc->Fill(pmiss,myMap.recoil_accept(prec));
+	      h1Acc_coarse->Fill(pmiss,myMap.recoil_accept(prec));
 	    }	  
 	}
 
@@ -190,7 +197,27 @@ int main(int argc, char **argv)
 	  else
 	    corr = acc/gen;
 
-	  h2Corr->Fill(pmiss,corr*100); // Put in units of pct
+	  h2Corr->Fill(pmiss,corr);
+	}
+
+      // Do the same for the coarse binning
+      for (int bin=1 ; bin <= n_pmiss_bins_coarse ; bin++)
+	{
+	  double pmiss = h1Gen_coarse->GetBinCenter(bin);
+	  double gen = h1Gen_coarse->GetBinContent(bin);
+	  double acc = h1Acc_coarse->GetBinContent(bin);
+
+	  // sanitize in case no generated (maybe we can kill this)
+	  double corr;
+	  if (gen <= 0)
+	    {
+	      cerr << "MC sample " << i << ": no generated events for pmiss bin " << bin << " (pmiss = " << pmiss  << ")\n";
+	      corr = 1.;
+	    }
+	  else
+	    corr = acc/gen;
+
+	  h2Corr_coarse->Fill(pmiss,corr);
 	}
     }
 

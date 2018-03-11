@@ -23,10 +23,9 @@ int main(int argc, char ** argv)
   TFile * outfile = new TFile(argv[3],"RECREATE");
 
   // Initialize some histograms
-  double binEdges[11]={0.3,0.375,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.875,1.0};
-  TH1D * hist_ep = new TH1D("ep","ep events;p_miss [GeV];Counts",10,binEdges);
-  TH1D * hist_epp = new TH1D("epp","epp events;p_miss [GeV];Counts",10,binEdges);
-  TH1D * hist_epp_nofid = new TH1D("epp_nofid","No fiducial cuts applied;p_miss [GeV];Counts",10,binEdges);
+  TH1D * hist_ep = new TH1D("ep","ep events;p_miss [GeV];Counts",10,coarse_bin_edges);
+  TH1D * hist_epp = new TH1D("epp","epp events;p_miss [GeV];Counts",10,coarse_bin_edges);
+  TH1D * hist_epp_nofid = new TH1D("epp_nofid","No fiducial cuts applied;p_miss [GeV];Counts",10,coarse_bin_edges);
   TH1D * hist_ep_fine = new TH1D("ep_fine","ep events;p_miss [GeV];Counts",28,0.3,1.);
   TH1D * hist_epp_fine = new TH1D("epp_fine","epp events;p_miss [GeV];Counts",28,0.3,1.);
   TGraphAsymmErrors * pp_to_p = new TGraphAsymmErrors();
