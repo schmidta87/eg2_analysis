@@ -18,7 +18,7 @@ using namespace std;
 
 // Vectors which describe all of the useful info for the e'p events
 
-const int n_recoils = 20;
+const int n_recoils = 1000;
 
 int main(int argc, char **argv)
 {
@@ -138,9 +138,8 @@ int main(int argc, char **argv)
   // Loop over e'p
   for (int j=0 ; j< n_ep_events ; j++)
     {
-      // Find pmiss, add to generated histogram
+      // Find pmiss
       double pmiss = ep_pmiss_list[j].Mag();
-      h1Gen->Fill(pmiss,n_recoils);
       
       // Get the Longitudinal Gaussian parameters given pmiss
       double muLong = b1 * (pmiss - 0.6) + b2;
@@ -149,6 +148,10 @@ int main(int argc, char **argv)
       // Generate some p recoil vectors
       for (int k=0 ; k<n_recoils ; k++)
 	{
+	  // Fill generated histogram
+	  h1Gen->Fill(pmiss);
+	  
+	  // Generate random Gaussian
 	  double pcmLon = muLong + sigLong * myRand.Gaus();
 	  double pcmInp = muPerp + sigPerp * myRand.Gaus();
 	  double pcmOop = muPerp + sigPerp * myRand.Gaus();
