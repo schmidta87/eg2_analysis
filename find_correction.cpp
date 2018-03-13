@@ -132,10 +132,10 @@ int main(int argc, char **argv)
 
   // Output file
   TFile * outfile = new TFile(argv[5],"RECREATE");
-  TH2D * h2Corr = new TH2D("corr","Correction;pmiss [GeV];Acceptance [%];Counts",n_pmiss_bins,0.3,1.0,100,0.,1.);
+  TH2D * h2Corr = new TH2D("corr_fine","Correction;pmiss [GeV];Acceptance [%];Counts",n_pmiss_bins,0.3,1.0,100,0.,1.);
   TH2D * h2Corr_coarse = new TH2D("corr","Correction;pmiss [GeV];Acceptance [%];Counts",n_pmiss_bins_coarse,coarse_bin_edges,100,0.,1.);
-  TH1D * h1Gen = new TH1D("gen","Generated;pmiss [GeV];Counts",n_pmiss_bins,0.3,1.);
-  TH1D * h1Acc = new TH1D("acc","Accepted;pmiss [GeV];Counts",n_pmiss_bins,0.3,1.);
+  TH1D * h1Gen = new TH1D("gen_fine","Generated;pmiss [GeV];Counts",n_pmiss_bins,0.3,1.);
+  TH1D * h1Acc = new TH1D("acc_fine","Accepted;pmiss [GeV];Counts",n_pmiss_bins,0.3,1.);
   TH1D * h1Gen_coarse = new TH1D("gen","Generated;pmiss [GeV];Counts",n_pmiss_bins_coarse,coarse_bin_edges);
   TH1D * h1Acc_coarse = new TH1D("acc","Accepted;pmiss [GeV];Counts",n_pmiss_bins_coarse,coarse_bin_edges);
   // Loop over the tree
@@ -225,6 +225,7 @@ int main(int argc, char **argv)
       
   outfile->cd();
   h2Corr->Write();
+  h2Corr_coarse->Write();
   outfile->Close();
 
   return 0;
