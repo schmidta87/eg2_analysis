@@ -101,10 +101,20 @@ int main(int argc, char ** argv)
   // Loop over slices
   double bins[5];
   double binErrs[5];
-  double means[5];
-  double meanErrs[5];
-  double sigs[5];
-  double sigErrs[5];
+  double means_inp[5];
+  double meanErrs_inp[5];
+  double sigs_inp[5];
+  double sigErrs_inp[5];
+  double means_oop[5];
+  double meanErrs_oop[5];
+  double sigs_oop[5];
+  double sigErrs_oop[5];
+  double means_lon[5];
+  double meanErrs_lon[5];
+  double sigs_lon[5];
+  double sigErrs_lon[5];
+
+
   TF1 * fGauss = new TF1("fGauss","gaus(0)",-1.2,1.2);
   int startBins[5]={1,2,3,4,5};
   int stopBins[5]={1,2,3,4,7};
@@ -113,9 +123,10 @@ int main(int argc, char ** argv)
       bins[i] = 0.5*(hist_epp_cm_lon->GetXaxis()->GetBinCenter(startBins[i]) + 
 			    hist_epp_cm_lon->GetXaxis()->GetBinCenter(stopBins[i]) );
       binErrs[i] =0.;
-
-      // Create the projection
       char tempString[100];
+
+      // First, the important longitudinal direction
+      // Create the projection
       sprintf(tempString,"temp_%d",i);
       TH1D * histLon =  hist_epp_cm_lon->ProjectionY(tempString,startBins[i],stopBins[i]);
 
@@ -126,33 +137,69 @@ int main(int argc, char ** argv)
 
       // Fit and extract results
       histLon->Fit("fGauss","Q");
-      means[i] = fGauss->GetParameter(1);
-      meanErrs[i] = fGauss->GetParError(1);
-      sigs[i] = fabs(fGauss->GetParameter(2));
-      sigErrs[i] = fGauss->GetParError(2);
+      means_lon[i] = fGauss->GetParameter(1);
+      meanErrs_lon[i] = fGauss->GetParError(1);
+      sigs_lon[i] = fabs(fGauss->GetParameter(2));
+      sigErrs_lon[i] = fGauss->GetParError(2);
 
       // Let's artificially blow up the errors if there aren't that many counts
       if (histLon->Integral()<5)
 	{
-	  meanErrs[i]=10.*fabs(means[i]);
-	  sigErrs[i]=10.*fabs(sigs[i]);
+	  meanErrs_lon[i]=10.*fabs(means_lon[i]);
+	  sigErrs_lon[i]=10.*fabs(sigs_lon[i]);
 	}
+
+      // Next, the inp direction
+      sprintf(tempString,"temp_inp_%d",i);
+      TH1D * histInp =  hist_epp_cm_inp->ProjectionY(tempString,startBins[i],stopBins[i]);
+
+      // Set the initial guesses
+      fGauss->SetParameter(0,histInp->GetMaximum());
+      fGauss->SetParameter(1,0.01);
+      fGauss->SetParameter(2,0.2);
+
+      // Fit and extract results
+      histInp->Fit("fGauss","Q");
+      means_inp[i] = fGauss->GetParameter(1);
+      meanErrs_inp[i] = fGauss->GetParError(1);
+      sigs_inp[i] = fabs(fGauss->GetParameter(2));
+      sigErrs_inp[i] = fGauss->GetParError(2);
+
+      // Next, the oop direction
+      sprintf(tempString,"temp_oop_%d",i);
+      TH1D * histOop =  hist_epp_cm_oop->ProjectionY(tempString,startBins[i],stopBins[i]);
+
+      // Set the initial guesses
+      fGauss->SetParameter(0,histOop->GetMaximum());
+      fGauss->SetParameter(1,0.01);
+      fGauss->SetParameter(2,0.2);
+
+      // Fit and extract results
+      histOop->Fit("fGauss","Q");
+      means_oop[i] = fGauss->GetParameter(1);
+      meanErrs_oop[i] = fGauss->GetParError(1);
+      sigs_oop[i] = fabs(fGauss->GetParameter(2));
+      sigErrs_oop[i] = fGauss->GetParError(2);
     }
 
   // Now do a fit to the longitudinal means and sigmas!
   TF1 * fLine = new TF1("fLine",specialLine,-1.2,1.2,2);
-  TGraphErrors * meanGraph = new TGraphErrors(5,bins,means,binErrs,meanErrs);
-  TGraphErrors * sigGraph = new TGraphErrors(5,bins,sigs,binErrs,sigErrs);
+  TGraphErrors * meanGraph_lon = new TGraphErrors(5,bins,means_lon,binErrs,meanErrs_lon);
+  TGraphErrors * sigGraph_lon = new TGraphErrors(5,bins,sigs_lon,binErrs,sigErrs_lon);
+  TGraphErrors * meanGraph_inp = new TGraphErrors(5,bins,means_inp,binErrs,meanErrs_inp);
+  TGraphErrors * sigGraph_inp = new TGraphErrors(5,bins,sigs_inp,binErrs,sigErrs_inp);
+  TGraphErrors * meanGraph_oop = new TGraphErrors(5,bins,means_oop,binErrs,meanErrs_oop);
+  TGraphErrors * sigGraph_oop = new TGraphErrors(5,bins,sigs_oop,binErrs,sigErrs_oop);
   fLine->SetParameter(0,0.1);
   fLine->SetParameter(1,0.1);
-  meanGraph->Fit("fLine","Q");
+  meanGraph_lon->Fit("fLine","Q");
   double b1 = fLine->GetParameter(0);
   double b1_err = fLine->GetParError(0);
   double b2 = fLine->GetParameter(1);
   double b2_err = fLine->GetParError(1);
   fLine->SetParameter(0,0.1);
   fLine->SetParameter(1,0.1);
-  sigGraph->Fit("fLine","Q");
+  sigGraph_lon->Fit("fLine","Q");
   double a1 = fLine->GetParameter(0);
   double a1_err = fLine->GetParError(0);
   double a2 = fLine->GetParameter(1);
@@ -171,8 +218,12 @@ int main(int argc, char ** argv)
   hist_epp_cm_inp->Write();
   hist_epp_cm_oop->Write();
   histSumInpOop->Write();
-  meanGraph->Write("means");
-  sigGraph->Write("sigmas");
+  meanGraph_lon->Write("means_lon");
+  sigGraph_lon->Write("sigmas_lon");
+  meanGraph_inp->Write("means_inp");
+  sigGraph_inp->Write("sigmas_inp");
+  meanGraph_oop->Write("means_oop");
+  sigGraph_oop->Write("sigmas_oop");
   outfile->Close();
 
   // Clean up
