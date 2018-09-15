@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <cmath>
+#include <cstdlib>
+#include <cstdio>
 
 #include "TFile.h"
 #include "TH3.h"
@@ -14,6 +16,16 @@ AccMap::AccMap(const char * filename)
   mapfile = new TFile(filename);
   genHist = (TH3D*) mapfile->Get("solid_p_gen");
   accHist = (TH3D*) mapfile->Get("solid_p_acc");
+}
+
+AccMap::AccMap(const char * filename, const char * particle)
+{
+  mapfile = new TFile(filename);
+  char temp[100];
+  sprintf(temp,"solid_%s_gen",particle);
+  genHist = (TH3D*) mapfile->Get(temp);
+  sprintf(temp,"solid_%s_acc",particle);
+  accHist = (TH3D*) mapfile->Get(temp);
 }
 
 AccMap::~AccMap()

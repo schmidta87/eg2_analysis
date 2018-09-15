@@ -14,6 +14,7 @@ class AccMap
 {
  public:
   AccMap(const char * filename);
+  AccMap(const char * filename, const char * particle);
   ~AccMap();
   double accept(TVector3 p);
   double recoil_accept(TVector3 p);

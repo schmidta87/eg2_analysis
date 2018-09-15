@@ -61,6 +61,9 @@ int main(int argc, char ** argv)
   TH2D * hist_model_cm_lon = new TH2D("model_cm_lon","Underlying model likelihood;p_miss [GeV];p_cm_lon [GeV];Counts",7,0.3,1.,120,-1.2,1.2);
   TH2D * hist_model_cm_inp = new TH2D("model_cm_inp","Underlying model likelihood;p_miss [GeV];p_cm_inp [GeV];Counts",7,0.3,1.,120,-1.2,1.2);
   TH2D * hist_model_cm_oop = new TH2D("model_cm_oop","Underlying model likelihood;p_miss [GeV];p_cm_oop [GeV];Counts",7,0.3,1.,120,-1.2,1.2);
+  TH2D * hist_model_fine_cm_lon = new TH2D("model_fine_cm_lon","Underlying model likelihood;p_miss [GeV];p_cm_lon [GeV];Counts",n_pmiss_bins,0.3,1.,120,-1.2,1.2);
+  TH2D * hist_model_fine_cm_inp = new TH2D("model_fine_cm_inp","Underlying model likelihood;p_miss [GeV];p_cm_inp [GeV];Counts",n_pmiss_bins,0.3,1.,120,-1.2,1.2);
+  TH2D * hist_model_fine_cm_oop = new TH2D("model_fine_cm_oop","Underlying model likelihood;p_miss [GeV];p_cm_oop [GeV];Counts",n_pmiss_bins,0.3,1.,120,-1.2,1.2);
   TH1D * hist_pmiss_gen = new TH1D("pseudo_pmiss_gen","Generated pseudo events;p_miss [GeV];Counts",n_pmiss_bins,0.3,1.);
   TH1D * hist_pmiss_acc = new TH1D("pseudo_pmiss_acc","Accepted pseudo events;p_miss [GeV];Counts",n_pmiss_bins,0.3,1.);
   hist_pmiss_gen->Sumw2();
@@ -193,6 +196,23 @@ int main(int argc, char ** argv)
 	  hist_model_cm_lon->Fill(pmiss,temp_pcm_lon,weight);
 	  hist_model_cm_inp->Fill(pmiss,temp_pcm_inp,weight);
 	  hist_model_cm_oop->Fill(pmiss,temp_pcm_oop,weight);
+
+	  hist_model_fine_cm_lon->Fill(pmiss,temp_pcm_lon,weight);
+	  hist_model_fine_cm_inp->Fill(pmiss,temp_pcm_inp,weight);
+	  hist_model_fine_cm_oop->Fill(pmiss,temp_pcm_oop,weight);
+	}
+    }
+
+  // Renormalize the model histograms
+  for (int i=1 ; i<=n_pmiss_bins ; i++)
+    {
+      double temp_integral=hist_pmiss_acc->GetBinContent(i);
+      for (int j=1 ; j<120 ; j++)
+	{
+	  int bin = hist_model_fine_cm_lon->GetBin(i,j);
+	  hist_model_fine_cm_lon->SetBinContent(bin,hist_model_fine_cm_lon->GetBinContent(bin)/temp_integral);
+	  hist_model_fine_cm_inp->SetBinContent(bin,hist_model_fine_cm_inp->GetBinContent(bin)/temp_integral);
+	  hist_model_fine_cm_oop->SetBinContent(bin,hist_model_fine_cm_oop->GetBinContent(bin)/temp_integral);
 	}
     }
 
@@ -260,6 +280,9 @@ int main(int argc, char ** argv)
   hist_model_cm_lon->Write();
   hist_model_cm_inp->Write();
   hist_model_cm_oop->Write();
+  hist_model_fine_cm_lon->Write();
+  hist_model_fine_cm_inp->Write();
+  hist_model_fine_cm_oop->Write();
   hist_pmiss_gen->Write();
   hist_pmiss_acc->Write();
   pp2p_corr->Write();
