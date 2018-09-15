@@ -124,11 +124,16 @@ int main(int argc, char ** argv)
 
       if (nmb == 1)
 	{
-	  weight *= (1. - pMap.accept(vrec));
+	  // If the recoil is a proton, we better not have detected it.
+	  if (rec_type == 2212)
+	    weight *= (1. - pMap.accept(vrec));
 	}
       else // nmb==2;
 	{
-	  weight *= pMap.accept(vrec);
+	  if (rec_type == 2212)
+	    weight *= pMap.accept(vrec);
+	  else
+	    weight = 0.; // We can't use recoil neutrons.
 	}
       
       if (weight <= 0.)
@@ -166,6 +171,8 @@ int main(int argc, char ** argv)
     }
 
   infile->Close();
+
+  outfile->Write();
   outfile->Close();
 
   return 0;
