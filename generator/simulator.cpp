@@ -3,8 +3,11 @@
 
 #include "TFile.h"
 #include "TTree.h"
+#include "TH1D.h"
+#include "TGraphAsymmErrors.h"
 
 #include "AccMap.h"
+#include "fiducials.h"
 
 using namespace std;
 
@@ -24,6 +27,15 @@ int main(int argc, char ** argv)
   AccMap pMap(argv[2]);
   AccMap eMap(argv[2],"e");
   TFile * outfile = new TFile(argv[3],"RECREATE");
+
+  // Histograms
+  TH1D * h_rec_p_all = new TH1D("rec_p_all","All recoil protons;pMiss [GeV];Counts",28,0.3,1.0);
+  h_rec_p_all->Sumw2();
+  TH1D * h_rec_p_acc = new TH1D("rec_p_acc","Accepted recoil protons;pMiss [GeV];Counts",28,0.3,1.0);
+  h_rec_p_acc->Sumw2();
+  TGraphAsymmErrors * rec_p_rat = new TGraphAsymmErrors();
+  rec_p_rat->SetName("rec_p_rat");
+  rec_p_rat->SetTitle("Acceptance Ratio;p_miss [GeV];Acceptance Ratio");
 
   Int_t nmb=atoi(argv[4]);
   if ((nmb < 1) || (nmb>2))
@@ -65,9 +77,11 @@ int main(int argc, char ** argv)
   // Output Tree
   TTree * T = new TTree("T","Simulated Data Tree");
   Float_t Q2, Xb, Pe[3], Pe_size, theta_e, phi_e, Pp[2][3], Pp_size[2], pq_angle[2], Ep[2], theta_p[2], phi_p[2], nu, q[3];
+  Float_t Pmiss_q_angle[2], Pmiss_size[2];
   Float_t z = 0.;
-  Float_t Rp[2][3]={{0.,0.,0.},{0.,0.,0.}};
+  Float_t Rp[2][3]={{0.,0.,-22.25},{0.,0.,-22.25}};
   Double_t weight;
+  T->Branch("nmb",&nmb,"nmb/I");
   T->Branch("Q2",&Q2,"Q2/F");
   T->Branch("Xb",&Xb,"Xb/F");
   T->Branch("nu",&nu,"nu/F");
@@ -82,6 +96,9 @@ int main(int argc, char ** argv)
   T->Branch("Ep",Ep,"Ep[nmb]/F");
   T->Branch("theta_p",theta_p,"theta_p[nmb]/F");
   T->Branch("phi_p",phi_p,"phi_p[nmb]/F");
+  T->Branch("Pmiss_q_angle",Pmiss_q_angle,"Pmiss_q_angle[nmb]/F");
+  T->Branch("Pmiss_size",Pmiss_size,"Pmiss_size[nmb]/F");
+  T->Branch("Rp",Rp,"Rp[nmb][3]/F");
   T->Branch("weight",&weight,"weight/D");
 
   // Loop over all events
@@ -104,7 +121,7 @@ int main(int argc, char ** argv)
       TVector3 vrec(gen_pRec[0],gen_pRec[1],gen_pRec[2]);
 
       // Apply weight for detecting e, p      
-      weight = gen_weight * eMap.accept(ve) * pMap.accept(vlead);
+      weight = gen_weight * eMap.accept(ve) * pMap.accept(vlead) * 1.E33; // put it in nb to make it macroscopic
 
       // Do leading proton cuts
       if (gen_pMiss_Mag <0.3)
@@ -122,16 +139,28 @@ int main(int argc, char ** argv)
       if (sqrt(-gen_QSq + 4.*mN*gen_nu - 2.*sqrt(mN*mN + gen_pLead_Mag*gen_pLead_Mag)*(gen_nu + 2.*mN) + 5.*mN*mN + 2.*vq.Dot(vlead)) > 1.1)
 	continue;
 
+      // Fill the acceptance histograms
+      const double recoil_accept = pMap.accept(vrec);
+      if (rec_type == 2212)
+	{
+	  h_rec_p_all->Fill(gen_pMiss_Mag,weight);
+	  
+	  // Test if the recoil was accepted
+	  if (accept_proton(vrec) && (vrec.Mag() > 0.35))
+	    h_rec_p_acc->Fill(gen_pMiss_Mag,weight*recoil_accept);
+	}
+
+      // Decide which tree to write
       if (nmb == 1)
 	{
 	  // If the recoil is a proton, we better not have detected it.
 	  if (rec_type == 2212)
-	    weight *= (1. - pMap.accept(vrec));
+	    weight *= (1. - recoil_accept);
 	}
       else // nmb==2;
 	{
 	  if (rec_type == 2212)
-	    weight *= pMap.accept(vrec);
+	    weight *= recoil_accept;
 	  else
 	    weight = 0.; // We can't use recoil neutrons.
 	}
@@ -167,12 +196,26 @@ int main(int argc, char ** argv)
 	  Pp[1][i] = gen_pRec[i];
 	}
 
+      Pmiss_q_angle[0] = (vlead - vq).Angle(vq) * 180./M_PI;
+      Pmiss_q_angle[1] = (vrec - vq).Angle(vq) * 180./M_PI;
+      
+      Pmiss_size[0] = (vlead-vq).Mag();
+      Pmiss_size[1] = (vrec - vq).Mag();
+
       T->Fill();
     }
-
   infile->Close();
+  
+  // Take the acceptance ratio
+  //rec_p_rat->BayesDivide(h_rec_p_acc,h_rec_p_all);
+  rec_p_rat->BayesDivide(h_rec_p_acc,h_rec_p_all,"cl=0.683 b(1,1) mode");
 
-  outfile->Write();
+  outfile->cd();
+  T->Write();
+  rec_p_rat->Write();
+  h_rec_p_all->Write();
+  h_rec_p_acc->Write();
+
   outfile->Close();
 
   return 0;

@@ -8,4 +8,8 @@ target_link_libraries(gen_weight ${ROOT_LIBRARIES})
 
 # Event Simulator
 add_executable(simulator simulator.cpp)
-target_link_libraries(simulator ${ROOT_LIBRARIES} AccMap)
+target_link_libraries(simulator ${ROOT_LIBRARIES} AccMap Fid)
+
+# Make histograms
+add_executable(make_hists make_hists.cpp)
+target_link_libraries(make_hists ${ROOT_LIBRARIES} Fid)
