@@ -77,7 +77,7 @@ int main(int argc, char ** argv)
   // Output Tree
   TTree * T = new TTree("T","Simulated Data Tree");
   Float_t Q2, Xb, Pe[3], Pe_size, theta_e, phi_e, Pp[2][3], Pp_size[2], pq_angle[2], Ep[2], theta_p[2], phi_p[2], nu, q[3];
-  Float_t Pmiss_q_angle[2], Pmiss_size[2];
+  Float_t Pmiss_q_angle[2], Pmiss_size[2], Pmiss[2][3];
   Float_t z = 0.;
   Float_t Rp[2][3]={{0.,0.,-22.25},{0.,0.,-22.25}};
   Double_t weight;
@@ -98,6 +98,7 @@ int main(int argc, char ** argv)
   T->Branch("phi_p",phi_p,"phi_p[nmb]/F");
   T->Branch("Pmiss_q_angle",Pmiss_q_angle,"Pmiss_q_angle[nmb]/F");
   T->Branch("Pmiss_size",Pmiss_size,"Pmiss_size[nmb]/F");
+  T->Branch("Pmiss",Pmiss,"Pmiss[nmb][3]/F");
   T->Branch("Rp",Rp,"Rp[nmb][3]/F");
   T->Branch("weight",&weight,"weight/D");
 
@@ -122,6 +123,11 @@ int main(int argc, char ** argv)
 
       // Apply weight for detecting e, p      
       weight = gen_weight * eMap.accept(ve) * pMap.accept(vlead) * 1.E33; // put it in nb to make it macroscopic
+
+      // Make a p_rel cut
+      TVector3 vrel=0.5*(vlead-vq-vrec);
+      if (vrel.Mag()<0.250)
+	continue;
 
       // Do leading proton cuts
       if (gen_pMiss_Mag <0.3)
@@ -194,6 +200,8 @@ int main(int argc, char ** argv)
 	  Pe[i] = gen_pe[i];
 	  Pp[0][i] = gen_pLead[i];
 	  Pp[1][i] = gen_pRec[i];
+	  Pmiss[0][i] = gen_pLead[i] - gen_q[i];
+	  Pmiss[1][i] = gen_pRec[i] - gen_q[i];
 	}
 
       Pmiss_q_angle[0] = (vlead - vq).Angle(vq) * 180./M_PI;

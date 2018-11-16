@@ -42,6 +42,14 @@ int main(int argc, char ** argv)
   TH1D * h2p_Pmq = new TH1D("2p_Pmq","Leading and recoil proton events;Theta_Pmq [deg];Counts",40,100.,180.);
   h2p_Pmq->Sumw2();
 
+  // Center of mass histograms
+  //TH2D * h2p_Pm_PcmLon = new TH2D("2p_Pm_PcmLon","2p events;pMiss [GeV];Pcm_lon [GeV];Counts",7,0.3,1.0,20,-0.4,0.4);
+  //h2p_Pm_PcmLon->Sumw2();
+  //TH2D * h2p_Pm_PcmInp = new TH2D("2p_Pm_PcmInp","2p events;pMiss [GeV];Pcm_inp [GeV];Counts",7,0.3,1.0,20,-0.4,0.4);
+  //h2p_Pm_PcmInp->Sumw2();
+  //TH2D * h2p_Pm_PcmOop = new TH2D("2p_Pm_PcmOop","2p events;pMiss [GeV];Pcm_oop [GeV];Counts",7,0.3,1.0,20,-0.4,0.4);
+  //h2p_Pm_PcmOop->Sumw2();
+
   // Loop over 1p tree
   cerr << " Looping over 1p tree...\n";
   TTree * t1p = (TTree*)f1p->Get("T");

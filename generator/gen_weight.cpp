@@ -198,14 +198,14 @@ int main(int argc, char ** argv)
 		* vRec.Mag2() * Erec * Elead / fabs(Erec*(pRec_Mag - Z*cosThetaZRec) + Elead*pRec_Mag); // Jacobian for delta fnc.
 	    }
 	}
-
+      
       // HERE IS WHERE WE SHOULD DO SINGLE CHARGE EXCHANGE!!!!
       do_SXC(lead_type, rec_type,gRandom->Rndm());
-
+      
       // Fill the tree
       outtree->Fill();      
     } 	  
-
+  
   // Clean up
   outtree->Write();
   outfile->Close();
