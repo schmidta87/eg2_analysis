@@ -25,35 +25,31 @@ int main(int argc, char ** argv)
   TFile * fo = new TFile(argv[3],"RECREATE");
 
   // Create histograms
-  TH1D * h1p_QSq = new TH1D("1p_QSq","Leading proton events;QSq [GeV^2];Counts",40,1.,5.);
+  TH1D * h1p_QSq = new TH1D("ep_QSq","ep;QSq [GeV^2];Counts",40,1.,5.);
   h1p_QSq->Sumw2();
-  TH1D * h1p_xB =  new TH1D("1p_xB" ,"Leading proton events;xB;Counts",26,1.2,2.5);
+  TH1D * h1p_xB =  new TH1D("ep_xB" ,"ep;xB;Counts",26,1.2,2.5);
   h1p_xB ->Sumw2();
-  TH1D * h1p_Pm =  new TH1D("1p_Pm" ,"Leading proton events;pMiss [GeV];Counts",28,0.3,1.0);
+  TH1D * h1p_Pm =  new TH1D("ep_Pm" ,"ep;pMiss [GeV];Counts",28,0.3,1.0);
   h1p_Pm ->Sumw2();
-  TH1D * h1p_Pmq = new TH1D("1p_Pmq","Leading proton events;Theta_Pmq [deg];Counts",40,100.,180.);
+  TH1D * h1p_Pmq = new TH1D("ep_Pmq","ep;Theta_Pmq [deg];Counts",40,100.,180.);
   h1p_Pmq->Sumw2();
-  TH1D * h2p_QSq = new TH1D("2p_QSq","Leading and recoil proton events;QSq [GeV^2];Counts",40,1.,5.);
+  TH1D * h2p_QSq = new TH1D("epp_QSq","epp;QSq [GeV^2];Counts",40,1.,5.);
   h2p_QSq->Sumw2();
-  TH1D * h2p_xB =  new TH1D("2p_xB" ,"Leading and recoil proton events;xB;Counts",26,1.2,2.5);
+  TH1D * h2p_xB =  new TH1D("epp_xB" ,"epp;xB;Counts",26,1.2,2.5);
   h2p_xB ->Sumw2();
-  TH1D * h2p_Pm =  new TH1D("2p_Pm" ,"Leading and recoil proton events;pMiss [GeV];Counts",28,0.3,1.0);
+  TH1D * h2p_Pm =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",28,0.3,1.0);
   h2p_Pm ->Sumw2();
-  TH1D * h2p_Pmq = new TH1D("2p_Pmq","Leading and recoil proton events;Theta_Pmq [deg];Counts",40,100.,180.);
+  TH1D * h2p_Pmq = new TH1D("epp_Pmq","epp;Theta_Pmq [deg];Counts",40,100.,180.);
   h2p_Pmq->Sumw2();
-
-  // Center of mass histograms
-  //TH2D * h2p_Pm_PcmLon = new TH2D("2p_Pm_PcmLon","2p events;pMiss [GeV];Pcm_lon [GeV];Counts",7,0.3,1.0,20,-0.4,0.4);
-  //h2p_Pm_PcmLon->Sumw2();
-  //TH2D * h2p_Pm_PcmInp = new TH2D("2p_Pm_PcmInp","2p events;pMiss [GeV];Pcm_inp [GeV];Counts",7,0.3,1.0,20,-0.4,0.4);
-  //h2p_Pm_PcmInp->Sumw2();
-  //TH2D * h2p_Pm_PcmOop = new TH2D("2p_Pm_PcmOop","2p events;pMiss [GeV];Pcm_oop [GeV];Counts",7,0.3,1.0,20,-0.4,0.4);
-  //h2p_Pm_PcmOop->Sumw2();
+  TH1D * h2p_Pmr = new TH1D("epp_Pmr","epp;Theta_Pmr [deg];Counts",40,100.,180.);
+  h2p_Pmr->Sumw2();
+  TH1D * h2p_Pr = new TH1D("epp_Pr","epp;pRec [GeV];Counts",26,0.35,1.0);
+  h2p_Pr->Sumw2();
 
   // Loop over 1p tree
   cerr << " Looping over 1p tree...\n";
   TTree * t1p = (TTree*)f1p->Get("T");
-  Float_t Xb, Q2, Pmiss_size[2], Pp[2][3], Rp[2][3], Pp_size[2], Pmiss_q_angle[2], Pe[3];
+  Float_t Xb, Q2, Pmiss_size[2], Pp[2][3], Rp[2][3], Pp_size[2], Pmiss_q_angle[2], Pe[3], q[3];
   Double_t weight = 1.;
   t1p->SetBranchAddress("Pmiss_q_angle",Pmiss_q_angle);
   t1p->SetBranchAddress("Xb",&Xb);
@@ -106,6 +102,7 @@ int main(int argc, char ** argv)
   t2p->SetBranchAddress("Rp",Rp);
   t2p->SetBranchAddress("Pp",Pp);
   t2p->SetBranchAddress("Pe",Pe);
+  t2p->SetBranchAddress("q",q);
   // See if there is a weight branch
   weight=1.;
   weight_branch = t2p->GetBranch("weight");
@@ -145,10 +142,15 @@ int main(int argc, char ** argv)
       if (!accept_proton(vrec))
 	continue;
 
+      TVector3 vq(q[0],q[1],q[2]);
+      TVector3 vmiss = vlead - vq;
+
       h2p_QSq->Fill(Q2,weight);
       h2p_xB ->Fill(Xb,weight);
       h2p_Pm ->Fill(Pmiss_size[0],weight);
       h2p_Pmq->Fill(Pmiss_q_angle[0],weight);
+      h2p_Pr ->Fill(Pp_size[1],weight);
+      h2p_Pmr->Fill(vmiss.Angle(vrec)*180./M_PI,weight);
 
     }
   f1p->Close();
@@ -164,6 +166,8 @@ int main(int argc, char ** argv)
   h2p_xB ->Write();
   h2p_Pm ->Write();
   h2p_Pmq->Write();
+  h2p_Pr ->Write();
+  h2p_Pmr->Write();
   fo->Close();
   
   return 0;
