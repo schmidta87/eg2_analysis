@@ -50,7 +50,7 @@ int main(int argc, char ** argv)
 
   // See if there is a weight branch
   Double_t weight = 1.;
-  TBranch * weight_branch = t1p->GetBranch("weight");
+  TBranch * weight_branch = tepp->GetBranch("weight");
   if (weight_branch)
     {
       tepp->SetBranchAddress("weight",&weight);
