@@ -47,6 +47,15 @@ int main(int argc, char ** argv)
   tepp->SetBranchAddress("Pmiss",pMissVec);
   tepp->SetBranchAddress("Rp",vertices);
   tepp->SetBranchAddress("Pp",pPVec);
+
+  // See if there is a weight branch
+  Double_t weight = 1.;
+  TBranch * weight_branch = t1p->GetBranch("weight");
+  if (weight_branch)
+    {
+      tepp->SetBranchAddress("weight",&weight);
+    }
+
   for (int i=0 ; i<tepp->GetEntries() ; i++)
     {
       tepp->GetEvent(i);  
@@ -80,9 +89,9 @@ int main(int argc, char ** argv)
       double pcm_inp = pcm.Dot(inp);
       double pcm_oop = pcm.Dot(oop);
 
-      hist_epp_cm_lon->Fill(pmiss_mag,pcm_lon);
-      hist_epp_cm_inp->Fill(pmiss_mag,pcm_inp);
-      hist_epp_cm_oop->Fill(pmiss_mag,pcm_oop);
+      hist_epp_cm_lon->Fill(pmiss_mag,pcm_lon,weight);
+      hist_epp_cm_inp->Fill(pmiss_mag,pcm_inp,weight);
+      hist_epp_cm_oop->Fill(pmiss_mag,pcm_oop,weight);
 
     }
   fepp->Close();

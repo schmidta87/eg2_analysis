@@ -53,7 +53,7 @@ int main(int argc, char ** argv)
   // Loop over 1p tree
   cerr << " Looping over 1p tree...\n";
   TTree * t1p = (TTree*)f1p->Get("T");
-  Float_t Xb, Q2, Pmiss_size[2], Pp[2][3], Rp[2][3], Pp_size[2], Pmiss_q_angle[2];
+  Float_t Xb, Q2, Pmiss_size[2], Pp[2][3], Rp[2][3], Pp_size[2], Pmiss_q_angle[2], Pe[3];
   Double_t weight = 1.;
   t1p->SetBranchAddress("Pmiss_q_angle",Pmiss_q_angle);
   t1p->SetBranchAddress("Xb",&Xb);
@@ -62,6 +62,7 @@ int main(int argc, char ** argv)
   t1p->SetBranchAddress("Pp_size",Pp_size);
   t1p->SetBranchAddress("Rp",Rp);
   t1p->SetBranchAddress("Pp",Pp);
+  t1p->SetBranchAddress("Pe",Pe);
   // See if there is a weight branch
   TBranch * weight_branch = t1p->GetBranch("weight");
   if (weight_branch)
@@ -77,6 +78,14 @@ int main(int argc, char ** argv)
       if (fabs(Rp[0][2]+22.25)>2.25)
 	continue;
       if (Pp_size[0]>2.4)
+	continue;
+      
+      // Apply fiducial cuts
+      TVector3 ve(Pe[0],Pe[1],Pe[2]);
+      TVector3 vp(Pp[0][0],Pp[0][1],Pp[0][2]);
+      if (!accept_electron(ve))
+	continue;
+      if (!accept_proton(vp))
 	continue;
 
       h1p_QSq->Fill(Q2,weight);
@@ -96,6 +105,7 @@ int main(int argc, char ** argv)
   t2p->SetBranchAddress("Pp_size",Pp_size);
   t2p->SetBranchAddress("Rp",Rp);
   t2p->SetBranchAddress("Pp",Pp);
+  t2p->SetBranchAddress("Pe",Pe);
   // See if there is a weight branch
   weight=1.;
   weight_branch = t2p->GetBranch("weight");
@@ -113,6 +123,14 @@ int main(int argc, char ** argv)
       if (Pp_size[0]>2.4)
 	continue;
 
+      // Apply fiducial cuts
+      TVector3 ve(Pe[0],Pe[1],Pe[2]);
+      TVector3 vlead(Pp[0][0],Pp[0][1],Pp[0][2]);
+      if (!accept_electron(ve))
+	continue;
+      if (!accept_proton(vlead))
+	continue;
+
       h1p_QSq->Fill(Q2,weight);
       h1p_xB ->Fill(Xb,weight);
       h1p_Pm ->Fill(Pmiss_size[0],weight);
@@ -123,8 +141,8 @@ int main(int argc, char ** argv)
 	continue;
       if (Pp_size[1] < 0.35)
 	continue;
-      TVector3 prec(Pp[1][0],Pp[1][1],Pp[1][2]);      
-      if (!accept_proton(prec))
+      TVector3 vrec(Pp[1][0],Pp[1][1],Pp[1][2]);      
+      if (!accept_proton(vrec))
 	continue;
 
       h2p_QSq->Fill(Q2,weight);

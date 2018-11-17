@@ -128,6 +128,38 @@ const double eFidThetaMinp4[6]={2.15567,13.6076,9.26858,12.3802,14.1265,8.90341}
 const double eFidThetaMinp5[6]={-0.1,-0.554978,-0.448555,-0.200086,-0.777645,-0.1};
 //##############################################################3
 
+// For FidThetaMin calculation for electron
+const Double_t kThetaPar0[6] = { 15        , 15        ,  15       , 15        ,  13       ,  13        };
+const Double_t kThetaPar1[6] = { -0.425145 , -1.02217  , -0.7837   , -1.47798  ,   3.47361 ,   3.5714   };
+const Double_t kThetaPar2[6] = { -0.666294 , -0.616567 , -0.673602 , -0.647113 ,  -0.34459 ,  -0.398458 };
+const Double_t kThetaPar3[6] = {  5.73077  ,  5.51799  ,  8.05224  ,  7.74737  ,   8.45226 ,   9.54265  };
+const Double_t kThetaPar4[6] = { 10.4976   , 14.0557   , 15.2178   , 16.7291   , -63.4556  , -22.649    };
+const Double_t kThetaPar5[6] = { -1.13254  , -1.16189  , -2.08386  , -1.79939  ,  -3.3791  ,  -1.89746  };
+
+// For parameter 0 of the FidPhiMin calculation for electron
+const Double_t kFidPar0Low0[6] = {  25      ,  25        ,  25       ,  24.6345  ,  23.4731  ,  24.8599  };
+const Double_t kFidPar0Low1[6] = { -12      , -12        , -12       , -12       , -12       , -12       };
+const Double_t kFidPar0Low2[6] = {   0.5605 ,   0.714261 ,  0.616788 ,   0.62982 ,   1.84236 ,   1.00513 };
+const Double_t kFidPar0Low3[6] = {  4.4     ,  4.4       ,  4.4      ,   4.4     ,   4.4     ,   4.4     };
+
+// For parameter 1 of the FidPhiMin calculation for electron
+const Double_t kFidPar1Low0[6] = {  2.1945   ,  4        ,  3.3352  ,  2.22769   ,  1.63143   ,  3.19807  };
+const Double_t kFidPar1Low1[6] = {  1.51417  ,  1.56882  ,  2       ,  2         ,  1.90179   ,  0.173168 };
+const Double_t kFidPar1Low2[6] = { -0.354081 , -2        , -2       , -0.760895  , -0.213751  , -0.1      };
+const Double_t kFidPar1Low3[6] = {  0.5      ,  0.5      ,  1.01681 ,  1.31808   ,  0.786844  ,  1.6      };
+
+// For parameter 0 of the FidPhiMax calculation for electron
+const Double_t kFidPar0High0[6] = { 25       ,  25        ,  25        ,  25        ,  23.7067  ,  25       };
+const Double_t kFidPar0High1[6] = { -8       , -10.3277   , -12        , -11.3361   , -12       , -11.4641  };
+const Double_t kFidPar0High2[6] = {  0.479446 ,  0.380908 ,   0.675835 ,   0.636018 ,   2.92146 ,   0.55553 };
+const Double_t kFidPar0High3[6] = {  4.8      ,  4.79964  ,   4.4      ,   4.4815   ,   4.4     ,   4.41327 };
+
+// For parameter 1 of the FidPhiMax calculation for electron
+const Double_t kFidPar1High0[6] = {  3.57349 ,  3.02279  ,  2.02102 ,  3.1948   ,  3.0934   ,  2.48828 };
+const Double_t kFidPar1High1[6] = {  2       ,  0.966175 ,  2       ,  0.192701 ,  0.821726 ,  2       };
+const Double_t kFidPar1High2[6] = { -2       , -2        , -1.70021 , -1.27578  , -0.233492 , -2       };
+const Double_t kFidPar1High3[6] = {  0.5     ,  0.527823 ,  0.68655 ,  1.6      ,  1.6      ,  0.70261 };
+
 
 bool accept_electron(TVector3 p)
 {
@@ -138,12 +170,12 @@ bool accept_electron(TVector3 p)
 
   int sector = (phi+30.)/60.;
 
-  double minTheta = theta_min(mom,eFidThetaMinp0[sector],
-			      eFidThetaMinp1[sector],
-			      eFidThetaMinp2[sector],
-			      eFidThetaMinp3[sector],
-			      eFidThetaMinp4[sector],
-			      eFidThetaMinp5[sector]);
+  double minTheta = theta_min(mom,kThetaPar0[sector],
+			      kThetaPar1[sector],
+			      kThetaPar2[sector],
+			      kThetaPar3[sector],
+			      kThetaPar4[sector],
+			      kThetaPar5[sector]);
 
   // Double check theta
   if (theta < minTheta)
@@ -151,6 +183,27 @@ bool accept_electron(TVector3 p)
 
   double phiCentral = 60.*sector;
 
+
+  double aLow = a(mom,kFidPar0Low0[sector],
+		  kFidPar0Low1[sector],
+		  kFidPar0Low2[sector],
+		  kFidPar0Low3[sector]);
+
+  double aHigh = a(mom,kFidPar0High0[sector],
+		  kFidPar0High1[sector],
+		  kFidPar0High2[sector],
+		  kFidPar0High3[sector]);
+
+  double bLow = b(mom,kFidPar1Low0[sector],
+		  kFidPar1Low1[sector],
+		  kFidPar1Low2[sector],
+		  kFidPar1Low3[sector]);
+
+  double bHigh = b(mom,kFidPar1High0[sector],
+		  kFidPar1High1[sector],
+		  kFidPar1High2[sector],
+		  kFidPar1High3[sector]);
+  /*
   double aLow = a(mom,eFidAp0[sector][0],
 		  eFidAp1[sector][0],
 		  eFidAp2[sector][0],
@@ -170,6 +223,7 @@ bool accept_electron(TVector3 p)
 		  eFidBp1[sector][1],
 		  eFidBp2[sector][1],
 		  eFidBp3[sector][1]);
+  */
 
   double deltaPhiLow = deltaPhi(theta, aLow, bLow, minTheta);
   double deltaPhiHigh = deltaPhi(theta, aHigh, bHigh, minTheta);
