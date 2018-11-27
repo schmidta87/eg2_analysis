@@ -2,6 +2,7 @@
 #define __NUCLEAR_INFO_H__
 
 // constants
+const double me = 0.000511;
 const double mN = 0.93892;
 const double mU=0.931;
 const double GeVfm=0.1973;
@@ -15,6 +16,7 @@ const double m_4He = 4.00260325415 * mU;
 const double m_6Li = 6.015122795 * mU;
 const double m_8Be = 8.00530510 * mU;
 const double m_10B = 10.0129370 * mU;
+const double m_11B = 11.0093054 * mU;
 const double m_12C = 12.*mU;
 const double m_14N = 14.0030740048*mU;
 const double m_16O = 15.99491461956*mU;
@@ -45,6 +47,7 @@ class Nuclear_Info
   double Cpn1;
   double get_phiSq(double *phiPtr, double k_rel);
   void fill_arrays();
+  void fill_arrays_chiral();
   
 };
 

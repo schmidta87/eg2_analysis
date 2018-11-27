@@ -6,6 +6,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TRandom3.h"
+#include "TH1D.h"
 
 #include "Nuclear_Info.h"
 
@@ -19,9 +20,13 @@ const double Xmax=2.;
 const int pCode=2212;
 const int nCode=2112;
 
+const bool doRad=true;
+const double pRel_cut=0.25;
+
 double sq(double x){ return x*x; };
-double sigmaCC1(double Ebeam, TVector3 k, TVector3 p, bool isProton);
+double sigmaCC1(double E1, TVector3 k, TVector3 p, bool isProton);
 void do_SXC(int &lead_type, int &rec_type, double r);
+double deltaHard(double QSq);
 
 int main(int argc, char ** argv)
 {
@@ -35,8 +40,11 @@ int main(int argc, char ** argv)
   // Read in the arguments
   const double Ebeam=atof(argv[2]);
   const TVector3 v1(0.,0.,Ebeam);
+  const double lambda_ei = alpha/M_PI * (log( 4.*Ebeam*Ebeam/(me*me)) - 1.);
   int nEvents = atoi(argv[4]);
   TFile * outfile = new TFile(argv[3],"RECREATE");
+  TH1D * h_DeltaEi = new TH1D("deltaEi","ISR;Photon Energy [GeV];Counts",100,0.,0.1);
+  TH1D * h_DeltaEf = new TH1D("deltaEf","FSR;Photon Energy [GeV];Counts",100,0.,0.1);
 
   // Set up the tree
   TTree * outtree = new TTree("genT","Generator Tree");
@@ -87,15 +95,49 @@ int main(int argc, char ** argv)
       rec_type = (myRand.Rndm() > 0.5) ? pCode:nCode;
       weight *= 4.;
 
-      // Pick random x, QSq to set up the electron side
-      QSq = Qmin + (Qmax-Qmin)*myRand.Rndm();
-      xB = Xmin + (Xmax - Xmin)*myRand.Rndm();
-      nu = QSq/(2.*mN*xB);
-      pe_Mag = Ebeam - nu;
-      double cosTheta3 = 1. - QSq/(2.*Ebeam*pe_Mag);
+      // Start with the radiation off the incoming electron
+      double DeltaEi = doRad ? pow(myRand.Rndm(),1./lambda_ei) * Ebeam : 0.;
+      h_DeltaEi->Fill(DeltaEi);
+      double Ebeam_eff = Ebeam - DeltaEi;
+
+      // Pick a random xB, QSq prior to FSR
+      double xB_eff = Xmin + (Xmax - Xmin)*myRand.Rndm();
+      double QSq_eff = Qmin + (Qmax-Qmin)*myRand.Rndm();
+      double nu_eff = QSq_eff/(2.*mN*xB_eff);
+      double pe_Mag_eff = Ebeam_eff - nu_eff;
+
+       if (pe_Mag_eff < 0.)
+	weight=0.;
+      else
+	{
+
+      // The outgoing electron angle won't change in the peaking approximation
+      double cosTheta3 = 1. - QSq_eff/(2.*Ebeam_eff*pe_Mag_eff);
+      if (fabs(cosTheta3) > 1.)
+	weight=0.;
+      else
+      {
+      
       double phi3 = 2.*M_PI*myRand.Rndm();
+      double theta3 = acos(cosTheta3);
+      TVector3 v3_eff;
+      v3_eff.SetMagThetaPhi(pe_Mag_eff, theta3, phi3);
+      TVector3 vq_eff = TVector3(0.,0.,Ebeam_eff) - v3_eff;
+
+      // Sample radiation off the outgoing electron
+      double lambda_ef = alpha/M_PI * (log( 4.*pe_Mag_eff*pe_Mag_eff/(me*me)) - 1.);
+      double DeltaEf = doRad? pow(myRand.Rndm(),1./lambda_ef) * pe_Mag_eff : 0.;
+      h_DeltaEf->Fill(DeltaEf);
+      pe_Mag = pe_Mag_eff - DeltaEf;
+
+      // This will allow us to calculate apparent quantities
+      QSq = 2. * Ebeam * pe_Mag * (1.-cosTheta3);
+      nu = Ebeam - pe_Mag;
+      xB = QSq/(2.*mN*nu);
+
+      // Fill into vectors
       TVector3 v3;
-      v3.SetMagThetaPhi(pe_Mag,acos(cosTheta3),phi3);
+      v3.SetMagThetaPhi(pe_Mag,theta3,phi3);
       pe[0]=v3.X();
       pe[1]=v3.Y();
       pe[2]=v3.Z();
@@ -106,15 +148,11 @@ int main(int argc, char ** argv)
       q_Mag = vq.Mag();
 
       // Pick random CM motion
-      pCM[0] = myRand.Gaus(0.,sigCM);
-      pCM[1] = myRand.Gaus(0.,sigCM);
-      pCM[2] = myRand.Gaus(0.,sigCM);
-      TVector3 vCM(pCM[0],pCM[1],pCM[2]);
-      pCM_Mag = vCM.Mag();
-      TVector3 vAm2 = -vCM;
-      double EAm2 = sqrt(vCM.Mag2() + sq(mAm2));
-      TVector3 vZ = vCM + vq; // 3 momentum of the pair, useful for calculating kinematics
-      double X = mA + nu - EAm2;
+      TVector3 vCM_eff(myRand.Gaus(0.,sigCM),myRand.Gaus(0.,sigCM),myRand.Gaus(0.,sigCM));
+      TVector3 vAm2 = -vCM_eff;
+      double EAm2 = sqrt(vCM_eff.Mag2() + sq(mAm2));
+      TVector3 vZ = vCM_eff + vq_eff; // 3 momentum of the pair, useful for calculating kinematics
+      double X = mA + nu_eff - EAm2;
       double Z = vZ.Mag();
       double YSq = sq(X) - sq(Z);
 
@@ -124,11 +162,11 @@ int main(int argc, char ** argv)
       double thetaRec = acos(cosThetaRec);
 
       // Determine other angles
-      double thetaCM = vCM.Theta();
-      double phiCM = vCM.Phi();
+      double thetaCM = vCM_eff.Theta();
+      double phiCM = vCM_eff.Phi();
       double cosThetaCMRec = sin(thetaCM)*sin(thetaRec) * (cos(phiCM)*cos(phiRec) + sin(phiCM)*sin(phiRec)) + cos(thetaCM)*cosThetaRec;
-      double thetaQ = vq.Theta();
-      double phiQ = vq.Phi();
+      double thetaQ = vq_eff.Theta();
+      double phiQ = vq_eff.Phi();
       double cosThetaQRec = sin(thetaQ)*sin(thetaRec) * (cos(phiQ)*cos(phiRec) + sin(phiQ)*sin(phiRec)) + cos(thetaQ)*cosThetaRec;
       double thetaZ = vZ.Theta();
       double phiZ = vZ.Phi();
@@ -169,34 +207,53 @@ int main(int argc, char ** argv)
 	      pRec[2]=vRec.Z();
 
 	      // Define the other vectors in the tree
-	      pMiss[0] = pCM[0] - pRec[0];
-	      pMiss[1] = pCM[1] - pRec[1];
-	      pMiss[2] = pCM[2] - pRec[2];
-	      pLead[0] = pMiss[0] + q[0];
-	      pLead[1] = pMiss[1] + q[1];
-	      pLead[2] = pMiss[2] + q[2];
-	      pRel[0] = 0.5*(pMiss[0] - pRec[0]);
+	      TVector3 vMiss_eff = vCM_eff - vRec; // This is the true pmiss
+	      TVector3 vLead = vMiss_eff + vq_eff; // This is the true plead
+	      pLead[0] = vLead.X();
+	      pLead[1] = vLead.Y();
+	      pLead[2] = vLead.Z();
+	      pLead_Mag = vLead.Mag();
+	      TVector3 vMiss = vLead - vq; // This is the apparent pmiss
+	      pMiss[0] = vMiss.X();
+	      pMiss[0] = vMiss.Y();
+	      pMiss[0] = vMiss.Z();
+	      pMiss_Mag = vMiss.Mag();
+	      TVector3 vRel_eff = 0.5*(vMiss_eff - vRec); // This is the true pRel
+	      double pRel_eff_Mag = vRel_eff.Mag();
+
+	      // Do a safeguard cut
+	      if (pRel_eff_Mag < pRel_cut)
+		weight=0.;
+	      
+	      pRel[0] = 0.5*(pMiss[0] - pRec[0]); // This is the apparent pRel;
 	      pRel[1] = 0.5*(pMiss[1] - pRec[1]);
 	      pRel[2] = 0.5*(pMiss[2] - pRec[2]);
-	      TVector3 vLead(pLead[0],pLead[1],pLead[2]);
 	      TVector3 vRel(pRel[0],pRel[1],pRel[2]);
-	      TVector3 vMiss(pMiss[0],pMiss[1],pMiss[2]);
-	      pLead_Mag = vLead.Mag();
-	      pMiss_Mag = vMiss.Mag();
 	      pRel_Mag = vRel.Mag();
+
+	      pCM[0] = pMiss[0] + pRec[0]; // Apparent pCM
+	      pCM[1] = pMiss[1] + pRec[1];
+	      pCM[2] = pMiss[2] + pRec[2];
+	      TVector3 vCM(pCM[0],pCM[1],pCM[2]);
+	      pCM_Mag = vCM.Mag();
+
+	      // These are apparent angles
 	      theta_pmq = acos((pMiss[0]*q[0] + pMiss[1]*q[1] + pMiss[2]*q[2])/pMiss_Mag /q_Mag);
 	      theta_prq = acos((pRec[0]*q[0] + pRec[1]*q[1] + pRec[2]*q[2])/pRec_Mag /q_Mag);
 
-	      double Elead = sqrt(sq(mN) + vLead.Mag2());
+	      double Elead = sqrt(sq(mN) + vLead.Mag2()); // True values
 	      double Erec = sqrt(sq(mN) + vRec.Mag2());
 
 	      // Calculate the weight
-	      weight *= sigmaCC1(Ebeam, v3, vLead, (lead_type==2122)) // eN cross section
-		* nu/(2.*xB*Ebeam*pe_Mag) * (Qmax-Qmin) * (Xmax-Xmin) // Jacobian for QSq,xB
+	      weight *= sigmaCC1(Ebeam_eff, v3_eff, vLead, (lead_type==2122)) // eN cross section
+		* nu_eff/(2.*xB_eff*Ebeam_eff*pe_Mag_eff) * (Qmax-Qmin) * (Xmax-Xmin) // Jacobian for QSq,xB
+		* (doRad ? (1. - deltaHard(QSq_eff)) * pow(Ebeam/sqrt(Ebeam*pe_Mag),lambda_ei) * pow(pe_Mag_eff/sqrt(Ebeam*pe_Mag),lambda_ef) : 1.) // Radiative weights
 		* 1./(4.*sq(M_PI)) // Angular terms
-		* ((lead_type==rec_type) ? myInfo.get_pp(pRel_Mag) : myInfo.get_pn(pRel_Mag)) // Contacts
+		* ((lead_type==rec_type) ? myInfo.get_pp(pRel_eff_Mag) : myInfo.get_pn(pRel_eff_Mag)) // Contacts
 		* vRec.Mag2() * Erec * Elead / fabs(Erec*(pRec_Mag - Z*cosThetaZRec) + Elead*pRec_Mag); // Jacobian for delta fnc.
 	    }
+	}
+	}
 	}
       
       // HERE IS WHERE WE SHOULD DO SINGLE CHARGE EXCHANGE!!!!
@@ -207,6 +264,8 @@ int main(int argc, char ** argv)
     } 	  
   
   // Clean up
+  h_DeltaEi->Write();
+  h_DeltaEf->Write();
   outtree->Write();
   outfile->Close();
   return 0;
@@ -214,12 +273,12 @@ int main(int argc, char ** argv)
 
 double Gdipole(double QSq){ return 1. / sq(1 + QSq/0.71); };
 
-double sigmaCC1(double Ebeam, TVector3 k, TVector3 p, bool isProton)
+double sigmaCC1(double E1, TVector3 k, TVector3 p, bool isProton)
 {
-  TVector3 q = TVector3(0.,0.,Ebeam) - k;
+  TVector3 q = TVector3(0.,0.,E1) - k;
   TVector3 pM = p-q;
+  double QSq = q.Mag2() - sq(E1 - k.Mag());
 
-  double QSq = q.Mag2() - sq(Ebeam - k.Mag());
   double E = sqrt(p.Mag2() + sq(mN));
   double Ebar = sqrt(pM.Mag2() + sq(mN));
   double omegabar = E-Ebar;
@@ -333,4 +392,9 @@ void do_SXC(int &lead_type, int &rec_type, double r)
     {
       cerr << "Invalid nucleon codes. Check and fix. Exiting\n\n\n";
     }
+}
+
+double deltaHard(double QSq)
+{
+  return 2.*alpha/M_PI * ( -13./12.*log(QSq/(me*me)) + 8./3.);
 }

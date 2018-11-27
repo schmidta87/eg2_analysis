@@ -120,13 +120,12 @@ int main(int argc, char ** argv)
       TVector3 vq(gen_q[0],gen_q[1],gen_q[2]);
       TVector3 vlead(gen_pLead[0],gen_pLead[1],gen_pLead[2]);
       TVector3 vrec(gen_pRec[0],gen_pRec[1],gen_pRec[2]);
+      TVector3 vrel=0.5*(vlead-vq-vrec);
 
       // Apply weight for detecting e, p      
       weight = gen_weight * eMap.accept(ve) * pMap.accept(vlead) * 1.E33; // put it in nb to make it macroscopic
 
-      // Make a p_rel cut
-      TVector3 vrel=0.5*(vlead-vq-vrec);
-      if (vrel.Mag()<0.250)
+      if (weight <= 0.)
 	continue;
 
       // Do leading proton cuts
@@ -151,7 +150,7 @@ int main(int argc, char ** argv)
 	{
 	  h_rec_p_all->Fill(gen_pMiss_Mag,weight);
 	  
-	  // Test if the recoil was accepted
+	  // Test if the recoil was in the fiducial region and above threshold
 	  if (accept_proton(vrec) && (vrec.Mag() > 0.35))
 	    h_rec_p_acc->Fill(gen_pMiss_Mag,weight*recoil_accept);
 	}
@@ -169,10 +168,7 @@ int main(int argc, char ** argv)
 	    weight *= recoil_accept;
 	  else
 	    weight = 0.; // We can't use recoil neutrons.
-	}
-      
-      if (weight <= 0.)
-	continue;
+	}      
 
       // Load up tree
       Q2 = gen_QSq;

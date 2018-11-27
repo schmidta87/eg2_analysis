@@ -6,7 +6,9 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
+#include "TGraphAsymmErrors.h"
 
+#include "Nuclear_Info.h"
 #include "fiducials.h"
 
 using namespace std;
@@ -33,6 +35,12 @@ int main(int argc, char ** argv)
   h1p_Pm ->Sumw2();
   TH1D * h1p_Pmq = new TH1D("ep_Pmq","ep;Theta_Pmq [deg];Counts",40,100.,180.);
   h1p_Pmq->Sumw2();
+  TH1D * h1p_phi1 = new TH1D("ep_phi1","ep;Phi [deg];Counts",60,-30.,330.);
+  h1p_phi1->Sumw2();
+  TH1D * h1p_theta1 = new TH1D("ep_theta1","ep;Theta [deg];Counts",60,10.,130.);
+  h1p_theta1->Sumw2();
+  TH1D * h1p_Emiss = new TH1D("ep_Emiss","ep;Emiss [GeV];Counts",50,0.,2);
+  h1p_Emiss->Sumw2();
   TH1D * h2p_QSq = new TH1D("epp_QSq","epp;QSq [GeV^2];Counts",40,1.,5.);
   h2p_QSq->Sumw2();
   TH1D * h2p_xB =  new TH1D("epp_xB" ,"epp;xB;Counts",26,1.2,2.5);
@@ -45,6 +53,41 @@ int main(int argc, char ** argv)
   h2p_Pmr->Sumw2();
   TH1D * h2p_Pr = new TH1D("epp_Pr","epp;pRec [GeV];Counts",26,0.35,1.0);
   h2p_Pr->Sumw2();
+  TH1D * h2p_phi1 = new TH1D("epp_phi1","ep;Phi [deg];Counts",60,-30.,330.);
+  h2p_phi1->Sumw2();
+  TH1D * h2p_phi2 = new TH1D("epp_phi2","ep;Phi [deg];Counts",60,-30.,330.);
+  h2p_phi2->Sumw2();
+  TH1D * h2p_theta1 = new TH1D("epp_theta1","ep;Theta [deg];Counts",60,10.,130.);
+  h2p_theta1->Sumw2();
+  TH1D * h2p_theta2 = new TH1D("epp_theta2","ep;Theta [deg];Counts",60,10.,130.);
+  h2p_theta2->Sumw2();
+  TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",50,0.,2);
+  h2p_Emiss->Sumw2();
+
+  TH1D * h1p_theta1_bySec[6];
+  TH1D * h2p_theta1_bySec[6];
+  TH1D * h2p_theta2_bySec[6];
+  for (int i=0 ; i<6 ; i++)
+    {
+      char temp[100];
+
+      sprintf(temp,"ep_theta1_%d",i);
+      h1p_theta1_bySec[i] = new TH1D(temp,"ep;Theta [deg];Counts",60,10.,130.);
+      h1p_theta1_bySec[i]->Sumw2();
+
+      sprintf(temp,"epp_theta1_%d",i);
+      h2p_theta1_bySec[i] = new TH1D(temp,"epp;Theta [deg];Counts",60,10.,130.);
+      h2p_theta1_bySec[i]->Sumw2();
+
+      sprintf(temp,"epp_theta2_%d",i);
+      h2p_theta2_bySec[i] = new TH1D(temp,"epp;Theta [deg];Counts",60,10.,130.);
+      h2p_theta2_bySec[i]->Sumw2();
+    }
+
+  // pp2p hist
+  TGraphAsymmErrors * pp_to_p = new TGraphAsymmErrors();
+  pp_to_p->SetName("pp_to_p");
+  pp_to_p->SetTitle("pp_to_p;p_miss [GeV];pp_to_p ratio");
 
   // Loop over 1p tree
   cerr << " Looping over 1p tree...\n";
@@ -89,6 +132,20 @@ int main(int argc, char ** argv)
       h1p_Pm ->Fill(Pmiss_size[0],weight);
       h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 
+      // Let's make a sanitized phi and sector
+      double phi1_deg = vp.Phi() * 180./M_PI;
+      if (phi1_deg < -30.)
+	phi1_deg += 360.;
+      int sector = phi1_deg/60.;
+      double theta1_deg = vp.Theta() * 180./M_PI;
+
+      h1p_phi1->Fill(phi1_deg,weight);
+      h1p_theta1->Fill(theta1_deg,weight);
+      h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
+
+      // Let's figure out missing energy! 
+      double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pmiss_size[0]*Pmiss_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
+      h1p_Emiss->Fill(Emiss,weight);
     }
 
   // Loop over 2p tree
@@ -133,6 +190,21 @@ int main(int argc, char ** argv)
       h1p_Pm ->Fill(Pmiss_size[0],weight);
       h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 
+      // Let's make a sanitized phi and sector
+      double phi1_deg = vlead.Phi() * 180./M_PI;
+      if (phi1_deg < -30.)
+	phi1_deg += 360.;
+      int sector = phi1_deg/60.;
+      double theta1_deg = vlead.Theta() * 180./M_PI;
+
+      h1p_phi1->Fill(phi1_deg,weight);
+      h1p_theta1->Fill(theta1_deg,weight);
+      h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
+
+      // Let's figure out missing energy! 
+      double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pmiss_size[0]*Pmiss_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
+      h1p_Emiss->Fill(Emiss,weight);
+
       // Make a check on the recoils
       if (fabs(Rp[1][2]+22.25)>2.25)
 	continue;
@@ -152,22 +224,59 @@ int main(int argc, char ** argv)
       h2p_Pr ->Fill(Pp_size[1],weight);
       h2p_Pmr->Fill(vmiss.Angle(vrec)*180./M_PI,weight);
 
+      h2p_phi1->Fill(phi1_deg,weight);
+      h2p_theta1->Fill(theta1_deg,weight);
+      h2p_theta1_bySec[sector]->Fill(theta1_deg,weight);
+
+      h2p_Emiss->Fill(Emiss,weight);
+
+      // Let's make a sanitized phi and sector
+      double phi2_deg = vrec.Phi() * 180./M_PI;
+      if (phi2_deg < -30.)
+	phi2_deg += 360.;
+      int sector2 = phi2_deg/60.;
+      double theta2_deg = vrec.Theta() * 180./M_PI;
+
+      h2p_phi2->Fill(phi2_deg,weight);
+      h2p_theta2->Fill(theta2_deg,weight);
+      h2p_theta2_bySec[sector2]->Fill(theta2_deg,weight);
+
     }
   f1p->Close();
   f2p->Close();
 
+  // pp-to-p
+  pp_to_p->BayesDivide(h2p_Pm,h1p_Pm);
+
   // Write out
   fo -> cd();
+  pp_to_p->Write();
   h1p_QSq->Write();
   h1p_xB ->Write();
   h1p_Pm ->Write();
   h1p_Pmq->Write();
+  h1p_phi1->Write();
+  h1p_theta1->Write();
+  h1p_Emiss->Write();
   h2p_QSq->Write();
   h2p_xB ->Write();
   h2p_Pm ->Write();
   h2p_Pmq->Write();
   h2p_Pr ->Write();
   h2p_Pmr->Write();
+  h2p_phi1->Write();
+  h2p_theta1->Write();
+  h2p_phi2->Write();
+  h2p_theta2->Write();
+  h2p_Emiss->Write();
+
+  for (int i=0 ; i<6 ; i++)
+    {
+      h1p_theta1_bySec[i]->Write();
+      h2p_theta1_bySec[i]->Write();
+      h2p_theta2_bySec[i]->Write();
+    }
+
   fo->Close();
   
   return 0;
