@@ -30,19 +30,19 @@ double deltaHard(double QSq);
 
 int main(int argc, char ** argv)
 {
-  if (argc !=5)
+  if (argc !=4)
     {
       cerr << "Wrong number of arguments. Insteady try\n\t"
-	   << "gen_weight [A] [Beam energy (GeV)] /path/to/output/file [# of events]\n\n";
+	   << "gen_weight [A] /path/to/output/file [# of events]\n\n";
       return -1;
     }
 
   // Read in the arguments
-  const double Ebeam=atof(argv[2]);
+  const double Ebeam=eg2beam;
   const TVector3 v1(0.,0.,Ebeam);
   const double lambda_ei = alpha/M_PI * (log( 4.*Ebeam*Ebeam/(me*me)) - 1.);
-  int nEvents = atoi(argv[4]);
-  TFile * outfile = new TFile(argv[3],"RECREATE");
+  int nEvents = atoi(argv[3]);
+  TFile * outfile = new TFile(argv[2],"RECREATE");
   TH1D * h_DeltaEi = new TH1D("deltaEi","ISR;Photon Energy [GeV];Counts",100,0.,0.1);
   TH1D * h_DeltaEf = new TH1D("deltaEf","FSR;Photon Energy [GeV];Counts",100,0.,0.1);
 
@@ -321,7 +321,7 @@ void do_SXC(int &lead_type, int &rec_type, double r)
 
   const double pNN2PN = 0.041;
   const double pNN2NP = 0.048;
-  const double pNN2PP = 0.029;
+  const double pNN2PP = 0.0029;
  
   // Now we do a whole bunch of tests
   if ((lead_type==pCode) && (rec_type==pCode))

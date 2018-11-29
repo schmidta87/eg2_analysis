@@ -43,9 +43,9 @@ double AccMap::recoil_accept(TVector3 p)
 
 double AccMap::accept(TVector3 p)
 {
-  // return 1.;
+  //return 1.;
   //return accept_fake(p);
-   return accept_map(p);
+  return accept_map(p);
 };
 
 double AccMap::accept_fake(TVector3 p)
