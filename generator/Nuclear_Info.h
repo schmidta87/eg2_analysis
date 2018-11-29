@@ -1,6 +1,9 @@
 #ifndef __NUCLEAR_INFO_H__
 #define __NUCLEAR_INFO_H__
 
+// EG2 info
+const double eg2beam=5.014;
+
 // constants
 const double me = 0.000511;
 const double mN = 0.93892;

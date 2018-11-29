@@ -8,10 +8,9 @@
 
 #include "AccMap.h"
 #include "fiducials.h"
+#include "Nuclear_Info.h"
 
 using namespace std;
-
-const double mN = 0.939;
 
 int main(int argc, char ** argv)
 {
