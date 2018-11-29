@@ -8,8 +8,8 @@
 Nuclear_Info::Nuclear_Info(int thisA)
 {
   A = thisA;
-  //fill_arrays();
-  fill_arrays_chiral();
+  fill_arrays();
+  //fill_arrays_chiral();
 
   if (A==2)
     {

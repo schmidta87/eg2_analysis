@@ -37,8 +37,12 @@ int main(int argc, char ** argv)
   h1p_Pmq->Sumw2();
   TH1D * h1p_phi1 = new TH1D("ep_phi1","ep;Phi [deg];Counts",60,-30.,330.);
   h1p_phi1->Sumw2();
+  TH1D * h1p_phie = new TH1D("ep_phie","ep;Phi [deg];Counts",60,-30.,330.);
+  h1p_phie->Sumw2();
   TH1D * h1p_theta1 = new TH1D("ep_theta1","ep;Theta [deg];Counts",60,10.,130.);
   h1p_theta1->Sumw2();
+  TH1D * h1p_thetae = new TH1D("ep_thetae","ep;Theta [deg];Counts",60,10.,40.);
+  h1p_thetae->Sumw2();
   TH1D * h1p_Emiss = new TH1D("ep_Emiss","ep;Emiss [GeV];Counts",50,0.,2);
   h1p_Emiss->Sumw2();
   TH1D * h2p_QSq = new TH1D("epp_QSq","epp;QSq [GeV^2];Counts",40,1.,5.);
@@ -57,6 +61,10 @@ int main(int argc, char ** argv)
   h2p_phi1->Sumw2();
   TH1D * h2p_phi2 = new TH1D("epp_phi2","ep;Phi [deg];Counts",60,-30.,330.);
   h2p_phi2->Sumw2();
+  TH1D * h2p_phie = new TH1D("epp_phie","ep;Phi [deg];Counts",60,-30.,330.);
+  h2p_phie->Sumw2();
+  TH1D * h2p_thetae = new TH1D("epp_thetae","ep;Theta [deg];Counts",60,10.,40.);
+  h2p_thetae->Sumw2();
   TH1D * h2p_theta1 = new TH1D("epp_theta1","ep;Theta [deg];Counts",60,10.,130.);
   h2p_theta1->Sumw2();
   TH1D * h2p_theta2 = new TH1D("epp_theta2","ep;Theta [deg];Counts",60,10.,130.);
@@ -64,6 +72,7 @@ int main(int argc, char ** argv)
   TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",50,0.,2);
   h2p_Emiss->Sumw2();
 
+  TH1D * h1p_thetae_bySec[6];
   TH1D * h1p_theta1_bySec[6];
   TH1D * h2p_theta1_bySec[6];
   TH1D * h2p_theta2_bySec[6];
@@ -74,6 +83,10 @@ int main(int argc, char ** argv)
       sprintf(temp,"ep_theta1_%d",i);
       h1p_theta1_bySec[i] = new TH1D(temp,"ep;Theta [deg];Counts",60,10.,130.);
       h1p_theta1_bySec[i]->Sumw2();
+
+      sprintf(temp,"ep_thetae_%d",i);
+      h1p_thetae_bySec[i] = new TH1D(temp,"ep;Theta [deg];Counts",60,10.,40.);
+      h1p_thetae_bySec[i]->Sumw2();
 
       sprintf(temp,"epp_theta1_%d",i);
       h2p_theta1_bySec[i] = new TH1D(temp,"epp;Theta [deg];Counts",60,10.,130.);
@@ -133,6 +146,16 @@ int main(int argc, char ** argv)
       h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 
       // Let's make a sanitized phi and sector
+      double phie_deg = ve.Phi() * 180./M_PI;
+      if (phie_deg < -30.)
+	phie_deg += 360.;
+      int sec_e = phie_deg/60.;
+      double thetae_deg = ve.Theta() * 180./M_PI;
+
+      h1p_phie->Fill(phie_deg,weight);
+      h1p_thetae->Fill(thetae_deg,weight);
+      h1p_thetae_bySec[sec_e]->Fill(thetae_deg,weight);
+
       double phi1_deg = vp.Phi() * 180./M_PI;
       if (phi1_deg < -30.)
 	phi1_deg += 360.;
@@ -191,6 +214,17 @@ int main(int argc, char ** argv)
       h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 
       // Let's make a sanitized phi and sector
+      double phie_deg = ve.Phi() * 180./M_PI;
+      if (phie_deg < -30.)
+	phie_deg += 360.;
+      int sec_e = phie_deg/60.;
+      double thetae_deg = ve.Theta() * 180./M_PI;
+
+      h1p_phie->Fill(phie_deg,weight);
+      h1p_thetae->Fill(thetae_deg,weight);
+      h1p_thetae_bySec[sec_e]->Fill(thetae_deg,weight);
+
+
       double phi1_deg = vlead.Phi() * 180./M_PI;
       if (phi1_deg < -30.)
 	phi1_deg += 360.;
@@ -223,6 +257,9 @@ int main(int argc, char ** argv)
       h2p_Pmq->Fill(Pmiss_q_angle[0],weight);
       h2p_Pr ->Fill(Pp_size[1],weight);
       h2p_Pmr->Fill(vmiss.Angle(vrec)*180./M_PI,weight);
+
+      h2p_phie->Fill(phie_deg,weight);
+      h2p_thetae->Fill(thetae_deg,weight);
 
       h2p_phi1->Fill(phi1_deg,weight);
       h2p_theta1->Fill(theta1_deg,weight);
@@ -257,6 +294,8 @@ int main(int argc, char ** argv)
   h1p_Pmq->Write();
   h1p_phi1->Write();
   h1p_theta1->Write();
+  h1p_phie->Write();
+  h1p_thetae->Write();
   h1p_Emiss->Write();
   h2p_QSq->Write();
   h2p_xB ->Write();
@@ -268,11 +307,14 @@ int main(int argc, char ** argv)
   h2p_theta1->Write();
   h2p_phi2->Write();
   h2p_theta2->Write();
+  h2p_phie->Write();
+  h2p_thetae->Write();
   h2p_Emiss->Write();
 
   for (int i=0 ; i<6 ; i++)
     {
       h1p_theta1_bySec[i]->Write();
+      h1p_thetae_bySec[i]->Write();
       h2p_theta1_bySec[i]->Write();
       h2p_theta2_bySec[i]->Write();
     }
