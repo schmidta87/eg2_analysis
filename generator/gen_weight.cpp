@@ -54,25 +54,26 @@ int main(int argc, char ** argv)
   outtree->Branch("lead_type",&lead_type,"lead_type/I");
   outtree->Branch("rec_type",&rec_type,"rec_type/I");
   outtree->Branch("pe",pe,"pe[3]/D");
-  outtree->Branch("q",q,"q[3]/D");
   outtree->Branch("pLead",pLead,"pLead[3]/D");
   outtree->Branch("pRec",pRec,"pRec[3]/D");
-  outtree->Branch("pMiss",pMiss,"pMiss[3]/D");
-  outtree->Branch("pCM",pCM,"pCM[3]/D");
-  outtree->Branch("pRel",pRel,"pRel[3]/D");
   outtree->Branch("weight",&weight,"weight/D");
-  outtree->Branch("QSq",&QSq,"QSq/D");
-  outtree->Branch("xB",&xB,"xB/D");
-  outtree->Branch("nu",&nu,"nu/D");
-  outtree->Branch("pe_Mag",&pe_Mag,"pe_Mag/D");
-  outtree->Branch("q_Mag",&q_Mag,"q_Mag/D");
-  outtree->Branch("pLead_Mag",&pLead_Mag,"pLead_Mag/D");
-  outtree->Branch("pRec_Mag",&pRec_Mag,"pRec_Mag/D");
-  outtree->Branch("pMiss_Mag",&pMiss_Mag,"pMiss_Mag/D");
-  outtree->Branch("pCM_Mag",&pCM_Mag,"pCM_Mag/D");
-  outtree->Branch("pRel_Mag",&pRel_Mag,"pRel_Mag/D");
-  outtree->Branch("theta_pmq",&theta_pmq,"theta_pmq/D");
-  outtree->Branch("theta_prq",&theta_prq,"theta_prq/D");
+  // Pare down the branches that are not strictly needed
+  //outtree->Branch("q",q,"q[3]/D");
+  //outtree->Branch("pMiss",pMiss,"pMiss[3]/D");
+  //outtree->Branch("pCM",pCM,"pCM[3]/D");
+  //outtree->Branch("pRel",pRel,"pRel[3]/D");
+  //outtree->Branch("QSq",&QSq,"QSq/D");
+  //outtree->Branch("xB",&xB,"xB/D");
+  //outtree->Branch("nu",&nu,"nu/D");
+  //outtree->Branch("pe_Mag",&pe_Mag,"pe_Mag/D");
+  //outtree->Branch("q_Mag",&q_Mag,"q_Mag/D");
+  //outtree->Branch("pLead_Mag",&pLead_Mag,"pLead_Mag/D");
+  //outtree->Branch("pRec_Mag",&pRec_Mag,"pRec_Mag/D");
+  //outtree->Branch("pMiss_Mag",&pMiss_Mag,"pMiss_Mag/D");
+  //outtree->Branch("pCM_Mag",&pCM_Mag,"pCM_Mag/D");
+  //outtree->Branch("pRel_Mag",&pRel_Mag,"pRel_Mag/D");
+  //outtree->Branch("theta_pmq",&theta_pmq,"theta_pmq/D");
+  //outtree->Branch("theta_prq",&theta_prq,"theta_prq/D");
 
   // Other chores
   TRandom3 myRand(0);

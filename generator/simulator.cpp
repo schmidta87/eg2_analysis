@@ -47,32 +47,14 @@ int main(int argc, char ** argv)
 
   // Input Tree
   TTree * inTree = (TTree*)infile->Get("genT");
-  Double_t gen_pe[3], gen_q[3], gen_pLead[3], gen_pRec[3], gen_pMiss[3], gen_pCM[3], gen_pRel[3];
-  Double_t gen_QSq, gen_xB, gen_nu, gen_pe_Mag, gen_q_Mag, gen_pLead_Mag, gen_pRec_Mag, gen_pMiss_Mag, gen_pCM_Mag, 
-    gen_pRel_Mag, gen_theta_pmq, gen_theta_prq, gen_weight;
+  Double_t gen_pe[3], gen_pLead[3], gen_pRec[3], gen_weight;
   Int_t lead_type, rec_type;
   inTree->SetBranchAddress("lead_type",&lead_type);
   inTree->SetBranchAddress("rec_type",&rec_type);
+  inTree->SetBranchAddress("weight",&gen_weight);
   inTree->SetBranchAddress("pe",gen_pe);
-  inTree->SetBranchAddress("q",gen_q);
   inTree->SetBranchAddress("pLead",gen_pLead);
   inTree->SetBranchAddress("pRec",gen_pRec);
-  inTree->SetBranchAddress("pMiss",gen_pMiss);
-  inTree->SetBranchAddress("pCM",gen_pCM);
-  inTree->SetBranchAddress("pRel",gen_pRel);
-  inTree->SetBranchAddress("weight",&gen_weight);
-  inTree->SetBranchAddress("QSq",&gen_QSq);
-  inTree->SetBranchAddress("xB",&gen_xB);
-  inTree->SetBranchAddress("nu",&gen_nu);
-  inTree->SetBranchAddress("pe_Mag",&gen_pe_Mag);
-  inTree->SetBranchAddress("q_Mag",&gen_q_Mag);
-  inTree->SetBranchAddress("pLead_Mag",&gen_pLead_Mag);
-  inTree->SetBranchAddress("pRec_Mag",&gen_pRec_Mag);
-  inTree->SetBranchAddress("pMiss_Mag",&gen_pMiss_Mag);
-  inTree->SetBranchAddress("pCM_Mag",&gen_pCM_Mag);
-  inTree->SetBranchAddress("pRel_Mag",&gen_pRel_Mag);
-  inTree->SetBranchAddress("theta_pmq",&gen_theta_pmq);
-  inTree->SetBranchAddress("theta_prq",&gen_theta_prq);
 
   // Output Tree
   TTree * T = new TTree("T","Simulated Data Tree");
@@ -117,10 +99,21 @@ int main(int argc, char ** argv)
 
       // Create vectors for the particles
       TVector3 ve(gen_pe[0],gen_pe[1],gen_pe[2]);
-      TVector3 vq(gen_q[0],gen_q[1],gen_q[2]);
+      TVector3 vq = TVector3(0.,0.,eg2beam) - ve;
       TVector3 vlead(gen_pLead[0],gen_pLead[1],gen_pLead[2]);
       TVector3 vrec(gen_pRec[0],gen_pRec[1],gen_pRec[2]);
-      TVector3 vrel=0.5*(vlead-vq-vrec);
+      TVector3 vmiss=vlead-vq;
+      TVector3 vcm=vmiss+vrec;
+      TVector3 vrel=0.5*(vmiss-vrec);
+
+      double gen_pMiss_Mag = vmiss.Mag();
+      double gen_pe_Mag = ve.Mag();
+      double gen_QSq = 2. * eg2beam * gen_pe_Mag * (1. - ve.CosTheta());
+      double gen_nu = eg2beam - ve.Mag();
+      double gen_xB = gen_QSq/(2.*mN*gen_nu);
+      double gen_q_Mag = vq.Mag();
+      double gen_pLead_Mag = vlead.Mag();
+      double gen_pRec_Mag = vrec.Mag();
 
       // Apply weight for detecting e, p      
       weight = gen_weight * eMap.accept(ve) * pMap.accept(vlead) * 1.E33; // put it in nb to make it macroscopic
@@ -129,9 +122,9 @@ int main(int argc, char ** argv)
 	continue;
 
       // Do leading proton cuts
-      if (gen_pMiss_Mag <0.3)
+      if (vmiss.Mag() <0.3)
 	continue;
-      if (gen_pMiss_Mag >1.0)
+      if (vmiss.Mag() >1.0)
 	continue;
       if (gen_xB < 1.2)
 	continue;
@@ -192,12 +185,12 @@ int main(int argc, char ** argv)
       if (phi_p[1] < -30.) phi_p[1] += 360;
       for (int i=0 ; i<3 ; i++)
 	{
-	  q[i] = gen_q[i];
+	  q[i] = vq[i];
 	  Pe[i] = gen_pe[i];
-	  Pp[0][i] = gen_pLead[i];
-	  Pp[1][i] = gen_pRec[i];
-	  Pmiss[0][i] = gen_pLead[i] - gen_q[i];
-	  Pmiss[1][i] = gen_pRec[i] - gen_q[i];
+	  Pp[0][i] = vlead[i];
+	  Pp[1][i] = vrec[i];
+	  Pmiss[0][i] = vlead[i] - vq[i];
+	  Pmiss[1][i] = vrec[i] - vq[i];
 	}
 
       Pmiss_q_angle[0] = (vlead - vq).Angle(vq) * 180./M_PI;
