@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <vector>
 
 Nuclear_Info::Nuclear_Info(int thisA)
 {
@@ -96,6 +97,38 @@ Nuclear_Info::~Nuclear_Info()
 {
 }
 
+void Nuclear_Info::set_Estar(double new_Estar)
+{
+  Estar = new_Estar;
+}
+
+void Nuclear_Info::set_Contacts(double new_Cpp0, double new_Cpn0, double new_Cpn1)
+{
+  Cpp0 = new_Cpp0;
+  Cpn0 = new_Cpn0;
+  Cpn1 = new_Cpn1;
+}
+
+double Nuclear_Info::get_Estar()
+{
+  return Estar;
+}
+
+double Nuclear_Info::get_Cpp0()
+{
+  return Cpp0;
+}
+
+double Nuclear_Info::get_Cpn0()
+{
+  return Cpn0;
+}
+
+double Nuclear_Info::get_Cpn1()
+{
+  return Cpn1;
+}
+
 double Nuclear_Info::get_mA()
 {
   return mA;
@@ -103,7 +136,7 @@ double Nuclear_Info::get_mA()
 
 double Nuclear_Info::get_mAm2()
 {
-  return mAm2;
+  return mAm2 + Estar;
 }
 
 double Nuclear_Info::get_sigmaCM()
@@ -203,6 +236,26 @@ void Nuclear_Info::do_SXC(int &lead_type, int &rec_type, double r)
       std::cerr << "Invalid nucleon codes. Check and fix. Exiting\n\n\n";
     }
 }
+
+std::vector<double> Nuclear_Info::get_SCX_Ps()
+{
+  std::vector<double> Ps{
+      pPP2PN,
+      pPP2NP,
+      pPP2NN,
+      pPN2NN,
+      pPN2PP,
+      pPN2NP,
+      pNP2NN,
+      pNP2PP,
+      pNP2PN,
+      pNN2PN,
+      pNN2NP,
+      pNN2PP
+  };
+  return Ps;
+}
+
 
 double Nuclear_Info::get_phiSq(double *phiPtr, double k_rel)
 {

@@ -1,5 +1,7 @@
 #ifndef __NUCLEAR_INFO_H__
 #define __NUCLEAR_INFO_H__
+#include <cstdlib>
+#include <vector>
 
 // EG2 info
 const double eg2beam=5.014;
@@ -33,6 +35,14 @@ class Nuclear_Info
  public:
   Nuclear_Info(int thisA);
   ~Nuclear_Info();
+  void set_Estar(double new_Estar);
+  void set_Contacts(double new_Cpp0, double new_Cpn0, double new_Cpn1);
+  
+  double get_Estar();
+  double get_Cpp0();
+  double get_Cpn0();
+  double get_Cpn1();
+  
   double get_pp(double k_rel);
   double get_pn(double k_rel);
   double get_pn0(double k_rel);
@@ -41,11 +51,13 @@ class Nuclear_Info
   double get_mAm2();
   double get_sigmaCM();
   void do_SXC(int &lead_type, int &rec_type, double r);
+  std::vector<double> get_SCX_Ps();
 
  private:
   int A;
   double mA;
   double mAm2;
+  double Estar = 0;
   double sigmaCM;
   double d_sigmaCM = 0.;
   double phiSq_pp0[100];
