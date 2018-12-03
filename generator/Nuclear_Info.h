@@ -24,6 +24,10 @@ const double m_12C = 12.*mU;
 const double m_14N = 14.0030740048*mU;
 const double m_16O = 15.99491461956*mU;
 
+// nucleon codes
+const int pCode=2212;
+const int nCode=2112;
+
 class Nuclear_Info
 {
  public:
@@ -36,22 +40,57 @@ class Nuclear_Info
   double get_mA();
   double get_mAm2();
   double get_sigmaCM();
+  void do_SXC(int &lead_type, int &rec_type, double r);
 
  private:
   int A;
   double mA;
   double mAm2;
   double sigmaCM;
+  double d_sigmaCM = 0.;
   double phiSq_pp0[100];
   double phiSq_pn0[100];
   double phiSq_pn1[100];
+  
   double Cpp0;
+  double d_Cpp0 = 0.;
   double Cpn0;
+  double d_Cpn0 = 0.;
   double Cpn1;
+  double d_Cpn1 = 0.;
+  
   double get_phiSq(double *phiPtr, double k_rel);
   void fill_arrays();
   void fill_arrays_chiral();
-  
+
+  double pPP2PN = 0.;
+  double d_pPP2PN = 0.;
+  double pPP2NP = 0.;
+  double d_pPP2NP = 0.;
+  double pPP2NN = 0.;
+  double d_pPP2NN = 0.;
+
+  double pPN2NN = 0.;
+  double d_pPN2NN = 0;
+  double pPN2PP = 0.;
+  double d_pPN2PP = 0.;
+  double pPN2NP = 0.;
+  double d_pPN2NP = 0.;
+
+  double pNP2NN = 0.;
+  double d_pNP2NN = 0.;
+  double pNP2PP = 0.;
+  double d_pNP2PP = 0.;
+  double pNP2PN = 0.;
+  double d_pNP2PN = 0.;
+
+  double pNN2PN = 0.;
+  double d_pNN2PN = 0.;
+  double pNN2NP = 0.;
+  double d_pNN2NP = 0.;
+  double pNN2PP = 0.;
+  double d_pNN2PP = 0.;
+
 };
 
 #endif
