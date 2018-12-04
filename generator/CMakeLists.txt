@@ -3,7 +3,7 @@
 include_directories( ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIR} )
 
 # Generator 
-add_executable(gen_weight gen_weight.cpp Nuclear_Info.cpp Cross_Sections.cpp)
+add_executable(gen_weight gen_weight.cpp Nuclear_Info.cpp )
 target_link_libraries(gen_weight ${ROOT_LIBRARIES})
 
 # Event Simulator

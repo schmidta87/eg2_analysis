@@ -4,26 +4,12 @@
 
 #include <iostream>
 #include <cstdlib>
-#include <vector>
 
-Nuclear_Info::Nuclear_Info(int thisA, int pType)
+Nuclear_Info::Nuclear_Info(int thisA)
 {
   A = thisA;
-
-  if(pType == 1){
   fill_arrays();
-  std::cerr <<"You are using the AV18 potential\n";
-  }
-  else if (pType == 2){
-    fill_arrays_chiral();
-    std::cerr <<"You are using the N2L0 potential\n";
-  }
-  else{
-    std::cerr <<"You are using a potential not in the library. \n Aborting...\n";
-  exit(-2);
-  }
-
-  Estar = 0;
+  //fill_arrays_chiral();
 
   if (A==2)
     {
@@ -60,43 +46,11 @@ Nuclear_Info::Nuclear_Info(int thisA, int pType)
       //mAm2 = m_10B;
 
       sigmaCM=0.15;
-      d_sigmaCM = 0.02;
       Cpp0 = 1.3;
-      d_Cpp0 = 0.2;
       Cpn0 = 1.4;
-      d_Cpn0 = 0.2;
       Cpn1 = 16.8;
-      d_Cpn1 = 0.8;
       mA = m_12C;
       mAm2 = m_10B;
-      
-      pPP2PN = 0.048;
-      d_pPP2PN = 0.003;
-      pPP2NP = 0.041;
-      d_pPP2NP = 0.003;
-      pPP2NN = 0.0029;
-      d_pPP2NN = 0.0002;
-      
-      pPN2NN = 0.035;
-      d_pPN2NN = 0.002;
-      pPN2PP = 0.041;
-      d_pPN2PP = 0.003;
-      pPN2NP = 0.0021;
-      d_pPN2NP = 0.0001;
-      
-      pNP2NN = 0.041;
-      d_pNP2NN = 0.003;
-      pNP2PP = 0.035;
-      d_pNP2PP = 0.002;
-      pNP2PN = 0.0021;
-      d_pNP2PN = 0.0001;
-      
-      pNN2PN = 0.041;
-      d_pNN2PN = 0.003;
-      pNN2NP = 0.048;
-      d_pNN2NP = 0.003;
-      pNN2PP = 0.0029;
-      d_pNN2PP = 0.0002;
     }
   else
     {
@@ -110,38 +64,6 @@ Nuclear_Info::~Nuclear_Info()
 {
 }
 
-void Nuclear_Info::set_Estar(double new_Estar)
-{
-  Estar = new_Estar;
-}
-
-void Nuclear_Info::set_Contacts(double new_Cpp0, double new_Cpn0, double new_Cpn1)
-{
-  Cpp0 = new_Cpp0;
-  Cpn0 = new_Cpn0;
-  Cpn1 = new_Cpn1;
-}
-
-double Nuclear_Info::get_Estar()
-{
-  return Estar;
-}
-
-double Nuclear_Info::get_Cpp0()
-{
-  return Cpp0;
-}
-
-double Nuclear_Info::get_Cpn0()
-{
-  return Cpn0;
-}
-
-double Nuclear_Info::get_Cpn1()
-{
-  return Cpn1;
-}
-
 double Nuclear_Info::get_mA()
 {
   return mA;
@@ -149,7 +71,7 @@ double Nuclear_Info::get_mA()
 
 double Nuclear_Info::get_mAm2()
 {
-  return mAm2 + Estar;
+  return mAm2;
 }
 
 double Nuclear_Info::get_sigmaCM()
@@ -176,99 +98,6 @@ double Nuclear_Info::get_pn1(double k_rel)
 {
   return 0.5*A*Cpn1 * get_phiSq(phiSq_pn1,k_rel);
 }
-
-void Nuclear_Info::do_SXC(int &lead_type, int &rec_type, double r)
-{
-  // Now we do a whole bunch of tests
-  if ((lead_type==pCode) && (rec_type==pCode))
-    {
-      if (r < pPP2NN)
-	{
-	  lead_type=nCode;
-	  rec_type=nCode;
-	}
-      else if (r < pPP2NN + pPP2NP)
-	{
-	  lead_type=nCode;
-	}
-      else if (r < pPP2NN + pPP2NP + pPP2PN)
-	{
-	  rec_type=nCode;
-	}
-    }
-  else if ((lead_type==nCode) && (rec_type==pCode))
-    {
-      if (r < pNP2PN)
-	{
-	  lead_type=pCode;
-	  rec_type=nCode;
-	}
-      else if (r < pNP2PN + pNP2PP)
-	{
-	  lead_type=pCode;
-	}
-      else if (r < pNP2PN + pNP2PP + pNP2NN)
-	{
-	  rec_type=nCode;
-	}
-    }
-  else if ((lead_type==pCode) && (rec_type==nCode))
-    {
-      if (r < pPN2NP)
-	{
-	  lead_type=nCode;
-	  rec_type=pCode;
-	}
-      else if (r < pPN2NP + pPN2NN)
-	{
-	  lead_type=nCode;
-	}
-      else if (r < pPN2NP + pPN2NN + pPN2PP)
-	{
-	  rec_type=pCode;
-	}
-    }
-  else if ((lead_type==nCode) && (rec_type==nCode))
-    {
-      if (r < pNN2PP)
-	{
-	  lead_type=pCode;
-	  rec_type=pCode;
-	}
-      else if (r < pNN2PP + pNN2PN)
-	{
-	  lead_type=pCode;
-	}
-      else if (r < pNN2PP + pNN2PN + pNN2NP)
-	{
-	  rec_type=pCode;
-	}
-    }
-  else
-    {
-      std::cerr << "Invalid nucleon codes. Check and fix. Exiting\n\n\n";
-    }
-}
-
-/*std::vector<double> Nuclear_Info::get_SCX_Ps()
-{
-  std::vector<double> Ps{
-      pPP2PN,
-      pPP2NP,
-      pPP2NN,
-      pPN2NN,
-      pPN2PP,
-      pPN2NP,
-      pNP2NN,
-      pNP2PP,
-      pNP2PN,
-      pNN2PN,
-      pNN2NP,
-      pNN2PP
-  };
-  return Ps;
-  }*/
-
 
 double Nuclear_Info::get_phiSq(double *phiPtr, double k_rel)
 {
