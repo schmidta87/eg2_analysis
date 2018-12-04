@@ -74,6 +74,7 @@ class Nuclear_Info
   double get_phiSq(double *phiPtr, double k_rel);
   void fill_arrays();
   void fill_arrays_chiral();
+  void fill_arrays_chiral_n3lo();
 
   double pPP2PN;// = 0.;
   double d_pPP2PN;// = 0.;
@@ -102,6 +103,7 @@ class Nuclear_Info
   double d_pNN2NP;// = 0.;
   double pNN2PP;// = 0.;
   double d_pNN2PP;// = 0.;
+
 
 };
 
