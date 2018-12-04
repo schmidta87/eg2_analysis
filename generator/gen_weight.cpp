@@ -9,7 +9,6 @@
 #include "TH1D.h"
 
 #include "Nuclear_Info.h"
-#include "Cross_Sections.h"
 
 using namespace std;
 
@@ -29,10 +28,10 @@ double deltaHard(double QSq);
 
 int main(int argc, char ** argv)
 {
-  if (argc !=6)
+  if (argc !=4)
     {
       cerr << "Wrong number of arguments. Insteady try\n\t"
-	   << "gen_weight [A] /path/to/output/file [# of events] [SigmaCC 1 or 2] [(AV18=1),(N2LO=2)]\n\n";
+	   << "gen_weight [A] /path/to/output/file [# of events]\n\n";
       return -1;
     }
 
@@ -41,7 +40,6 @@ int main(int argc, char ** argv)
   const TVector3 v1(0.,0.,Ebeam);
   const double lambda_ei = alpha/M_PI * (log( 4.*Ebeam*Ebeam/(me*me)) - 1.);
   int nEvents = atoi(argv[3]);
-  int sType = atoi(argv[4]);
   TFile * outfile = new TFile(argv[2],"RECREATE");
   TH1D * h_DeltaEi = new TH1D("deltaEi","ISR;Photon Energy [GeV];Counts",100,0.,0.1);
   TH1D * h_DeltaEf = new TH1D("deltaEf","FSR;Photon Energy [GeV];Counts",100,0.,0.1);
@@ -77,8 +75,7 @@ int main(int argc, char ** argv)
 
   // Other chores
   TRandom3 myRand(0);
-  Nuclear_Info myInfo(atoi(argv[1]),atoi(argv[5]));
-  Cross_Sections myCS;
+  Nuclear_Info myInfo(atoi(argv[1]),argv[5]);
   const double mA = myInfo.get_mA();
   const double mAm2 = myInfo.get_mAm2();
   const double sigCM = myInfo.get_sigmaCM();
@@ -247,7 +244,7 @@ int main(int argc, char ** argv)
 	      double Erec = sqrt(sq(mN) + vRec.Mag2());
 
 	      // Calculate the weight
-	      weight *= myCS.sigmaCCn(Ebeam_eff, v3_eff, vLead, (lead_type==pCode),sType) // eN cross section
+	      weight *= sigmaCC1(Ebeam_eff, v3_eff, vLead, (lead_type==pCode)) // eN cross section
 		* nu_eff/(2.*xB_eff*Ebeam_eff*pe_Mag_eff) * (Qmax-Qmin) * (Xmax-Xmin) // Jacobian for QSq,xB
 		* (doRad ? (1. - deltaHard(QSq_eff)) * pow(Ebeam/sqrt(Ebeam*pe_Mag),lambda_ei) * pow(pe_Mag_eff/sqrt(Ebeam*pe_Mag),lambda_ef) : 1.) // Radiative weights
 		* 1./(4.*sq(M_PI)) // Angular terms
@@ -259,7 +256,7 @@ int main(int argc, char ** argv)
 	}
       
       // HERE IS WHERE WE SHOULD DO SINGLE CHARGE EXCHANGE!!!!
-      myInfo.do_SXC(lead_type, rec_type,gRandom->Rndm());
+      do_SXC(lead_type, rec_type,gRandom->Rndm());
       
       // Fill the tree
       outtree->Fill();      
@@ -271,6 +268,129 @@ int main(int argc, char ** argv)
   outtree->Write();
   outfile->Close();
   return 0;
+}
+
+double Gdipole(double QSq){ return 1. / sq(1 + QSq/0.71); };
+
+double sigmaCC1(double E1, TVector3 k, TVector3 p, bool isProton)
+{
+  TVector3 q = TVector3(0.,0.,E1) - k;
+  TVector3 pM = p-q;
+  double QSq = q.Mag2() - sq(E1 - k.Mag());
+
+  double E = sqrt(p.Mag2() + sq(mN));
+  double Ebar = sqrt(pM.Mag2() + sq(mN));
+  double omegabar = E-Ebar;
+  double QSqbar = q.Mag2() - sq(omegabar);
+
+  // Calculate form factors
+  double GE = (isProton)? Gdipole(QSq) : 1.91 * QSq * Gdipole(QSq) / (4.*sq(mN) + 5.6 * QSq);
+  double GM = (isProton)? 2.79*Gdipole(QSq) : -1.91*Gdipole(QSq);
+  double F1 = 0.5 * (GE + QSq*GM/(4.*sq(mN)));
+  double kF2 = (GM - GE)/(1. + QSq/(4.*sq(mN)));
+
+  double wC = (sq(E+Ebar)*(sq(F1) + QSqbar/(4.*mN*mN) * sq(kF2)) - q.Mag2()*sq(F1 + kF2))/(4.*E*Ebar);
+  double wT = QSqbar*sq(F1 + kF2)/(2.*Ebar*E);
+  double wS = p.Mag2() * sq(sin(p.Angle(q))) * (sq(F1) + QSqbar/(4.*mN*mN) * sq(kF2))/(E*Ebar);
+  double wI = -p.Mag()*sin(p.Angle(q))*(Ebar + E)*(sq(F1) + QSqbar/(4.*mN*mN) * sq(kF2))/(E*Ebar);
+
+  double sigmaMott = cmSqGeVSq * 4. * sq(alpha) * k.Mag2() * sq(cos(k.Theta()/2.)) / sq(QSq);
+
+  double phi = q.Cross(k).Angle( q.Cross(p) );
+  return sigmaMott * ( sq(QSq)/q.Mag2() * wC +
+                       (QSq/(2.*q.Mag2()) + sq(tan(k.Theta()/2.))) * wT +
+                       QSq/q.Mag2() * sqrt(QSq/q.Mag2() + sq(tan(k.Theta()/2.))) * wI * cos(phi) +
+                       (QSq/q.Mag2() * sq(cos(phi)) + sq(tan(k.Theta()/2.))) * wS
+                       );
+}
+
+void do_SXC(int &lead_type, int &rec_type, double r)
+{
+  const double pPP2PN = 0.048;
+  const double pPP2NP = 0.041;
+  const double pPP2NN = 0.0029;
+
+  const double pPN2NN = 0.035;
+  const double pPN2PP = 0.041;
+  const double pPN2NP = 0.0021;
+
+  const double pNP2NN = 0.041;
+  const double pNP2PP = 0.035;
+  const double pNP2PN = 0.0021;
+
+  const double pNN2PN = 0.041;
+  const double pNN2NP = 0.048;
+  const double pNN2PP = 0.0029;
+ 
+  // Now we do a whole bunch of tests
+  if ((lead_type==pCode) && (rec_type==pCode))
+    {
+      if (r < pPP2NN)
+	{
+	  lead_type=nCode;
+	  rec_type=nCode;
+	}
+      else if (r < pPP2NN + pPP2NP)
+	{
+	  lead_type=nCode;
+	}
+      else if (r < pPP2NN + pPP2NP + pPP2PN)
+	{
+	  rec_type=nCode;
+	}
+    }
+  else if ((lead_type==nCode) && (rec_type==pCode))
+    {
+      if (r < pNP2PN)
+	{
+	  lead_type=pCode;
+	  rec_type=nCode;
+	}
+      else if (r < pNP2PN + pNP2PP)
+	{
+	  lead_type=pCode;
+	}
+      else if (r < pNP2PN + pNP2PP + pNP2NN)
+	{
+	  rec_type=nCode;
+	}
+    }
+  else if ((lead_type==pCode) && (rec_type==nCode))
+    {
+      if (r < pPN2NP)
+	{
+	  lead_type=nCode;
+	  rec_type=pCode;
+	}
+      else if (r < pPN2NP + pPN2NN)
+	{
+	  lead_type=nCode;
+	}
+      else if (r < pPN2NP + pPN2NN + pPN2PP)
+	{
+	  rec_type=pCode;
+	}
+    }
+  else if ((lead_type==nCode) && (rec_type==nCode))
+    {
+      if (r < pNN2PP)
+	{
+	  lead_type=pCode;
+	  rec_type=pCode;
+	}
+      else if (r < pNN2PP + pNN2PN)
+	{
+	  lead_type=pCode;
+	}
+      else if (r < pNN2PP + pNN2PN + pNN2NP)
+	{
+	  rec_type=pCode;
+	}
+    }
+  else
+    {
+      cerr << "Invalid nucleon codes. Check and fix. Exiting\n\n\n";
+    }
 }
 
 double deltaHard(double QSq)
