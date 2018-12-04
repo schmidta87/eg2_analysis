@@ -29,10 +29,10 @@ double deltaHard(double QSq);
 
 int main(int argc, char ** argv)
 {
-  if (argc !=4)
+  if (argc !=6)
     {
       cerr << "Wrong number of arguments. Insteady try\n\t"
-	   << "gen_weight [A] /path/to/output/file [# of events]\n\n";
+	   << "gen_weight [A] /path/to/output/file [# of events] [SigmaCC 1 or 2] [(AV18=1),(N2LO=2)]\n\n";
       return -1;
     }
 
@@ -41,6 +41,7 @@ int main(int argc, char ** argv)
   const TVector3 v1(0.,0.,Ebeam);
   const double lambda_ei = alpha/M_PI * (log( 4.*Ebeam*Ebeam/(me*me)) - 1.);
   int nEvents = atoi(argv[3]);
+  int sType = atoi(argv[4]);
   TFile * outfile = new TFile(argv[2],"RECREATE");
   TH1D * h_DeltaEi = new TH1D("deltaEi","ISR;Photon Energy [GeV];Counts",100,0.,0.1);
   TH1D * h_DeltaEf = new TH1D("deltaEf","FSR;Photon Energy [GeV];Counts",100,0.,0.1);
@@ -76,7 +77,7 @@ int main(int argc, char ** argv)
 
   // Other chores
   TRandom3 myRand(0);
-  Nuclear_Info myInfo(atoi(argv[1]));
+  Nuclear_Info myInfo(atoi(argv[1]),atoi(argv[5]));
   Cross_Sections myCS;
   const double mA = myInfo.get_mA();
   const double mAm2 = myInfo.get_mAm2();
@@ -246,7 +247,7 @@ int main(int argc, char ** argv)
 	      double Erec = sqrt(sq(mN) + vRec.Mag2());
 
 	      // Calculate the weight
-	      weight *= myCS.sigmaCC1(Ebeam_eff, v3_eff, vLead, (lead_type==pCode)) // eN cross section
+	      weight *= myCS.sigmaCCn(Ebeam_eff, v3_eff, vLead, (lead_type==pCode),sType) // eN cross section
 		* nu_eff/(2.*xB_eff*Ebeam_eff*pe_Mag_eff) * (Qmax-Qmin) * (Xmax-Xmin) // Jacobian for QSq,xB
 		* (doRad ? (1. - deltaHard(QSq_eff)) * pow(Ebeam/sqrt(Ebeam*pe_Mag),lambda_ei) * pow(pe_Mag_eff/sqrt(Ebeam*pe_Mag),lambda_ef) : 1.) // Radiative weights
 		* 1./(4.*sq(M_PI)) // Angular terms

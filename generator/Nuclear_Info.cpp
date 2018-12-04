@@ -6,11 +6,24 @@
 #include <cstdlib>
 #include <vector>
 
-Nuclear_Info::Nuclear_Info(int thisA)
+Nuclear_Info::Nuclear_Info(int thisA, int pType)
 {
   A = thisA;
+
+  if(pType == 1){
   fill_arrays();
-  //fill_arrays_chiral();
+  std::cerr <<"You are using the AV18 potential\n";
+  }
+  else if (pType == 2){
+    fill_arrays_chiral();
+    std::cerr <<"You are using the N2L0 potential\n";
+  }
+  else{
+    std::cerr <<"You are using a potential not in the library. \n Aborting...\n";
+  exit(-2);
+  }
+
+  Estar = 0;
 
   if (A==2)
     {
@@ -237,7 +250,7 @@ void Nuclear_Info::do_SXC(int &lead_type, int &rec_type, double r)
     }
 }
 
-std::vector<double> Nuclear_Info::get_SCX_Ps()
+/*std::vector<double> Nuclear_Info::get_SCX_Ps()
 {
   std::vector<double> Ps{
       pPP2PN,
@@ -254,7 +267,7 @@ std::vector<double> Nuclear_Info::get_SCX_Ps()
       pNN2PP
   };
   return Ps;
-}
+  }*/
 
 
 double Nuclear_Info::get_phiSq(double *phiPtr, double k_rel)
