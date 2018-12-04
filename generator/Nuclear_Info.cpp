@@ -250,25 +250,23 @@ void Nuclear_Info::do_SXC(int &lead_type, int &rec_type, double r)
     }
 }
 
-/*std::vector<double> Nuclear_Info::get_SCX_Ps()
+std::vector<double> Nuclear_Info::get_SCX_Ps()
 {
-  std::vector<double> Ps{
-      pPP2PN,
-      pPP2NP,
-      pPP2NN,
-      pPN2NN,
-      pPN2PP,
-      pPN2NP,
-      pNP2NN,
-      pNP2PP,
-      pNP2PN,
-      pNN2PN,
-      pNN2NP,
-      pNN2PP
-  };
+  std::vector<double> Ps;
+  Ps.push_back(pPP2PN);
+  Ps.push_back(pPP2NP);
+  Ps.push_back(pPP2NN);
+  Ps.push_back(pPN2NN);
+  Ps.push_back(pPN2PP);
+  Ps.push_back(pPN2NP);
+  Ps.push_back(pNP2NN);
+  Ps.push_back(pNP2PP);
+  Ps.push_back(pNP2PN);
+  Ps.push_back(pNN2PN);
+  Ps.push_back(pNN2NP);
+  Ps.push_back(pNN2PP);
   return Ps;
-  }*/
-
+}
 
 double Nuclear_Info::get_phiSq(double *phiPtr, double k_rel)
 {
