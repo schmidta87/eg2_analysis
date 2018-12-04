@@ -51,7 +51,8 @@ class Nuclear_Info
   double get_phiSq(double *phiPtr, double k_rel);
   void fill_arrays();
   void fill_arrays_chiral();
-  
+  void fill_arrays_chiral_n3lo();
+ 
 };
 
 #endif
