@@ -7,6 +7,7 @@
 #include "TTree.h"
 #include "TRandom3.h"
 #include "TH1D.h"
+#include "TVectorT.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -31,32 +32,45 @@ double sigmaCC1(double E1, TVector3 k, TVector3 p, bool isProton);
 void do_SXC(int &lead_type, int &rec_type, double r);
 double deltaHard(double QSq);
 
+void help_mess()
+{
+  cerr << "Usage: ./gen_weight [path/to/output.root] [Number of desired events]\n"
+       << "Optional flags:\n"
+       << "-h: Help\n"
+       << "-A <Nucleus number>==<12>\n"
+       << "-s <Sigma_CM [GeV]>\n"
+       << "-C <Nuclear Contact [%]> (Use for Cpp0, Cpn0, Cpn1)\n"
+       << "-E <E* [GeV]>\n"
+       << "-k <kRel cutoff [GeV]>\n"
+       << "-u <Nuclear potential>==<1> (1=AV18, 2=N2LO, 3=N3LO)\n"
+       << "-c <Cross section type>==<1>\n"
+       << "-r: Randomize constants\n";
+}
+
 int main(int argc, char ** argv)
 {
-  if (false)
+    
+  if (argc < 2)
     {
-      cerr << "Wrong number of arguments. Insteady try\n\t"
-	   << "gen_weight [A] /path/to/output/file [# of events] [SigmaCC 1 or 2] [(AV18=1),(N2LO=2)]\n\n";
+      cerr << "Wrong number of arguments. Insteady try\n\n";
+      help_mess();
       return -1;
     }
-
+  
   if (strcmp(argv[1], "-h")==0)
     {
-      cerr << "Usage: ./gen_weight [path/to/output.root] [Number of desired events]\n"
-	   << "Optional flags:\n"
-	   << "-h: Help\n"
-	   << "-A <Nucleus number>==<12>\n"
-	   << "-s <Sigma_CM [GeV]>\n"
-	   << "-C <Nuclear Contact [%]> (Use for Cpp0, Cpn0, Cpn1)\n"
-	   << "-E <E* [GeV]>\n"
-	   << "-k <kRel cutoff [GeV]>\n"
-	   << "-u <Nuclear potential>==<1> (1=AV18, 2=N2LO, 3=N3LO)\n"
-	   << "-c <Cross section type>==<1>\n"
-	   << "-r: Randomize constants\n";
-      return 1;
+      help_mess();
+      return -1;
     }
   
-  // Read in the arguments
+  if (argc < 3)
+    {
+      cerr << "Wrong number of arguments. Insteady try\n\n";
+      help_mess();
+      return -1;
+    }
+  
+  // Read in the arguments and flags
   TFile * outfile = new TFile(argv[1],"RECREATE");
   int nEvents = atoi(argv[2]);
   
@@ -76,18 +90,8 @@ int main(int argc, char ** argv)
     switch(c)
       {
       case 'h':
-	cerr << "Usage: ./gen_weight [path/to/output.root] [Number of desired events]\n"
-	     << "Optional flags:\n"
-	     << "-h: Help\n"
-	     << "-A <Nucleus number>==<12>\n"
-	     << "-s <Sigma_CM [GeV]>\n"
-	     << "-C <Nuclear Contact [%]> (Use for Cpp0, Cpn0, Cpn1)\n"
-	     << "-E <E* [GeV]>\n"
-	     << "-k <kRel cutoff [GeV]>\n"
-	     << "-u <Nuclear potential>==<1> (1=AV18, 2=N2LO, 3=N3LO)\n"
-	     << "-c <Cross section type>==<1>\n"
-	     << "-r: Randomize constants\n";
-	return 1;
+	help_mess();
+	return -1;
       case 'A':
 	Anum = atoi(optarg);
 	break;
@@ -113,14 +117,14 @@ int main(int argc, char ** argv)
 	if ((cType != 1) and (cType != 2))
 	  {
 	    cerr << "Invalid cross section designation. Allowed values are 1 and 2. Aborting...\n";
-	    return 1;
+	    return -1;
 	  }
 	break;
       case 'r':
 	rand_flag = true;
 	break;
       case '?':
-	return 1;
+	return -1;
       default:
 	abort();
       }
@@ -186,6 +190,25 @@ int main(int argc, char ** argv)
   const double mA = myInfo.get_mA();
   const double mAm2 = myInfo.get_mAm2();
   const double sigCM = myInfo.get_sigmaCM();
+
+  // Prepare vector of parameters to be output
+  TVectorT<double> params(15);
+  params[0] = Anum;
+  params[1] = sigCM;
+  params[2] = myInfo.get_Cpp0();
+  params[3] = myInfo.get_Cpn0();
+  params[4] = myInfo.get_Cpn1();
+  params[5] = myInfo.get_Estar();
+  std::vector<double> Ps = myInfo.get_SCX_Ps();
+  params[6] = Ps[0];
+  params[7] = Ps[1];
+  params[8] = Ps[2];
+  params[9] = Ps[3];
+  params[10] = Ps[4];
+  params[11] = Ps[5];
+  params[12] = pRel_cut;
+  params[13] = pType;
+  params[14] = cType;
   
   // Loop over events
   for (int event=0 ; event < nEvents ; event++)
@@ -370,6 +393,7 @@ int main(int argc, char ** argv)
     } 	  
   
   // Clean up
+  params.Write("parameters");
   h_DeltaEi->Write();
   h_DeltaEf->Write();
   outtree->Write();
