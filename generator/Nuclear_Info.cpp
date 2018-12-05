@@ -18,6 +18,11 @@ Nuclear_Info::Nuclear_Info(int thisA, int pType)
     fill_arrays_chiral();
     std::cerr <<"You are using the N2L0 potential\n";
   }
+  else if (pType == 3){
+    fill_arrays_chiral_n3lo();
+    std::cerr <<"You are using the N3L0 potential\n";
+    
+  }
   else{
     std::cerr <<"You are using a potential not in the library. \n Aborting...\n";
   exit(-2);
@@ -110,6 +115,11 @@ Nuclear_Info::~Nuclear_Info()
 {
 }
 
+void Nuclear_Info::set_sigmaCM(double new_sigmaCM)
+{
+  sigmaCM = new_sigmaCM;
+}
+
 void Nuclear_Info::set_Estar(double new_Estar)
 {
   Estar = new_Estar;
@@ -120,6 +130,10 @@ void Nuclear_Info::set_Contacts(double new_Cpp0, double new_Cpn0, double new_Cpn
   Cpp0 = new_Cpp0;
   Cpn0 = new_Cpn0;
   Cpn1 = new_Cpn1;
+}
+
+void Nuclear_Info::randomize()
+{
 }
 
 double Nuclear_Info::get_Estar()

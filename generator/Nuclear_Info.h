@@ -35,9 +35,11 @@
   public:
    Nuclear_Info(int thisA, int pType);
    ~Nuclear_Info();
+   void set_sigmaCM(double new_sigmaCM);
    void set_Estar(double new_Estar);
    void set_Contacts(double new_Cpp0, double new_Cpn0, double new_Cpn1);
-
+   void randomize();
+   
    double get_Estar();
    double get_Cpp0();
    double get_Cpn0();
