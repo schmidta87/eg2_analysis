@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include "TRandom3.h"
 
 Nuclear_Info::Nuclear_Info(int thisA, int pType)
 {
@@ -75,10 +76,10 @@ Nuclear_Info::Nuclear_Info(int thisA, int pType)
       mA = m_12C;
       mAm2 = m_10B;
       
-      pPP2PN = 0.048;
-      d_pPP2PN = 0.003;
       pPP2NP = 0.041;
       d_pPP2NP = 0.003;
+      pPP2PN = 0.048;
+      d_pPP2PN = 0.003;
       pPP2NN = 0.0029;
       d_pPP2NN = 0.0002;
       
@@ -89,10 +90,10 @@ Nuclear_Info::Nuclear_Info(int thisA, int pType)
       pPN2NP = 0.0021;
       d_pPN2NP = 0.0001;
       
-      pNP2NN = 0.041;
-      d_pNP2NN = 0.003;
       pNP2PP = 0.035;
       d_pNP2PP = 0.002;
+      pNP2NN = 0.041;
+      d_pNP2NN = 0.003;
       pNP2PN = 0.0021;
       d_pNP2PN = 0.0001;
       
@@ -134,6 +135,23 @@ void Nuclear_Info::set_Contacts(double new_Cpp0, double new_Cpn0, double new_Cpn
 
 void Nuclear_Info::randomize()
 {
+  TRandom myRand(0);
+  sigmaCM += myRand.Gaus(0.,d_sigmaCM);
+  Cpp0 += myRand.Gaus(0.,d_Cpp0);
+  Cpn0 += myRand.Gaus(0.,d_Cpn0);
+  Cpn1 += myRand.Gaus(0.,d_Cpn1);
+  pPP2NP += myRand.Gaus(0.,d_pPP2NP);
+  pPP2PN += myRand.Gaus(0.,d_pPP2PN);
+  pPP2NN += myRand.Gaus(0.,d_pPP2NN);
+  pPN2NN += myRand.Gaus(0.,d_pPN2NN);
+  pPN2PP += myRand.Gaus(0.,d_pPN2PP);
+  pPN2NP += myRand.Gaus(0.,d_pPN2NP);
+  pNP2PP += myRand.Gaus(0.,d_pNP2PP);
+  pNP2NN += myRand.Gaus(0.,d_pNP2NN);
+  pNP2PN += myRand.Gaus(0.,d_pNP2PN);
+  pNN2PN += myRand.Gaus(0.,d_pNN2PN);
+  pNN2NP += myRand.Gaus(0.,d_pNN2NP);
+  pNN2PP += myRand.Gaus(0.,d_pNN2PP);
 }
 
 double Nuclear_Info::get_Estar()
@@ -267,14 +285,14 @@ void Nuclear_Info::do_SXC(int &lead_type, int &rec_type, double r)
 std::vector<double> Nuclear_Info::get_SCX_Ps()
 {
   std::vector<double> Ps;
-  Ps.push_back(pPP2PN);
   Ps.push_back(pPP2NP);
+  Ps.push_back(pPP2PN);
   Ps.push_back(pPP2NN);
   Ps.push_back(pPN2NN);
   Ps.push_back(pPN2PP);
   Ps.push_back(pPN2NP);
-  Ps.push_back(pNP2NN);
   Ps.push_back(pNP2PP);
+  Ps.push_back(pNP2NN);
   Ps.push_back(pNP2PN);
   Ps.push_back(pNN2PN);
   Ps.push_back(pNN2NP);

@@ -58,15 +58,21 @@ void param_mess()
        << "      3 | Cpn0 [%]\n"
        << "      4 | Cpn1 [%]\n"
        << "      5 | E* [GeV]\n"
-       << "      6 | Ppp2np\n"
-       << "      7 | Ppp2pn\n"
-       << "      8 | Ppp2nn\n"
-       << "      9 | Ppn2nn\n"
-       << "     10 | Ppn2pp\n"
-       << "     11 | Ppn2np\n"
-       << "     12 | kRel Cut [GeV]\n"
-       << "     13 | Nuclear Potential\n"
-       << "     14 | Cross Section\n";
+       << "      6 | pPP2NP\n"
+       << "      7 | pPP2PN\n"
+       << "      8 | pPP2NN\n"
+       << "      9 | pPN2NN\n"
+       << "     10 | pPN2PP\n"
+       << "     11 | pPN2NP\n"
+       << "     12 | pNP2PP\n"
+       << "     13 | pNP2NN\n"
+       << "     14 | pNP2PN\n"
+       << "     15 | pNN2PN\n"
+       << "     16 | pNN2NP\n"
+       << "     17 | pNN2PP\n"
+       << "     18 | kRel Cut [GeV]\n"
+       << "     19 | Nuclear Potential\n"
+       << "     20 | Cross Section\n";
 }
 
 int main(int argc, char ** argv)
@@ -223,7 +229,7 @@ int main(int argc, char ** argv)
   const double sigCM = myInfo.get_sigmaCM();
 
   // Prepare vector of parameters to be output
-  TVectorT<double> params(15);
+  TVectorT<double> params(21);
   params[0] = Anum;
   params[1] = sigCM;
   params[2] = myInfo.get_Cpp0();
@@ -237,9 +243,15 @@ int main(int argc, char ** argv)
   params[9] = Ps[3];
   params[10] = Ps[4];
   params[11] = Ps[5];
-  params[12] = pRel_cut;
-  params[13] = pType;
-  params[14] = cType;
+  params[12] = Ps[6];
+  params[13] = Ps[7];
+  params[14] = Ps[8];
+  params[15] = Ps[9];
+  params[16] = Ps[10];
+  params[17] = Ps[11];
+  params[18] = pRel_cut;
+  params[19] = pType;
+  params[20] = cType;
   
   // Loop over events
   for (int event=0 ; event < nEvents ; event++)

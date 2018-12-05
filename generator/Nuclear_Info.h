@@ -59,53 +59,52 @@
   int A;
   double mA;
   double mAm2;
-  double Estar;// = 0;
+  double Estar;
   double sigmaCM;
-  double d_sigmaCM;// = 0.;
+  double d_sigmaCM;
   double phiSq_pp0[100];
   double phiSq_pn0[100];
   double phiSq_pn1[100];
   
   double Cpp0;
-  double d_Cpp0;// = 0.;
+  double d_Cpp0;
   double Cpn0;
-  double d_Cpn0;// = 0.;
+  double d_Cpn0;
   double Cpn1;
-  double d_Cpn1;// = 0.;
+  double d_Cpn1;
   
   double get_phiSq(double *phiPtr, double k_rel);
   void fill_arrays();
   void fill_arrays_chiral();
   void fill_arrays_chiral_n3lo();
 
-  double pPP2PN;// = 0.;
-  double d_pPP2PN;// = 0.;
-  double pPP2NP;// = 0.;
-  double d_pPP2NP;// = 0.;
-  double pPP2NN;// = 0.;
-  double d_pPP2NN;// = 0.;
+  double pPP2NP;
+  double d_pPP2NP;
+  double pPP2PN;
+  double d_pPP2PN;
+  double pPP2NN;
+  double d_pPP2NN;
 
-  double pPN2NN;// = 0.;
-  double d_pPN2NN;// = 0;
-  double pPN2PP;// = 0.;
-  double d_pPN2PP;// = 0.;
-  double pPN2NP;// = 0.;
-  double d_pPN2NP;// = 0.;
+  double pPN2NN;
+  double d_pPN2NN;
+  double pPN2PP;
+  double d_pPN2PP;
+  double pPN2NP;
+  double d_pPN2NP;
 
-  double pNP2NN;// = 0.;
-  double d_pNP2NN;// = 0.;
-  double pNP2PP;// = 0.;
-  double d_pNP2PP;// = 0.;
-  double pNP2PN;// = 0.;
-  double d_pNP2PN;// = 0.;
+  double pNP2PP;
+  double d_pNP2PP;
+  double pNP2NN;
+  double d_pNP2NN;
+  double pNP2PN;
+  double d_pNP2PN;
 
-  double pNN2PN;// = 0.;
-  double d_pNN2PN;// = 0.;
-  double pNN2NP;// = 0.;
-  double d_pNN2NP;// = 0.;
-  double pNN2PP;// = 0.;
-  double d_pNN2PP;// = 0.;
-
+  double pNN2PN;
+  double d_pNN2PN;
+  double pNN2NP;
+  double d_pNN2NP;
+  double pNN2PP;
+  double d_pNN2PP;
 
 };
 
