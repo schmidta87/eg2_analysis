@@ -44,7 +44,29 @@ void help_mess()
        << "-k <kRel cutoff [GeV]>\n"
        << "-u <Nuclear potential>==<1> (1=AV18, 2=N2LO, 3=N3LO)\n"
        << "-c <Cross section type>==<1>\n"
-       << "-r: Randomize constants\n";
+       << "-r: Randomize constants\n"
+       << "-p: List output file parameter order\n";
+}
+
+void param_mess()
+{
+  cerr << "Element | Parameter\n"
+       << "---------------------------\n"
+       << "      0 | Nucleus\n"
+       << "      1 | Sigma_CM [GeV]\n"
+       << "      2 | Cpp0 [%]\n"
+       << "      3 | Cpn0 [%]\n"
+       << "      4 | Cpn1 [%]\n"
+       << "      5 | E* [GeV]\n"
+       << "      6 | Ppp2np\n"
+       << "      7 | Ppp2pn\n"
+       << "      8 | Ppp2nn\n"
+       << "      9 | Ppn2nn\n"
+       << "     10 | Ppn2pp\n"
+       << "     11 | Ppn2np\n"
+       << "     12 | kRel Cut [GeV]\n"
+       << "     13 | Nuclear Potential\n"
+       << "     14 | Cross Section\n";
 }
 
 int main(int argc, char ** argv)
@@ -60,6 +82,12 @@ int main(int argc, char ** argv)
   if (strcmp(argv[1], "-h")==0)
     {
       help_mess();
+      return -1;
+    }
+  
+  if (strcmp(argv[1], "-p")==0)
+    {
+      param_mess();
       return -1;
     }
   
@@ -123,6 +151,9 @@ int main(int argc, char ** argv)
       case 'r':
 	rand_flag = true;
 	break;
+      case 'p':
+	param_mess();
+	return -1;
       case '?':
 	return -1;
       default:
