@@ -18,6 +18,10 @@ Nuclear_Info::Nuclear_Info(int thisA, int pType)
     fill_arrays_chiral();
     std::cerr <<"You are using the N2L0 potential\n";
   }
+  else if (pType == 3){
+    fill_arrays_chiral_n3lo();
+    std::cerr <<"You are using the N3L0 potential\n";
+  }
   else{
     std::cerr <<"You are using a potential not in the library. \n Aborting...\n";
   exit(-2);

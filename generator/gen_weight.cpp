@@ -32,7 +32,7 @@ int main(int argc, char ** argv)
   if (argc !=6)
     {
       cerr << "Wrong number of arguments. Insteady try\n\t"
-	   << "gen_weight [A] /path/to/output/file [# of events] [SigmaCC 1 or 2] [(AV18=1),(N2LO=2)]\n\n";
+	   << "gen_weight [A] /path/to/output/file [# of events] [SigmaCC 1 or 2] [(AV18=1),(N2LO=2),(N3L0)]\n\n";
       return -1;
     }
 

@@ -13,3 +13,7 @@ target_link_libraries(simulator ${ROOT_LIBRARIES} AccMap Fid)
 # Make histograms
 add_executable(make_hists make_hists.cpp )
 target_link_libraries(make_hists ${ROOT_LIBRARIES} Fid)
+
+# Make Text Files
+add_executable(H2T H2T.cpp )
+target_link_libraries(H2T ${ROOT_LIBRARIES})
