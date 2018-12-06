@@ -94,7 +94,7 @@ int main(int argc, char ** argv)
       inTree->GetEvent(event);
 
       // Require a leading proton
-      if (lead_type != 2212)
+      if (lead_type != pCode)
 	continue;
 
       // Create vectors for the particles
@@ -136,10 +136,12 @@ int main(int argc, char ** argv)
 	continue;
       if (sqrt(-gen_QSq + 4.*mN*gen_nu - 2.*sqrt(mN*mN + gen_pLead_Mag*gen_pLead_Mag)*(gen_nu + 2.*mN) + 5.*mN*mN + 2.*vq.Dot(vlead)) > 1.1)
 	continue;
+      if (!accept_electron(ve)) // Fiducial cut on electron
+	continue;
 
       // Fill the acceptance histograms
       const double recoil_accept = pMap.accept(vrec);
-      if (rec_type == 2212)
+      if (rec_type == pCode)
 	{
 	  h_rec_p_all->Fill(gen_pMiss_Mag,weight);
 	  
@@ -152,12 +154,12 @@ int main(int argc, char ** argv)
       if (nmb == 1)
 	{
 	  // If the recoil is a proton, we better not have detected it.
-	  if (rec_type == 2212)
+	  if (rec_type == pCode)
 	    weight *= (1. - recoil_accept);
 	}
       else // nmb==2;
 	{
-	  if (rec_type == 2212)
+	  if (rec_type == pCode)
 	    weight *= recoil_accept;
 	  else
 	    weight = 0.; // We can't use recoil neutrons.

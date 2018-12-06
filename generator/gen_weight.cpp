@@ -1,12 +1,16 @@
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
+#include <cstdio>
+#include <unistd.h>
+#include <ctype.h>
 
 #include "TVector3.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TRandom3.h"
 #include "TH1D.h"
+#include "TVectorT.h"
 
 #include "Nuclear_Info.h"
 #include "Cross_Sections.h"
@@ -20,29 +24,156 @@ const double Xmin=1.;
 const double Xmax=2.;
 
 const bool doRad=true;
-const double pRel_cut=0.25;
 
 double sq(double x){ return x*x; };
 double sigmaCC1(double E1, TVector3 k, TVector3 p, bool isProton);
 void do_SXC(int &lead_type, int &rec_type, double r);
 double deltaHard(double QSq);
 
+void help_mess()
+{
+  cerr << "Usage: ./gen_weight [path/to/output.root] [Number of desired events] [optional flags]\n"
+       << "Optional flags:\n"
+       << "-h: Help\n"
+       << "-v: Verbose\n"
+       << "-A <Nucleus number>==<12>\n"
+       << "-s <Sigma_CM [GeV]>\n"
+       << "-C <Nuclear Contact [%]> (Use for Cpp0, Cpn0, Cpn1)\n"
+       << "-E <E* [GeV]>\n"
+       << "-k <kRel cutoff [GeV]==0.25>\n"
+       << "-u <Nuclear potential>==<1> (1=AV18, 2=N2LO, 3=N3LO)\n"
+       << "-c <Cross section type>==<1>\n"
+       << "-r: Randomize constants\n"
+       << "-p: List output file parameter order\n";
+}
+
+void param_mess()
+{
+  cerr << "Element | Parameter\n"
+       << "---------------------------\n"
+       << "      0 | Nucleus\n"
+       << "      1 | Sigma_CM [GeV]\n"
+       << "      2 | Cpp0 [%]\n"
+       << "      3 | Cpn0 [%]\n"
+       << "      4 | Cpn1 [%]\n"
+       << "      5 | E* [GeV]\n"
+       << "      6 | pPP2NP\n"
+       << "      7 | pPP2PN\n"
+       << "      8 | pPP2NN\n"
+       << "      9 | pPN2NN\n"
+       << "     10 | pPN2PP\n"
+       << "     11 | pPN2NP\n"
+       << "     12 | pNP2PP\n"
+       << "     13 | pNP2NN\n"
+       << "     14 | pNP2PN\n"
+       << "     15 | pNN2PN\n"
+       << "     16 | pNN2NP\n"
+       << "     17 | pNN2PP\n"
+       << "     18 | kRel Cut [GeV]\n"
+       << "     19 | Nuclear Potential\n"
+       << "     20 | Cross Section\n";
+}
+
 int main(int argc, char ** argv)
 {
-  if (argc !=6)
+    
+  if (argc < 2)
     {
-      cerr << "Wrong number of arguments. Insteady try\n\t"
-	   << "gen_weight [A] /path/to/output/file [# of events] [SigmaCC 1 or 2] [(AV18=1),(N2LO=2),(N3L0)]\n\n";
+      cerr << "Wrong number of arguments. Insteady try\n\n";
+      help_mess();
       return -1;
     }
+  
+  if (strcmp(argv[1], "-h")==0)
+    {
+      help_mess();
+      return -1;
+    }
+  
+  if (strcmp(argv[1], "-p")==0)
+    {
+      param_mess();
+      return -1;
+    }
+  
+  if (argc < 3)
+    {
+      cerr << "Wrong number of arguments. Insteady try\n\n";
+      help_mess();
+      return -1;
+    }
+  
+  // Read in the arguments and flags
+  TFile * outfile = new TFile(argv[1],"RECREATE");
+  int nEvents = atoi(argv[2]);
+  
+  bool verbose = false;
+  int Anum = 12;
+  bool do_sCM = false;
+  double sCM;
+  bool do_Cs = false;
+  std::vector<double> Cs;
+  double Estar = 0.;
+  double pRel_cut = 0.25;
+  int pType = 1;
+  int cType = 1;
+  double rand_flag = false;
 
-  // Read in the arguments
+  int c;  
+  while ((c=getopt (argc-2, &argv[2], "hvA:s:C:E:k:u:c:rp")) != -1) // First two arguments are not optional flags.
+    switch(c)
+      {
+      case 'h':
+	help_mess();
+	return -1;
+      case 'v':
+	verbose = true;
+	break;
+      case 'A':
+	Anum = atoi(optarg);
+	break;
+      case 's':
+	do_sCM = true;
+	sCM = atof(optarg);
+	break;
+      case 'C':
+	do_Cs = true;
+	Cs.push_back(atof(optarg));
+	break;
+      case 'E':
+	Estar = atof(optarg);
+	break;
+      case 'k':
+        pRel_cut = atof(optarg);
+	break;
+      case 'u':
+	pType = atoi(optarg);
+	break;
+      case 'c':
+	cType = atoi(optarg);
+	if ((cType != 1) and (cType != 2))
+	  {
+	    cerr << "Invalid cross section designation. Allowed values are 1 and 2. Aborting...\n";
+	    return -1;
+	  }
+	break;
+      case 'r':
+	rand_flag = true;
+	break;
+      case 'p':
+	param_mess();
+	return -1;
+      case '?':
+	return -1;
+      default:
+	abort();
+      }
+
+
   const double Ebeam=eg2beam;
   const TVector3 v1(0.,0.,Ebeam);
   const double lambda_ei = alpha/M_PI * (log( 4.*Ebeam*Ebeam/(me*me)) - 1.);
-  int nEvents = atoi(argv[3]);
-  int sType = atoi(argv[4]);
-  TFile * outfile = new TFile(argv[2],"RECREATE");
+
   TH1D * h_DeltaEi = new TH1D("deltaEi","ISR;Photon Energy [GeV];Counts",100,0.,0.1);
   TH1D * h_DeltaEf = new TH1D("deltaEf","FSR;Photon Energy [GeV];Counts",100,0.,0.1);
 
@@ -77,16 +208,58 @@ int main(int argc, char ** argv)
 
   // Other chores
   TRandom3 myRand(0);
-  Nuclear_Info myInfo(atoi(argv[1]),atoi(argv[5]));
+  Nuclear_Info myInfo(Anum,pType);
+  if (do_sCM)
+    myInfo.set_sigmaCM(sCM);
+  myInfo.set_Estar(Estar);
+  if (do_Cs)
+    {
+    std::vector<double>::size_type isize = 3;
+    if (Cs.size() != isize)
+      {
+	cerr << "Wrong number of contacts added. Require three values (Cpp0, Cpn0, Cpn1). Aborting...\n";
+	return 1;
+      }
+    myInfo.set_Contacts(Cs[0],Cs[1],Cs[2]);
+    }
+
+  if (rand_flag)
+    myInfo.randomize();
+  
   Cross_Sections myCS;
   const double mA = myInfo.get_mA();
   const double mAm2 = myInfo.get_mAm2();
   const double sigCM = myInfo.get_sigmaCM();
+
+  // Prepare vector of parameters to be output
+  TVectorT<double> params(21);
+  params[0] = Anum;
+  params[1] = sigCM;
+  params[2] = myInfo.get_Cpp0();
+  params[3] = myInfo.get_Cpn0();
+  params[4] = myInfo.get_Cpn1();
+  params[5] = myInfo.get_Estar();
+  std::vector<double> Ps = myInfo.get_SCX_Ps();
+  params[6] = Ps[0];
+  params[7] = Ps[1];
+  params[8] = Ps[2];
+  params[9] = Ps[3];
+  params[10] = Ps[4];
+  params[11] = Ps[5];
+  params[12] = Ps[6];
+  params[13] = Ps[7];
+  params[14] = Ps[8];
+  params[15] = Ps[9];
+  params[16] = Ps[10];
+  params[17] = Ps[11];
+  params[18] = pRel_cut;
+  params[19] = pType;
+  params[20] = cType;
   
   // Loop over events
   for (int event=0 ; event < nEvents ; event++)
     {
-      if (event %10000 ==0)
+      if ((event %10000 ==0) and verbose)
 	cerr << "Working on event " << event << "\n";
 
       // Start with weight 1. Only multiply terms to weight. If trouble, set weight=0
@@ -247,7 +420,7 @@ int main(int argc, char ** argv)
 	      double Erec = sqrt(sq(mN) + vRec.Mag2());
 
 	      // Calculate the weight
-	      weight *= myCS.sigmaCCn(Ebeam_eff, v3_eff, vLead, (lead_type==pCode),sType) // eN cross section
+	      weight *= myCS.sigmaCCn(Ebeam_eff, v3_eff, vLead, (lead_type==pCode),cType) // eN cross section
 		* nu_eff/(2.*xB_eff*Ebeam_eff*pe_Mag_eff) * (Qmax-Qmin) * (Xmax-Xmin) // Jacobian for QSq,xB
 		* (doRad ? (1. - deltaHard(QSq_eff)) * pow(Ebeam/sqrt(Ebeam*pe_Mag),lambda_ei) * pow(pe_Mag_eff/sqrt(Ebeam*pe_Mag),lambda_ef) : 1.) // Radiative weights
 		* 1./(4.*sq(M_PI)) // Angular terms
@@ -263,9 +436,16 @@ int main(int argc, char ** argv)
       
       // Fill the tree
       outtree->Fill();      
-    } 	  
+    }
+
+  if (verbose)
+    {
+      cerr << "Listing parameters:\n";
+      params.Print();
+    }
   
   // Clean up
+  params.Write("parameters");
   h_DeltaEi->Write();
   h_DeltaEf->Write();
   outtree->Write();
