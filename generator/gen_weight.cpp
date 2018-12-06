@@ -1,6 +1,9 @@
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
+#include <cstdio>
+#include <unistd.h>
+#include <ctype.h>
 
 #include "TVector3.h"
 #include "TFile.h"
@@ -8,11 +11,6 @@
 #include "TRandom3.h"
 #include "TH1D.h"
 #include "TVectorT.h"
-
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 #include "Nuclear_Info.h"
 #include "Cross_Sections.h"
@@ -34,7 +32,7 @@ double deltaHard(double QSq);
 
 void help_mess()
 {
-  cerr << "Usage: ./gen_weight [path/to/output.root] [Number of desired events]\n"
+  cerr << "Usage: ./gen_weight [path/to/output.root] [Number of desired events] [optional flags]\n"
        << "Optional flags:\n"
        << "-h: Help\n"
        << "-v: Verbose\n"
