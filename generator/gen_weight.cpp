@@ -40,7 +40,7 @@ void help_mess()
        << "-s <Sigma_CM [GeV]>\n"
        << "-C <Nuclear Contact [%]> (Use for Cpp0, Cpn0, Cpn1)\n"
        << "-E <E* [GeV]>\n"
-       << "-k <kRel cutoff [GeV]>\n"
+       << "-k <kRel cutoff [GeV]==0.25>\n"
        << "-u <Nuclear potential>==<1> (1=AV18, 2=N2LO, 3=N3LO)\n"
        << "-c <Cross section type>==<1>\n"
        << "-r: Randomize constants\n"
@@ -107,7 +107,6 @@ int main(int argc, char ** argv)
   TFile * outfile = new TFile(argv[1],"RECREATE");
   int nEvents = atoi(argv[2]);
   
-  int c;
   bool verbose = false;
   int Anum = 12;
   bool do_sCM = false;
@@ -119,8 +118,9 @@ int main(int argc, char ** argv)
   int pType = 1;
   int cType = 1;
   double rand_flag = false;
-  
-  while ((c=getopt (argc, argv, "hvA:s:C:E:k:u:c:r")) != -1)
+
+  int c;  
+  while ((c=getopt (argc-2, &argv[2], "hvA:s:C:E:k:u:c:rp")) != -1) // First two arguments are not optional flags.
     switch(c)
       {
       case 'h':
