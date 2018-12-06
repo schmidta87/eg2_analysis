@@ -5,7 +5,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
-#include "TRandom3.h"
+#include "TRandom1.h"
 
 Nuclear_Info::Nuclear_Info(int thisA, int pType)
 {
@@ -135,7 +135,7 @@ void Nuclear_Info::set_Contacts(double new_Cpp0, double new_Cpn0, double new_Cpn
 
 void Nuclear_Info::randomize()
 {
-  TRandom myRand(0);
+  TRandom1 myRand(0);
   sigmaCM += myRand.Gaus(0.,d_sigmaCM);
   Cpp0 += myRand.Gaus(0.,d_Cpp0);
   Cpn0 += myRand.Gaus(0.,d_Cpn0);

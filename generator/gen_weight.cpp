@@ -37,6 +37,7 @@ void help_mess()
   cerr << "Usage: ./gen_weight [path/to/output.root] [Number of desired events]\n"
        << "Optional flags:\n"
        << "-h: Help\n"
+       << "-v: Verbose\n"
        << "-A <Nucleus number>==<12>\n"
        << "-s <Sigma_CM [GeV]>\n"
        << "-C <Nuclear Contact [%]> (Use for Cpp0, Cpn0, Cpn1)\n"
@@ -109,6 +110,7 @@ int main(int argc, char ** argv)
   int nEvents = atoi(argv[2]);
   
   int c;
+  bool verbose = false;
   int Anum = 12;
   bool do_sCM = false;
   double sCM;
@@ -120,12 +122,15 @@ int main(int argc, char ** argv)
   int cType = 1;
   double rand_flag = false;
   
-  while ((c=getopt (argc, argv, "hA:s:C:E:k:u:c:r")) != -1)
+  while ((c=getopt (argc, argv, "hvA:s:C:E:k:u:c:r")) != -1)
     switch(c)
       {
       case 'h':
 	help_mess();
 	return -1;
+      case 'v':
+	verbose = true;
+	break;
       case 'A':
 	Anum = atoi(optarg);
 	break;
@@ -256,7 +261,7 @@ int main(int argc, char ** argv)
   // Loop over events
   for (int event=0 ; event < nEvents ; event++)
     {
-      if (event %10000 ==0)
+      if ((event %10000 ==0) and verbose)
 	cerr << "Working on event " << event << "\n";
 
       // Start with weight 1. Only multiply terms to weight. If trouble, set weight=0
@@ -433,7 +438,13 @@ int main(int argc, char ** argv)
       
       // Fill the tree
       outtree->Fill();      
-    } 	  
+    }
+
+  if (verbose)
+    {
+      cerr << "Listing parameters:\n";
+      params.Print();
+    }
   
   // Clean up
   params.Write("parameters");
