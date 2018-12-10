@@ -55,29 +55,26 @@ double Cross_Sections::sigmaCCn(double Ebeam, TVector3 k, TVector3 p, bool isPro
       double pq = dot4(E,p,omega,q);
       double qbarq = dot4(omegabar,q,omega,q);
       double sumq = dot4((Ebar+E),(pM+p),omega,q);
+      double qmuSq = -QSq;
 
-      wC = (E*Ebar
-		   + 0.5 * (pbarp + sq(mN)) * sq(F1)
-		   - 0.5 * q.Mag2() * F1 * kF2
-		   - ((pbarq*E + pq*Ebar)*omega
-		      - Ebar * E * QSq
+      wC = ((E*Ebar + 0.5 * (pbarp + sq(mN))) * sq(F1)
+	    - 0.5 * q.Mag2() * F1 * kF2
+	    - ((pbarq*E + pq*Ebar)*omega
+		      - Ebar * E * qmuSq
 		      + pbarq * pq
 		      - 0.5 * (pbarp - sq(mN)) * q.Mag2())
-		   * sq(kF2)/(4*sq(mN))
-		   )/(E*Ebar);
+	    * sq(kF2)/(4*sq(mN)))
+	/(E*Ebar);
       wT = (-(pbarp + sq(mN)) * sq(F1)
-		   + qbarq * F1 * kF2
-		   + (2*pbarq*pq
-		      - (pbarp - sq(mN))*QSq)
-		   * sq(kF2)/(4*sq(mN))
-		   )/(Ebar*E);
-      wS = p.Mag2() * sq(sin(p.Angle(q))) * (sq(F1)
-						    + QSq/(4.*mN*mN) * sq(kF2))/(E*Ebar);
-      wI = p.Mag()*sin(p.Angle(q))*(-(Ebar + E) * sq(F1)
-					   + (sumq * omega
-					      - (Ebar + E) * QSq)
-					   * sq(kF2)/(4*sq(mN))
-					   )/(E*Ebar);
+	    + qbarq * F1 * kF2
+	    + (2*pbarq*pq - (pbarp - sq(mN))*qmuSq)
+	    * sq(kF2)/(4*sq(mN)))
+	/(Ebar*E);
+      wS = p.Mag2() * sq(sin(p.Angle(q))) * (sq(F1) + qmuSq * sq(kF2) / (4*sq(mN)) ) / (E*Ebar);
+      wI = p.Mag() * sin(p.Angle(q)) * (-(Ebar + E) * sq(F1)
+					+ (sumq * omega - (Ebar + E) * qmuSq)
+					* sq(kF2)/(4*sq(mN)))
+	/(E*Ebar);
     }
   else
     {
