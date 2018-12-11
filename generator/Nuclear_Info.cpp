@@ -152,6 +152,7 @@ void Nuclear_Info::randomize()
   pNN2PN += myRand.Gaus(0.,d_pNN2PN);
   pNN2NP += myRand.Gaus(0.,d_pNN2NP);
   pNN2PP += myRand.Gaus(0.,d_pNN2PP);
+  Estar = myRand.Uniform()*0.030;
 }
 
 double Nuclear_Info::get_Estar()
