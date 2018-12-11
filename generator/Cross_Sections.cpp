@@ -12,10 +12,10 @@ Cross_Sections::Cross_Sections()
 }
 
 double Cross_Sections::sq(double x){ return x*x; };
-
+//This is the mostly positvie metric
 double Cross_Sections::dot4(double x0, TVector3 x, double y0, TVector3 y)
 {
-  return ((x0*y0)-(x*y));
+  return ((x*y)-(x0*y0));
     }
 
 double Cross_Sections::sigmaCCn(double Ebeam, TVector3 k, TVector3 p, bool isProton, int n)
@@ -55,24 +55,23 @@ double Cross_Sections::sigmaCCn(double Ebeam, TVector3 k, TVector3 p, bool isPro
       double pq = dot4(E,p,omega,q);
       double qbarq = dot4(omegabar,q,omega,q);
       double sumq = dot4((Ebar+E),(pM+p),omega,q);
-      double qmuSq = -QSq;
 
       wC = ((E*Ebar + 0.5 * (pbarp + sq(mN))) * sq(F1)
 	    - 0.5 * q.Mag2() * F1 * kF2
 	    - ((pbarq*E + pq*Ebar)*omega
-		      - Ebar * E * qmuSq
+		      - Ebar * E * QSq
 		      + pbarq * pq
 		      - 0.5 * (pbarp - sq(mN)) * q.Mag2())
 	    * sq(kF2)/(4*sq(mN)))
 	/(E*Ebar);
       wT = (-(pbarp + sq(mN)) * sq(F1)
 	    + qbarq * F1 * kF2
-	    + (2*pbarq*pq - (pbarp - sq(mN))*qmuSq)
+	    + (2*pbarq*pq - (pbarp - sq(mN))*QSq)
 	    * sq(kF2)/(4*sq(mN)))
 	/(Ebar*E);
-      wS = p.Mag2() * sq(sin(p.Angle(q))) * (sq(F1) + qmuSq * sq(kF2) / (4*sq(mN)) ) / (E*Ebar);
+      wS = p.Mag2() * sq(sin(p.Angle(q))) * (sq(F1) + QSq * sq(kF2) / (4*sq(mN)) ) / (E*Ebar);
       wI = p.Mag() * sin(p.Angle(q)) * (-(Ebar + E) * sq(F1)
-					+ (sumq * omega - (Ebar + E) * qmuSq)
+					+ (sumq * omega - (Ebar + E) * QSq)
 					* sq(kF2)/(4*sq(mN)))
 	/(E*Ebar);
     }
@@ -84,7 +83,7 @@ double Cross_Sections::sigmaCCn(double Ebeam, TVector3 k, TVector3 p, bool isPro
   double sigmaMott = cmSqGeVSq * 4. * sq(alpha) * k.Mag2() * sq(cos(k.Theta()/2.)) / sq(QSq);
 
   double phi = q.Cross(k).Angle( q.Cross(p) );
-  return sigmaMott * ( sq(QSq)/q.Mag2() * wC +
+  return sigmaMott * ( sq(QSq)/sq(q.Mag2()) * wC +
                        (QSq/(2.*q.Mag2()) + sq(tan(k.Theta()/2.))) * wT +
                        QSq/q.Mag2() * sqrt(QSq/q.Mag2() + sq(tan(k.Theta()/2.))) * wI * cos(phi) +
                        (QSq/q.Mag2() * sq(cos(phi)) + sq(tan(k.Theta()/2.))) * wS
