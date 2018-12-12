@@ -107,6 +107,40 @@ bool accept_proton(TVector3 p)
   return false;
 }
 
+// Currently ECal only, to be improved
+bool accept_neutron(TVector3 pm){
+        double vtx_z = -22.25;
+	double dist = 10.0;
+        double r, pm_phi, x_rot, y_rot, angle, pm_theta, third_theta, d_intercept;
+
+        const double ec_theta =  65.*M_PI/180.; // degrees
+        const double z0       =563.1; // cm
+
+        // Using law of sines to determine distance from vertex to EC
+        pm_theta    = pm.Theta();
+        third_theta = (M_PI - ec_theta - pm_theta);
+
+        r = (z0-vtx_z)*sin(ec_theta)/sin(third_theta);
+
+        double Xmiss = r*sin(pm.Theta())*cos(pm.Phi());
+        double Ymiss = r*sin(pm.Theta())*sin(pm.Phi());
+
+        pm_phi = 180./M_PI*pm.Phi();
+        if (pm_phi < -30.) pm_phi += 360.;
+        int sec = (int)(pm_phi+30)/60;
+        if (sec>5) sec = 5;
+        if (sec<0) sec = 0;
+
+        angle = M_PI/180.*60.*(sec);
+
+        x_rot = Xmiss*cos(angle) + Ymiss*sin(angle);
+        y_rot = Xmiss*sin(angle) - Ymiss*cos(angle);
+
+        d_intercept = dist/cos(atan(1.73));
+
+        return((x_rot<390.-dist)&&(x_rot>1.73*abs(y_rot)+55.+d_intercept));
+}
+
 
 // ############## ELECTRON FIDUCIAL CUT PARAMETERS (starting with e) #################
 // sector, side
