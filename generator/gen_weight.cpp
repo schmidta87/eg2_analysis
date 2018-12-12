@@ -14,6 +14,7 @@
 
 #include "Nuclear_Info.h"
 #include "Cross_Sections.h"
+#include "helpers.h"
 
 using namespace std;
 
@@ -25,7 +26,6 @@ const double Xmax=2.;
 
 const bool doRad=true;
 
-double sq(double x){ return x*x; };
 double sigmaCC1(double E1, TVector3 k, TVector3 p, bool isProton);
 void do_SXC(int &lead_type, int &rec_type, double r);
 double deltaHard(double QSq);
