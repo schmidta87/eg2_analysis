@@ -9,5 +9,5 @@ add_library(${LIBNAME} Cross_Sections.cpp)
 target_link_libraries(${LIBNAME} ${ROOT_LIBRARIES} Helpers)
 
 # Cross Section test executable
-#add_executable(cs_test cs_test.cpp)
-#target_link_libraries(cs_test ${ROOT_LIBRARIES} Cross_Sections )
+add_executable(cs_query cs_query.cpp)
+target_link_libraries(cs_query ${ROOT_LIBRARIES} Cross_Sections )
