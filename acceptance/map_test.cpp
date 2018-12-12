@@ -9,14 +9,14 @@ using namespace std;
 
 int main(int argc, char ** argv)
 {
-  if (argc != 2)
+  if (argc != 3)
     {
       cerr << "Call map_test using: \n"
-	   << "\tmap_test /path/to/map/file\n\n";
+	   << "\tmap_test /path/to/map/file [particle]\n\n";
       return -1;
     }
 
-  AccMap myMap(argv[1]);
+  AccMap myMap(argv[1],argv[2]);
 
   double mom, theta, phi;
   while (true)

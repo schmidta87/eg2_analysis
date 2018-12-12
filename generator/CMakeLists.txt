@@ -3,8 +3,8 @@
 include_directories( ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR} ${ROOT_INCLUDE_DIR} )
 
 # Generator 
-add_executable(gen_weight gen_weight.cpp Nuclear_Info.cpp Cross_Sections.cpp)
-target_link_libraries(gen_weight ${ROOT_LIBRARIES})
+add_executable(gen_weight gen_weight.cpp Nuclear_Info.cpp )
+target_link_libraries(gen_weight ${ROOT_LIBRARIES} Cross_Sections)
 
 # pp/np ratio cut
 add_executable(pp_np_cut pp_np_cut.cpp)
