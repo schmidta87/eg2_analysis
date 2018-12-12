@@ -1,0 +1,13 @@
+# Set project name
+PROJECT(Cross_Sections)
+SET(LIBNAME "Cross_Sections")
+
+include_directories( ${CMAKE_SOURCE_DIR}/include ${ROOT_INCLUDE_DIR} )
+
+# Cross Sections Library
+add_library(${LIBNAME} Cross_Sections.cpp)
+target_link_libraries(${LIBNAME} ${ROOT_LIBRARIES} )
+
+# Cross Section test executable
+#add_executable(cs_test cs_test.cpp)
+#target_link_libraries(cs_test ${ROOT_LIBRARIES} Cross_Sections )

@@ -1,11 +1,13 @@
+#include "Cross_Sections.h"
+
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
 
 #include "TVector3.h"
 
-#include "Nuclear_Info.h"
-#include "Cross_Sections.h"
+//#include "Nuclear_Info.h"
+#include "constants.h"
 
 Cross_Sections::Cross_Sections()
 {

@@ -2,17 +2,10 @@
  #define __NUCLEAR_INFO_H__
  #include <cstdlib>
  #include <vector>
+ #include "constants.h"
 
  // EG2 info
  const double eg2beam=5.014;
-
- // constants
- const double me = 0.000511;
- const double mN = 0.93892;
- const double mU=0.931;
- const double GeVfm=0.1973;
- const double alpha=0.0072973525664;
- const double cmSqGeVSq = GeVfm*GeVfm*1.E-26;
 
  // nuclear masses
  const double m_1H = mN;
