@@ -13,6 +13,8 @@ class Cross_Sections
 {
  public:
   Cross_Sections();
+  Cross_Sections(csMethod thisMeth, ffModel thisMod);
+  ~Cross_Sections();
   double sigma_eN(double Ebeam, TVector3 k, TVector3 p, bool isProton);
   double sigmaCCn(double Ebeam, TVector3 k, TVector3 p, bool isProton, int n);
   double sigmaCC1(double Ebeam, TVector3 k, TVector3 p, bool isProton);

@@ -15,6 +15,14 @@ Cross_Sections::Cross_Sections()
   myMethod=cc1;
 }
 
+Cross_Sections::Cross_Sections(csMethod thisMeth, ffModel thisMod)
+{
+  myModel=thisMod;
+  myMethod=thisMeth;
+}
+
+Cross_Sections::~Cross_Sections(){}
+
 double Cross_Sections::sigma_eN(double Ebeam,TVector3 k, TVector3 p, bool isProton)
 {
   switch (myMethod)
