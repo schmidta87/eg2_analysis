@@ -42,7 +42,8 @@ void help_mess()
        << "-E <E* [GeV]>\n"
        << "-k <kRel cutoff [GeV]==0.25>\n"
        << "-u <Nuclear potential>==<1> (1=AV18, 2=N2LO, 3=N3LO)\n"
-       << "-c <Cross section type>==<1>\n"
+       << "-c <Cross section method>==<cc1>\n"
+       << "-f <Form Factor model>==<kelly>\n"
        << "-r: Randomize constants\n"
        << "-p: List output file parameter order\n";
 }
@@ -116,11 +117,12 @@ int main(int argc, char ** argv)
   double Estar = 0.;
   double pRel_cut = 0.25;
   int pType = 1;
-  int cType = 1;
+  csMethod csMeth=cc1;
+  ffModel ffMod=kelly;
   double rand_flag = false;
 
   int c;  
-  while ((c=getopt (argc-2, &argv[2], "hvA:s:C:E:k:u:c:rp")) != -1) // First two arguments are not optional flags.
+  while ((c=getopt (argc-2, &argv[2], "hvA:s:C:E:k:u:f:c:rp")) != -1) // First two arguments are not optional flags.
     switch(c)
       {
       case 'h':
@@ -150,12 +152,31 @@ int main(int argc, char ** argv)
 	pType = atoi(optarg);
 	break;
       case 'c':
-	cType = atoi(optarg);
-	if ((cType != 1) and (cType != 2))
+	if (strcmp(optarg,"onshell")==0)
+	  csMeth=onshell;
+	else if (strcmp(optarg,"cc1")==0)
+	  csMeth=cc1;
+	else if (strcmp(optarg,"cc2")==0)
+	  csMeth=cc2;
+	else if (atoi(optarg)==1)
+	  csMeth=cc1;
+	else if (atoi(optarg)==2)
+	  csMeth=cc2;
+	else
 	  {
-	    cerr << "Invalid cross section designation. Allowed values are 1 and 2. Aborting...\n";
+	    cerr << "Invalid cross section designation. Allowed values are onshell, cc1 and cc2. Aborting...\n";
 	    return -1;
 	  }
+	break;
+      case 'f':
+	if (strcmp(optarg,"kelly")==0)
+	  ffMod=kelly;
+	else if (strcmp(optarg,"dipole")==0)
+	  ffMod=dipole;
+	else{
+	  cerr << "Invalid form factor model provided. Allowed options are kelly and dipole. Aborting...\n";
+	  return -1;
+	}
 	break;
       case 'r':
 	rand_flag = true;
@@ -226,13 +247,13 @@ int main(int argc, char ** argv)
   if (rand_flag)
     myInfo.randomize();
   
-  Cross_Sections myCS;
+  Cross_Sections myCS(csMeth,ffMod);
   const double mA = myInfo.get_mA();
   const double mAm2 = myInfo.get_mAm2();
   const double sigCM = myInfo.get_sigmaCM();
 
   // Prepare vector of parameters to be output
-  TVectorT<double> params(21);
+  TVectorT<double> params(22);
   params[0] = Anum;
   params[1] = sigCM;
   params[2] = myInfo.get_Cpp0();
@@ -254,7 +275,8 @@ int main(int argc, char ** argv)
   params[17] = Ps[11];
   params[18] = pRel_cut;
   params[19] = pType;
-  params[20] = cType;
+  params[20] = csMeth;
+  params[21] = ffMod;
   
   // Loop over events
   for (int event=0 ; event < nEvents ; event++)
@@ -358,15 +380,19 @@ int main(int argc, char ** argv)
 	{
 	  double momRec1 = 0.5*(YSq*Z*cosThetaZRec + sqrt(D))/(sq(X) - vZ.Mag2()*sq(cosThetaZRec));
 	  double momRec2 = 0.5*(YSq*Z*cosThetaZRec - sqrt(D))/(sq(X) - vZ.Mag2()*sq(cosThetaZRec));
-	  if ((momRec1 < 0) && (momRec2 <0))
+
+	  bool momRec1Valid = (momRec1>=0.) && (X - sqrt(sq(momRec1) + sq(mN)) >=0.) && (sq(X) - sq(Z) + 2.*Z*momRec1*cosThetaZRec > 0.);
+	  bool momRec2Valid = (momRec2>=0.) && (X - sqrt(sq(momRec2) + sq(mN)) >=0.) && (sq(X) - sq(Z) + 2.*Z*momRec2*cosThetaZRec >= 0.);
+
+	  if ( (!momRec1Valid) && (!momRec2Valid))
 	    {
 	      weight=0.;
 	    }
 	  else
 	    {
-	      if (momRec1 < 0)
+	      if (!momRec1Valid)
 		pRec_Mag = momRec2;
-	      else if (momRec2 < 0)
+	      else if (!momRec2Valid)
 		pRec_Mag = momRec1;
 	      else
 		{
@@ -420,7 +446,7 @@ int main(int argc, char ** argv)
 	      double Erec = sqrt(sq(mN) + vRec.Mag2());
 
 	      // Calculate the weight
-	      weight *= myCS.sigmaCCn(Ebeam_eff, v3_eff, vLead, (lead_type==pCode),cType) // eN cross section
+	      weight *= myCS.sigma_eN(Ebeam_eff, v3_eff, vLead, (lead_type==pCode)) // eN cross section
 		* nu_eff/(2.*xB_eff*Ebeam_eff*pe_Mag_eff) * (Qmax-Qmin) * (Xmax-Xmin) // Jacobian for QSq,xB
 		* (doRad ? (1. - deltaHard(QSq_eff)) * pow(Ebeam/sqrt(Ebeam*pe_Mag),lambda_ei) * pow(pe_Mag_eff/sqrt(Ebeam*pe_Mag),lambda_ef) : 1.) // Radiative weights
 		* 1./(4.*sq(M_PI)) // Angular terms
