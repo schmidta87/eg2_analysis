@@ -1,22 +1,52 @@
+#include "Cross_Sections.h"
+
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
 
 #include "TVector3.h"
 
-#include "Nuclear_Info.h"
-#include "Cross_Sections.h"
+#include "constants.h"
+#include "helpers.h"
 
 Cross_Sections::Cross_Sections()
 {
+  myModel=kelly;
+  myMethod=cc1;
 }
 
-double Cross_Sections::sq(double x){ return x*x; };
-//This is the mostly positvie metric
-double Cross_Sections::dot4(double x0, TVector3 x, double y0, TVector3 y)
+Cross_Sections::Cross_Sections(csMethod thisMeth, ffModel thisMod)
+{
+  myModel=thisMod;
+  myMethod=thisMeth;
+}
+
+Cross_Sections::~Cross_Sections(){}
+
+double Cross_Sections::sigma_eN(double Ebeam,TVector3 k, TVector3 p, bool isProton)
+{
+  switch (myMethod)
+    {
+    case onshell:
+      return sigma_onShell_by_Etheta(Ebeam,k,isProton);
+    case cc1:
+      return sigmaCC1(Ebeam,k,p,isProton);
+    case cc2:
+      return sigmaCC2(Ebeam,k,p,isProton);
+    default:
+      {
+	std::cerr << "Invalid cross section method! Double check and fix!\n";
+	exit(-1);
+      }
+    }
+  return 0;
+}
+
+// This is the opposite from our usual (1,-1,-1,-1) convention
+double dot4(double x0, TVector3 x, double y0, TVector3 y)
 {
   return ((x*y)-(x0*y0));
-    }
+}
 
 double Cross_Sections::sigmaCCn(double Ebeam, TVector3 k, TVector3 p, bool isProton, int n)
 {
@@ -101,4 +131,77 @@ double Cross_Sections::sigmaCC2(double Ebeam, TVector3 k, TVector3 p, bool isPro
   return sigmaCCn(Ebeam, k, p, isProton, 2);
 }
 
-double Cross_Sections::Gdipole(double QSq){ return 1. / sq(1 + QSq/0.71); };
+double Cross_Sections::sigma_onShell_by_Etheta(double Ebeam, TVector3 k, bool isProton)
+{
+  double theta=k.Theta();
+  double E3 = Ebeam * mN/ (mN + Ebeam*(1.-k.CosTheta()));
+  double QSq = 2. * Ebeam * E3 * (1.-k.CosTheta());
+  double tau = QSq/(4.*mN*mN);
+  double GE = isProton ? GEp(QSq) : GEn(QSq);
+  double GM = isProton ? GMp(QSq) : GMn(QSq);
+  double epsilon = epsilon = 1./(1.+2.*(1.+tau)*sq(tan(theta/2.)));
+  double sigmaMott = cmSqGeVSq * 4* sq(alpha) * E3*E3*E3 * sq(cos(theta/2.))/(Ebeam*QSq*QSq);
+  return sigmaMott * (sq(GE) + tau/epsilon * sq(GM))/(1. + tau);
+}
+
+double Cross_Sections::GEp(double QSq)
+{
+  switch (myModel)
+    {
+    case dipole: 
+      return Gdipole(QSq);
+    case kelly:
+      return Gkelly(QSq,-0.24,10.98,12.82,21.97);
+    default:
+      std::cerr << "Error in GEp: invalid form factor model!\n";
+      exit(-1);
+    }
+  return 0.;
+}
+
+double Cross_Sections::GEn(double QSq) // This will use the Galster parameterization
+{
+  double tau = QSq/(4.*mN*mN);
+  return 1.70 * tau / (1. + 3.3 * tau) * Gdipole(QSq); // params from Kelly paper
+  //return 1.91 * tau / (1. + 5.6 * tau) * Gdipole(QSq); // I can't find a source for these numbers, so I trust them less.
+}
+
+double Cross_Sections::GMp(double QSq)
+{
+  switch (myModel)
+    {
+    case dipole: 
+      return mu_p * Gdipole(QSq);
+    case kelly:
+      return mu_p * Gkelly(QSq,0.12,10.97,18.86,6.55);
+    default:
+      std::cerr << "Error in GMp: invalid form factor model!\n";
+      exit(-1);
+    }
+  return 0.;
+}
+
+double Cross_Sections::GMn(double QSq)
+{
+  switch (myModel)
+    {
+    case dipole: 
+      return mu_n * Gdipole(QSq);
+    case kelly:
+      return mu_n * Gkelly(QSq,2.33,14.72,24.20,84.1);
+    default:
+      std::cerr << "Error in GMn: invalid form factor model!\n";
+      exit(-1);
+    }
+  return 0.;
+}
+
+double Cross_Sections::Gdipole(double QSq){ return 1. / sq(1 + QSq/0.71); }
+
+double Cross_Sections::Gkelly(double QSq,double a1, double b1, double b2, double b3)
+{
+  double tau = QSq/(4.*mN*mN);
+  double denom = 1. + b1*tau + b2*tau*tau + b3*tau*tau*tau;
+  double numer = 1. + a1*tau;
+  return numer/denom;
+}

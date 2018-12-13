@@ -25,6 +25,7 @@ project (eg2)
 add_subdirectory(helpers)
 add_subdirectory(acceptance)
 add_subdirectory(fiducials)
+add_subdirectory(cross_sections)
 add_subdirectory(generator)
 
 include_directories(${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include )
