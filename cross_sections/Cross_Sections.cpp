@@ -12,6 +12,26 @@
 Cross_Sections::Cross_Sections()
 {
   myModel=kelly;
+  myMethod=cc1;
+}
+
+double Cross_Sections::sigma_eN(double Ebeam,TVector3 k, TVector3 p, bool isProton)
+{
+  switch (myMethod)
+    {
+    case onshell:
+      return sigma_onShell_by_Etheta(Ebeam,k,isProton);
+    case cc1:
+      return sigmaCC1(Ebeam,k,p,isProton);
+    case cc2:
+      return sigmaCC2(Ebeam,k,p,isProton);
+    default:
+      {
+	std::cerr << "Invalid cross section method! Double check and fix!\n";
+	exit(-1);
+      }
+    }
+  return 0;
 }
 
 // This is the opposite from our usual (1,-1,-1,-1) convention
@@ -101,6 +121,19 @@ double Cross_Sections::sigmaCC1(double Ebeam, TVector3 k, TVector3 p, bool isPro
 double Cross_Sections::sigmaCC2(double Ebeam, TVector3 k, TVector3 p, bool isProton)
 {
   return sigmaCCn(Ebeam, k, p, isProton, 2);
+}
+
+double Cross_Sections::sigma_onShell_by_Etheta(double Ebeam, TVector3 k, bool isProton)
+{
+  double theta=k.Theta();
+  double E3 = Ebeam * mN/ (mN + Ebeam*(1.-k.CosTheta()));
+  double QSq = 2. * Ebeam * E3 * (1.-k.CosTheta());
+  double tau = QSq/(4.*mN*mN);
+  double GE = isProton ? GEp(QSq) : GEn(QSq);
+  double GM = isProton ? GMp(QSq) : GMn(QSq);
+  double epsilon = epsilon = 1./(1.+2.*(1.+tau)*sq(tan(theta/2.)));
+  double sigmaMott = cmSqGeVSq * 4* sq(alpha) * E3*E3*E3 * sq(cos(theta/2.))/(Ebeam*QSq*QSq);
+  return sigmaMott * (sq(GE) + tau/epsilon * sq(GM))/(1. + tau);
 }
 
 double Cross_Sections::GEp(double QSq)

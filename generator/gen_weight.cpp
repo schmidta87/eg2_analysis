@@ -358,15 +358,19 @@ int main(int argc, char ** argv)
 	{
 	  double momRec1 = 0.5*(YSq*Z*cosThetaZRec + sqrt(D))/(sq(X) - vZ.Mag2()*sq(cosThetaZRec));
 	  double momRec2 = 0.5*(YSq*Z*cosThetaZRec - sqrt(D))/(sq(X) - vZ.Mag2()*sq(cosThetaZRec));
-	  if ((momRec1 < 0) && (momRec2 <0))
+
+	  bool momRec1Valid = (momRec1>=0.) && (X - sqrt(sq(momRec1) + sq(mN)) >=0.) && (sq(X) - sq(Z) + 2.*Z*momRec1*cosThetaZRec > 0.);
+	  bool momRec2Valid = (momRec2>=0.) && (X - sqrt(sq(momRec2) + sq(mN)) >=0.) && (sq(X) - sq(Z) + 2.*Z*momRec2*cosThetaZRec >= 0.);
+
+	  if ( (!momRec1Valid) && (!momRec2Valid))
 	    {
 	      weight=0.;
 	    }
 	  else
 	    {
-	      if (momRec1 < 0)
+	      if (!momRec1Valid)
 		pRec_Mag = momRec2;
-	      else if (momRec2 < 0)
+	      else if (!momRec2Valid)
 		pRec_Mag = momRec1;
 	      else
 		{
