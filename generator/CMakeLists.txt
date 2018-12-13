@@ -8,7 +8,7 @@ target_link_libraries(gen_weight ${ROOT_LIBRARIES} Cross_Sections)
 
 # pp/np ratio cut
 add_executable(pp_np_cut pp_np_cut.cpp)
-target_link_libraries(pp_np_cut ${ROOT_LIBRARIES} AccMap Fid)
+target_link_libraries(pp_np_cut ${ROOT_LIBRARIES} AccMap Fid Cross_Sections)
 
 # Event Simulator
 add_executable(simulator simulator.cpp)
