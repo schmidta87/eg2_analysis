@@ -276,7 +276,7 @@ int main(int argc, char ** argv)
   params[18] = pRel_cut;
   params[19] = pType;
   params[20] = csMeth;
-  params[20] = ffMod;
+  params[21] = ffMod;
   
   // Loop over events
   for (int event=0 ; event < nEvents ; event++)
