@@ -15,12 +15,17 @@
 
 using namespace std;
 
+double sq(double x)
+{
+  return x*x;
+}
+
 int main(int argc, char ** argv)
 {
   if (argc != 4)
     {
       cerr << "Wrong number of arguments. Instead use:\n"
-	   << "\tsimulator /path/to/gen/file /path/to/pp/file /path/tp/np/file\n";
+	   << "\tsimulator /path/to/gen/file /path/to/file [# protons]\n";
       return -1;
     }
 
@@ -76,7 +81,7 @@ int main(int argc, char ** argv)
   TRandom3 myRand(0);
   double a = 0.03;
   double b = 0.06;
-  Cross_Sections myCS;
+  Cross_Sections myCS; 
   
   // Loop over all events
   const int nEvents = inTree->GetEntries(); // this is a key number for the weight
@@ -86,7 +91,7 @@ int main(int argc, char ** argv)
 	cerr << "Working on event " << event << " out of " << nEvents <<"\n";
       
       inTree->GetEvent(event);
-
+      
       // Require a recoil proton
       if (rec_type != pCode)
 	continue;
@@ -101,6 +106,9 @@ int main(int argc, char ** argv)
       TVector3 vlead(gen_pLead[0],gen_pLead[1],gen_pLead[2]);
       
       // Fiducial cuts
+      if (lead_type == nCode)
+	vlead += vlead*myRand.Gaus(0,a+b*vlead.Mag());
+      
       if (!accept_electron(ve))
 	continue;
       if (!accept_proton(vlead))
@@ -110,15 +118,10 @@ int main(int argc, char ** argv)
       if (!accept_neutron(vlead))
 	continue;
 
-      // Apply Smearing
-      vlead += vlead*myRand.Gaus(0,a+b*vlead.Mag());
-      
-      // Apply weight for cross sections
       if (lead_type == pCode)
-	weight = gen_weight/(2*myCS.sigmaCC1(eg2beam,ve,vlead,true));
-      else
-	weight = gen_weight/(myCS.sigmaCC1(eg2beam,ve,vlead,false));
-      if (weight <= 0.)
+	vlead += vlead*myRand.Gaus(0,a+b*vlead.Mag());
+
+      if (gen_weight <= 0.)
 	continue;
       
       TVector3 vmiss=vlead-vq;
@@ -127,8 +130,8 @@ int main(int argc, char ** argv)
       
       double gen_pMiss_Mag = vmiss.Mag();
       double gen_pe_Mag = ve.Mag();
-      double gen_QSq = 2. * eg2beam * gen_pe_Mag * (1. - ve.CosTheta());
       double gen_nu = eg2beam - ve.Mag();
+      double gen_QSq = 2. * eg2beam * gen_pe_Mag * (1. - ve.CosTheta());
       double gen_xB = gen_QSq/(2.*mN*gen_nu);
       double gen_q_Mag = vq.Mag();
       double gen_pLead_Mag = vlead.Mag();
@@ -136,6 +139,7 @@ int main(int argc, char ** argv)
       double gen_ELead = sqrt(gen_pLead_Mag*gen_pLead_Mag+mN*mN);
       double m_miss = sqrt((gen_nu+2*mN-gen_ELead)*(gen_nu+2*mN-gen_ELead)-gen_pMiss_Mag*gen_pMiss_Mag);
 
+      
       // Meytal's cuts
       if (gen_xB < 1.1)
 	continue;
@@ -153,6 +157,16 @@ int main(int argc, char ** argv)
 	continue;
       if (gen_pRec_Mag < 0.35)
 	continue;
+
+      // Apply weight for cross sections
+      double gen_theta = ve.Theta();
+      double tau = gen_QSq/(4*mN*mN);
+      double epsilon = 1/(1.0+2.0*(1.+tau)*sq(tan(gen_theta/2)));
+      
+      if (lead_type == pCode)
+	weight = gen_weight/(2*(epsilon/tau*sq(myCS.GEp(gen_QSq))+sq(myCS.GMp(gen_QSq))));
+      else
+	weight = gen_weight/(epsilon/tau*sq(myCS.GEn(gen_QSq))+sq(myCS.GMn(gen_QSq)));
 
       // Load up tree
       pRec_Mag = gen_pRec_Mag;
