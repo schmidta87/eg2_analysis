@@ -6,6 +6,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
+#include "TH2.h"
 #include "TGraphAsymmErrors.h"
 
 #include "Nuclear_Info.h"
@@ -45,6 +46,8 @@ int main(int argc, char ** argv)
 	h1p_thetae->Sumw2();
 	TH1D * h1p_Emiss = new TH1D("ep_Emiss","ep;Emiss [GeV];Counts",50,0.,2);
 	h1p_Emiss->Sumw2();
+	TH2D * h1p_pmiss_Emiss = new TH2D("ep_pmiss_Emiss","ep;pmiss [GeV];Emiss [GeV];Counts",28,0.3,1.0,25,0.,2.);
+	h1p_pmiss_Emiss->Sumw2();
 	TH1D * h2p_QSq = new TH1D("epp_QSq","epp;QSq [GeV^2];Counts",40,1.,5.);
 	h2p_QSq->Sumw2();
 	TH1D * h2p_xB =  new TH1D("epp_xB" ,"epp;xB;Counts",26,1.2,2.5);
@@ -169,6 +172,7 @@ int main(int argc, char ** argv)
 		// Let's figure out missing energy! 
 		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pmiss_size[0]*Pmiss_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
+		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 	}
 
 	// Loop over 2p tree
@@ -238,6 +242,7 @@ int main(int argc, char ** argv)
 		// Let's figure out missing energy! 
 		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pmiss_size[0]*Pmiss_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
+		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 
 		// Make a check on the recoils
 		if (fabs(Rp[1][2]+22.25)>2.25)
@@ -301,6 +306,7 @@ int main(int argc, char ** argv)
 	h1p_phie->   Scale(pnorm/h1p_phie->    Integral());
 	h1p_thetae-> Scale(pnorm/h1p_thetae->  Integral());
 	h1p_Emiss->  Scale(pnorm/h1p_Emiss->   Integral());
+	h1p_pmiss_Emiss->  Scale(pnorm/h1p_pmiss_Emiss->   Integral());
 	h2p_QSq->    Scale(ppnorm/h2p_QSq->    Integral());
 	h2p_xB->     Scale(ppnorm/h2p_xB->     Integral());
 	h2p_Pm->     Scale(ppnorm/h2p_Pm->     Integral());
@@ -324,6 +330,7 @@ int main(int argc, char ** argv)
 	h1p_phie->Write();
 	h1p_thetae->Write();
 	h1p_Emiss->Write();
+	h1p_pmiss_Emiss->Write();
 	h2p_QSq->Write();
 	h2p_xB ->Write();
 	h2p_Pm ->Write();
