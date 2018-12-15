@@ -53,6 +53,8 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_Emiss);
 	TH2D * h1p_pmiss_Emiss = new TH2D("ep_pmiss_Emiss","ep;pmiss [GeV];Emiss [GeV];Counts",28,0.3,1.0,25,0.,2.);
 	h1p_list.push_back(h1p_pmiss_Emiss);
+	TH2D * h1p_pmiss_E1 = new TH2D("ep_pmiss_E1","ep;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,20,0.5,0.9);
+	h1p_list.push_back(h1p_pmiss_E1);
 	TH1D * h2p_QSq = new TH1D("epp_QSq","epp;QSq [GeV^2];Counts",40,1.,5.);
 	h2p_list.push_back(h2p_QSq);
 	TH1D * h2p_xB =  new TH1D("epp_xB" ,"epp;xB;Counts",26,1.2,2.5);
@@ -79,6 +81,10 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_theta2);
 	TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",50,0.,2);
 	h2p_list.push_back(h2p_Emiss);
+	TH2D * h2p_pmiss_E1 = new TH2D("epp_pmiss_E1","epp;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,20,0.5,0.9);
+	h2p_list.push_back(h2p_pmiss_E1);
+
+	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.3,1.0,20,0.5,0.9);
 
 	TH1D * h1p_thetae_bySec[6];
 	TH1D * h1p_theta1_bySec[6];
@@ -158,6 +164,7 @@ int main(int argc, char ** argv)
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
+		double omega = Q2/(2.*mN*Xb);
 
 		// Let's make a sanitized phi and sector
 		double phie_deg = ve.Phi() * 180./M_PI;
@@ -184,6 +191,8 @@ int main(int argc, char ** argv)
 		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pmiss_size[0]*Pmiss_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
+
+		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vp.Mag2() + mN*mN) - omega,weight);
 	}
 
 	// Loop over 2p tree
@@ -227,6 +236,7 @@ int main(int argc, char ** argv)
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
+		double omega = Q2/(2.*mN*Xb);
 
 		// Let's make a sanitized phi and sector
 		double phie_deg = ve.Phi() * 180./M_PI;
@@ -254,6 +264,7 @@ int main(int argc, char ** argv)
 		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pmiss_size[0]*Pmiss_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
+		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
 
 		// Make a check on the recoils
 		if (fabs(Rp[1][2]+22.25)>2.25)
@@ -282,6 +293,7 @@ int main(int argc, char ** argv)
 		h2p_theta1_bySec[sector]->Fill(theta1_deg,weight);
 
 		h2p_Emiss->Fill(Emiss,weight);
+		h2p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
 
 		// Let's make a sanitized phi and sector
 		double phi2_deg = vrec.Phi() * 180./M_PI;
@@ -300,10 +312,22 @@ int main(int argc, char ** argv)
 
 	// pp-to-p
 	pp_to_p->BayesDivide(h2p_Pm,h1p_Pm);
+	for (int binX=1 ; binX<=pp_to_p_2d->GetNbinsX() ; binX++)
+	  for (int binY=1 ; binY<=pp_to_p_2d->GetNbinsY() ; binY++)
+	    {
+	      
+	      double N_pp = h2p_pmiss_E1->GetBinContent(binX,binY);
+	      double N_p =  h1p_pmiss_E1->GetBinContent(binX,binY);
+	      double ratio = 0.;
+	      if (N_p >0)
+		ratio = N_pp / N_p;
+	      pp_to_p_2d->SetBinContent(binX,binY,ratio);
+	    }
 
 	// Write out
 	fo -> cd();
 	pp_to_p->Write();
+	pp_to_p_2d->Write();
 
 	double pnorm = 9170;
 	double ppnorm = 437;
