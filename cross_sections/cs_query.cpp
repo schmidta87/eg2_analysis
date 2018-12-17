@@ -69,7 +69,7 @@ int main(int argc, char **argv)
       double gammaDeg = q.Angle(pp) * 180./M_PI;
 
       cout << Ebeam << " " << mom_e << " " << thetaDeg_e << " " << phiDeg_e << " " << mom_p << " " <<thetaDeg_p << " " << phiDeg_p << " "
-	   << " " << phiAngleDeg << " " << gammaDeg << " " << myCS.sigmaCC1(Ebeam,pe,pp,true) << "\n";
+	   << " " << phiAngleDeg << " " << gammaDeg << " " << myCS.sigma_eN(Ebeam,pe,pp,true) << "\n";
 
     }
   return 0;
