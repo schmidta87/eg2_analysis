@@ -112,11 +112,11 @@ double Cross_Sections::sigmaCCn(double Ebeam, TVector3 k, TVector3 p, bool isPro
       
   double sigmaMott = cmSqGeVSq * 4. * sq(alpha) * k.Mag2() * sq(cos(k.Theta()/2.)) / sq(QSq);
 
-  double phi = q.Cross(k).Angle( q.Cross(p) );
+  double cosPhi = cos(q.Cross(k).Angle( q.Cross(p) ));
   return sigmaMott * ( sq(QSq)/sq(q.Mag2()) * wC +
                        (QSq/(2.*q.Mag2()) + sq(tan(k.Theta()/2.))) * wT +
-                       QSq/q.Mag2() * sqrt(QSq/q.Mag2() + sq(tan(k.Theta()/2.))) * wI * cos(phi) +
-                       (QSq/q.Mag2() * sq(cos(phi)) + sq(tan(k.Theta()/2.))) * wS
+                       QSq/q.Mag2() * sqrt(QSq/q.Mag2() + sq(tan(k.Theta()/2.))) * wI * cosPhi +
+                       (QSq/q.Mag2() * sq(cosPhi) + sq(tan(k.Theta()/2.))) * wS
                        );
 }
 
