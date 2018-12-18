@@ -31,6 +31,7 @@
    void set_sigmaCM(double new_sigmaCM);
    void set_Estar(double new_Estar);
    void set_Contacts(double new_Cpp0, double new_Cpn0, double new_Cpn1);
+   void set_byRatio();
    void randomize();
    
    double get_Estar();
@@ -50,6 +51,7 @@
 
  private:
   int A;
+  int u;
   double mA;
   double mAm2;
   double Estar;

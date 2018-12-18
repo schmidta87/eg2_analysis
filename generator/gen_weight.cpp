@@ -45,7 +45,8 @@ void help_mess()
        << "-c <Cross section method>==<cc1>\n"
        << "-f <Form Factor model>==<kelly>\n"
        << "-r: Randomize constants\n"
-       << "-p: List output file parameter order\n";
+       << "-p: List output file parameter order\n"
+       << "-R: Define contacts only by ratio";
 }
 
 void param_mess()
@@ -120,9 +121,10 @@ int main(int argc, char ** argv)
   csMethod csMeth=cc1;
   ffModel ffMod=kelly;
   double rand_flag = false;
+  bool byRat = false;
 
   int c;  
-  while ((c=getopt (argc-2, &argv[2], "hvA:s:C:E:k:u:f:c:rp")) != -1) // First two arguments are not optional flags.
+  while ((c=getopt (argc-2, &argv[2], "hvA:s:C:E:k:u:f:c:rpR")) != -1) // First two arguments are not optional flags.
     switch(c)
       {
       case 'h':
@@ -184,6 +186,9 @@ int main(int argc, char ** argv)
       case 'p':
 	param_mess();
 	return -1;
+      case 'R':
+	byRat = true;
+	break;
       case '?':
 	return -1;
       default:
@@ -233,6 +238,8 @@ int main(int argc, char ** argv)
   if (do_sCM)
     myInfo.set_sigmaCM(sCM);
   myInfo.set_Estar(Estar);
+  if (byRat)
+    myInfo.set_byRatio();
   if (do_Cs)
     {
     std::vector<double>::size_type isize = 3;
@@ -243,7 +250,6 @@ int main(int argc, char ** argv)
       }
     myInfo.set_Contacts(Cs[0],Cs[1],Cs[2]);
     }
-
   if (rand_flag)
     myInfo.randomize();
   
