@@ -138,7 +138,7 @@ bool accept_neutron(TVector3 pm){
 
         d_intercept = dist/cos(atan(1.73));
 
-        return((x_rot<390.-dist)&&(x_rot>1.73*abs(y_rot)+55.+d_intercept));
+        return((x_rot<390.-dist)&&(x_rot>1.73*fabs(y_rot)+55.+d_intercept));
 }
 
 

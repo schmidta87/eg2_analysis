@@ -7,7 +7,6 @@
 #include "TTree.h"
 #include "TH1.h"
 #include "TGraphAsymmErrors.h"
-#include "TRatioPlot.h"
 
 #include "Nuclear_Info.h"
 #include "fiducials.h"
