@@ -17,6 +17,7 @@ Cross_Sections::Cross_Sections()
 
 Cross_Sections::Cross_Sections(csMethod thisMeth, ffModel thisMod)
 {
+  std::cerr << "Cross_Sections: you have selected configuration: " << thisMeth << " " << thisMod <<"\n";
   myModel=thisMod;
   myMethod=thisMeth;
 }
@@ -61,9 +62,10 @@ double Cross_Sections::sigmaCCn(double Ebeam, TVector3 k, TVector3 p, bool isPro
   double QSqbar = q.Mag2() - sq(omegabar);
 
   // Calculate form factors
-  double GE = (isProton)? Gdipole(QSq) : 1.91 * QSq * Gdipole(QSq) / (4.*sq(mN) + 5.6 * QSq);
-  double GM = (isProton)? 2.79*Gdipole(QSq) : -1.91*Gdipole(QSq);
-  double F1 = 0.5 * (GE + QSq*GM/(4.*sq(mN)));
+  double GE = (isProton)? GEp(QSq) : GEn(QSq);
+  double GM = (isProton)? GMp(QSq) : GMn(QSq);
+
+  double F1 = (GE + GM*QSq/(4.*sq(mN))) / (1. + QSq/(4.*sq(mN)));
   double kF2 = (GM - GE)/(1. + QSq/(4.*sq(mN)));
 
   double wC;
@@ -108,15 +110,16 @@ double Cross_Sections::sigmaCCn(double Ebeam, TVector3 k, TVector3 p, bool isPro
   else
     {
       std::cerr << "Invalid cross section designation. Check and fix. Exiting\n\n\n";
+      exit(-10);
     }
       
-  double sigmaMott = cmSqGeVSq * 4. * sq(alpha) * k.Mag2() * sq(cos(k.Theta()/2.)) / sq(QSq);
+  double sigmaMott = cmSqGeVSq * k.Mag2() * sq( 2. * alpha * cos(k.Theta()/2.) / QSq);
 
-  double phi = q.Cross(k).Angle( q.Cross(p) );
-  return sigmaMott * ( sq(QSq)/sq(q.Mag2()) * wC +
+  double cosPhi = cos(q.Cross(k).Angle( q.Cross(p) ));
+  return sigmaMott *   ( sq(QSq)/sq(q.Mag2()) * wC +
                        (QSq/(2.*q.Mag2()) + sq(tan(k.Theta()/2.))) * wT +
-                       QSq/q.Mag2() * sqrt(QSq/q.Mag2() + sq(tan(k.Theta()/2.))) * wI * cos(phi) +
-                       (QSq/q.Mag2() * sq(cos(phi)) + sq(tan(k.Theta()/2.))) * wS
+                       QSq/q.Mag2() * sqrt(QSq/q.Mag2() + sq(tan(k.Theta()/2.))) * wI * cosPhi +
+                       (QSq/q.Mag2() * sq(cosPhi) + sq(tan(k.Theta()/2.))) * wS
                        );
 }
 
@@ -124,7 +127,6 @@ double Cross_Sections::sigmaCC1(double Ebeam, TVector3 k, TVector3 p, bool isPro
 {
   return sigmaCCn(Ebeam, k, p, isProton, 1);
 }
-
 
 double Cross_Sections::sigmaCC2(double Ebeam, TVector3 k, TVector3 p, bool isProton)
 {
@@ -140,7 +142,9 @@ double Cross_Sections::sigma_onShell_by_Etheta(double Ebeam, TVector3 k, bool is
   double GE = isProton ? GEp(QSq) : GEn(QSq);
   double GM = isProton ? GMp(QSq) : GMn(QSq);
   double epsilon = epsilon = 1./(1.+2.*(1.+tau)*sq(tan(theta/2.)));
-  double sigmaMott = cmSqGeVSq * 4* sq(alpha) * E3*E3*E3 * sq(cos(theta/2.))/(Ebeam*QSq*QSq);
+
+  double sigmaMott = cmSqGeVSq * sq(2.*alpha*E3 * cos(theta/2.)/QSq) * (E3/Ebeam);
+  
   return sigmaMott * (sq(GE) + tau/epsilon * sq(GM))/(1. + tau);
 }
 
@@ -163,7 +167,7 @@ double Cross_Sections::GEn(double QSq) // This will use the Galster parameteriza
 {
   double tau = QSq/(4.*mN*mN);
   return 1.70 * tau / (1. + 3.3 * tau) * Gdipole(QSq); // params from Kelly paper
-  //return 1.91 * tau / (1. + 5.6 * tau) * Gdipole(QSq); // I can't find a source for these numbers, so I trust them less.
+  //return mu_n * tau / (1. + 5.6 * tau) * Gdipole(QSq); // the original Galster numbers
 }
 
 double Cross_Sections::GMp(double QSq)

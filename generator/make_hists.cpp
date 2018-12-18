@@ -2,6 +2,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <vector>
 
 #include "TFile.h"
 #include "TTree.h"
@@ -27,53 +28,63 @@ int main(int argc, char ** argv)
 	TFile * f2p = new TFile(argv[2]);
 	TFile * fo = new TFile(argv[3],"RECREATE");
 
+	// Let's create a vector of all the histogram pointers so we can loop over them, save hassles
+	vector<TH1*> h1p_list;
+	vector<TH1*> h2p_list;
+
 	// Create histograms
 	TH1D * h1p_QSq = new TH1D("ep_QSq","ep;QSq [GeV^2];Counts",40,1.,5.);
-	h1p_QSq->Sumw2();
+	h1p_list.push_back(h1p_QSq);
 	TH1D * h1p_xB =  new TH1D("ep_xB" ,"ep;xB;Counts",26,1.2,2.5);
-	h1p_xB ->Sumw2();
+	h1p_list.push_back(h1p_xB );
 	TH1D * h1p_Pm =  new TH1D("ep_Pm" ,"ep;pMiss [GeV];Counts",28,0.3,1.0);
-	h1p_Pm ->Sumw2();
+	h1p_list.push_back(h1p_Pm );
 	TH1D * h1p_Pmq = new TH1D("ep_Pmq","ep;Theta_Pmq [deg];Counts",40,100.,180.);
-	h1p_Pmq->Sumw2();
+	h1p_list.push_back(h1p_Pmq);
 	TH1D * h1p_phi1 = new TH1D("ep_phi1","ep;Phi [deg];Counts",60,-30.,330.);
-	h1p_phi1->Sumw2();
+	h1p_list.push_back(h1p_phi1);
 	TH1D * h1p_phie = new TH1D("ep_phie","ep;Phi [deg];Counts",60,-30.,330.);
-	h1p_phie->Sumw2();
+	h1p_list.push_back(h1p_phie);
 	TH1D * h1p_theta1 = new TH1D("ep_theta1","ep;Theta [deg];Counts",60,10.,130.);
-	h1p_theta1->Sumw2();
+	h1p_list.push_back(h1p_theta1);
 	TH1D * h1p_thetae = new TH1D("ep_thetae","ep;Theta [deg];Counts",60,10.,40.);
-	h1p_thetae->Sumw2();
+	h1p_list.push_back(h1p_thetae);
 	TH1D * h1p_Emiss = new TH1D("ep_Emiss","ep;Emiss [GeV];Counts",50,0.,2);
-	h1p_Emiss->Sumw2();
+	h1p_list.push_back(h1p_Emiss);
 	TH2D * h1p_pmiss_Emiss = new TH2D("ep_pmiss_Emiss","ep;pmiss [GeV];Emiss [GeV];Counts",28,0.3,1.0,25,0.,2.);
-	h1p_pmiss_Emiss->Sumw2();
+	h1p_list.push_back(h1p_pmiss_Emiss);
+	TH2D * h1p_pmiss_E1 = new TH2D("ep_pmiss_E1","ep;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,20,0.5,0.9);
+	h1p_list.push_back(h1p_pmiss_E1);
 	TH1D * h2p_QSq = new TH1D("epp_QSq","epp;QSq [GeV^2];Counts",40,1.,5.);
-	h2p_QSq->Sumw2();
+	h2p_list.push_back(h2p_QSq);
 	TH1D * h2p_xB =  new TH1D("epp_xB" ,"epp;xB;Counts",26,1.2,2.5);
-	h2p_xB ->Sumw2();
+	h2p_list.push_back(h2p_xB );
 	TH1D * h2p_Pm =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",28,0.3,1.0);
-	h2p_Pm ->Sumw2();
+	h2p_list.push_back(h2p_Pm );
 	TH1D * h2p_Pmq = new TH1D("epp_Pmq","epp;Theta_Pmq [deg];Counts",40,100.,180.);
-	h2p_Pmq->Sumw2();
+	h2p_list.push_back(h2p_Pmq);
 	TH1D * h2p_Pmr = new TH1D("epp_Pmr","epp;Theta_Pmr [deg];Counts",40,100.,180.);
-	h2p_Pmr->Sumw2();
+	h2p_list.push_back(h2p_Pmr);
 	TH1D * h2p_Pr = new TH1D("epp_Pr","epp;pRec [GeV];Counts",26,0.35,1.0);
-	h2p_Pr->Sumw2();
+	h2p_list.push_back(h2p_Pr);
 	TH1D * h2p_phi1 = new TH1D("epp_phi1","ep;Phi [deg];Counts",60,-30.,330.);
-	h2p_phi1->Sumw2();
+	h2p_list.push_back(h2p_phi1);
 	TH1D * h2p_phi2 = new TH1D("epp_phi2","ep;Phi [deg];Counts",60,-30.,330.);
-	h2p_phi2->Sumw2();
+	h2p_list.push_back(h2p_phi2);
 	TH1D * h2p_phie = new TH1D("epp_phie","ep;Phi [deg];Counts",60,-30.,330.);
-	h2p_phie->Sumw2();
+	h2p_list.push_back(h2p_phie);
 	TH1D * h2p_thetae = new TH1D("epp_thetae","ep;Theta [deg];Counts",60,10.,40.);
-	h2p_thetae->Sumw2();
+	h2p_list.push_back(h2p_thetae);
 	TH1D * h2p_theta1 = new TH1D("epp_theta1","ep;Theta [deg];Counts",60,10.,130.);
-	h2p_theta1->Sumw2();
+	h2p_list.push_back(h2p_theta1);
 	TH1D * h2p_theta2 = new TH1D("epp_theta2","ep;Theta [deg];Counts",60,10.,130.);
-	h2p_theta2->Sumw2();
+	h2p_list.push_back(h2p_theta2);
 	TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",50,0.,2);
-	h2p_Emiss->Sumw2();
+	h2p_list.push_back(h2p_Emiss);
+	TH2D * h2p_pmiss_E1 = new TH2D("epp_pmiss_E1","epp;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,20,0.5,0.9);
+	h2p_list.push_back(h2p_pmiss_E1);
+
+	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.3,1.0,20,0.5,0.9);
 
 	TH1D * h1p_thetae_bySec[6];
 	TH1D * h1p_theta1_bySec[6];
@@ -85,22 +96,28 @@ int main(int argc, char ** argv)
 
 		sprintf(temp,"ep_theta1_%d",i);
 		h1p_theta1_bySec[i] = new TH1D(temp,"ep;Theta [deg];Counts",60,10.,130.);
-		h1p_theta1_bySec[i]->Sumw2();
+		h1p_list.push_back(h1p_theta1_bySec[i]);
 
 		sprintf(temp,"ep_thetae_%d",i);
 		h1p_thetae_bySec[i] = new TH1D(temp,"ep;Theta [deg];Counts",60,10.,40.);
-		h1p_thetae_bySec[i]->Sumw2();
+		h1p_list.push_back(h1p_thetae_bySec[i]);
 
 		sprintf(temp,"epp_theta1_%d",i);
 		h2p_theta1_bySec[i] = new TH1D(temp,"epp;Theta [deg];Counts",60,10.,130.);
-		h2p_theta1_bySec[i]->Sumw2();
+		h2p_list.push_back(h2p_theta1_bySec[i]);
 
 		sprintf(temp,"epp_theta2_%d",i);
 		h2p_theta2_bySec[i] = new TH1D(temp,"epp;Theta [deg];Counts",60,10.,130.);
-		h2p_theta2_bySec[i]->Sumw2();
+		h2p_list.push_back(h2p_theta2_bySec[i]);
 	}
 
-	// pp2p hist
+	// Now that all histograms have been defined, set them to Sumw2
+	for (int i=0 ; i<h1p_list.size() ; i++)
+	  h1p_list[i]->Sumw2();
+	for (int i=0 ; i<h2p_list.size() ; i++)
+	  h2p_list[i]->Sumw2();
+
+	// pp2p graph
 	TGraphAsymmErrors * pp_to_p = new TGraphAsymmErrors();
 	pp_to_p->SetName("pp_to_p");
 	pp_to_p->SetTitle("pp_to_p;p_miss [GeV];pp_to_p ratio");
@@ -147,6 +164,7 @@ int main(int argc, char ** argv)
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
+		double omega = Q2/(2.*mN*Xb);
 
 		// Let's make a sanitized phi and sector
 		double phie_deg = ve.Phi() * 180./M_PI;
@@ -173,6 +191,8 @@ int main(int argc, char ** argv)
 		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pmiss_size[0]*Pmiss_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
+
+		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vp.Mag2() + mN*mN) - omega,weight);
 	}
 
 	// Loop over 2p tree
@@ -216,6 +236,7 @@ int main(int argc, char ** argv)
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
+		double omega = Q2/(2.*mN*Xb);
 
 		// Let's make a sanitized phi and sector
 		double phie_deg = ve.Phi() * 180./M_PI;
@@ -243,6 +264,7 @@ int main(int argc, char ** argv)
 		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pmiss_size[0]*Pmiss_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
+		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
 
 		// Make a check on the recoils
 		if (fabs(Rp[1][2]+22.25)>2.25)
@@ -271,6 +293,7 @@ int main(int argc, char ** argv)
 		h2p_theta1_bySec[sector]->Fill(theta1_deg,weight);
 
 		h2p_Emiss->Fill(Emiss,weight);
+		h2p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
 
 		// Let's make a sanitized phi and sector
 		double phi2_deg = vrec.Phi() * 180./M_PI;
@@ -289,74 +312,37 @@ int main(int argc, char ** argv)
 
 	// pp-to-p
 	pp_to_p->BayesDivide(h2p_Pm,h1p_Pm);
+	for (int binX=1 ; binX<=pp_to_p_2d->GetNbinsX() ; binX++)
+	  for (int binY=1 ; binY<=pp_to_p_2d->GetNbinsY() ; binY++)
+	    {
+	      
+	      double N_pp = h2p_pmiss_E1->GetBinContent(binX,binY);
+	      double N_p =  h1p_pmiss_E1->GetBinContent(binX,binY);
+	      double ratio = 0.;
+	      if (N_p >0)
+		ratio = N_pp / N_p;
+	      pp_to_p_2d->SetBinContent(binX,binY,ratio);
+	    }
 
 	// Write out
 	fo -> cd();
 	pp_to_p->Write();
+	pp_to_p_2d->Write();
 
 	double pnorm = 9170;
 	double ppnorm = 437;
-						
-	h1p_QSq->    Scale(pnorm/h1p_QSq->     Integral());
-	h1p_xB->     Scale(pnorm/h1p_xB->      Integral());
-	h1p_Pm->     Scale(pnorm/h1p_Pm->      Integral());
-	h1p_Pmq->    Scale(pnorm/h1p_Pmq->     Integral());
-	h1p_phi1->   Scale(pnorm/h1p_phi1->    Integral());
-	h1p_theta1-> Scale(pnorm/h1p_theta1->  Integral());
-	h1p_phie->   Scale(pnorm/h1p_phie->    Integral());
-	h1p_thetae-> Scale(pnorm/h1p_thetae->  Integral());
-	h1p_Emiss->  Scale(pnorm/h1p_Emiss->   Integral());
-	h1p_pmiss_Emiss->  Scale(pnorm/h1p_pmiss_Emiss->   Integral());
-	h2p_QSq->    Scale(ppnorm/h2p_QSq->    Integral());
-	h2p_xB->     Scale(ppnorm/h2p_xB->     Integral());
-	h2p_Pm->     Scale(ppnorm/h2p_Pm->     Integral());
-	h2p_Pmq->    Scale(ppnorm/h2p_Pmq->    Integral());
-	h2p_Pr->     Scale(ppnorm/h2p_Pr->     Integral());
-	h2p_Pmr->    Scale(ppnorm/h2p_Pmr->    Integral());
-	h2p_phi1->   Scale(ppnorm/h2p_phi1->   Integral());
-	h2p_theta1-> Scale(ppnorm/h2p_theta1-> Integral());
-	h2p_phi2->   Scale(ppnorm/h2p_phi2->   Integral());
-	h2p_theta2-> Scale(ppnorm/h2p_theta2-> Integral());
-	h2p_phie->   Scale(ppnorm/h2p_phie->   Integral());
-	h2p_thetae-> Scale(ppnorm/h2p_thetae-> Integral());
-	h2p_Emiss->  Scale(ppnorm/h2p_Emiss->  Integral());
 
-	h1p_QSq->Write();
-	h1p_xB ->Write();
-	h1p_Pm ->Write();
-	h1p_Pmq->Write();
-	h1p_phi1->Write();
-	h1p_theta1->Write();
-	h1p_phie->Write();
-	h1p_thetae->Write();
-	h1p_Emiss->Write();
-	h1p_pmiss_Emiss->Write();
-	h2p_QSq->Write();
-	h2p_xB ->Write();
-	h2p_Pm ->Write();
-	h2p_Pmq->Write();
-	h2p_Pr ->Write();
-	h2p_Pmr->Write();
-	h2p_phi1->Write();
-	h2p_theta1->Write();
-	h2p_phi2->Write();
-	h2p_theta2->Write();
-	h2p_phie->Write();
-	h2p_thetae->Write();
-	h2p_Emiss->Write();
-
-	for (int i=0 ; i<6 ; i++)
-	{
-		
-		h1p_theta1_bySec[i]->Scale(ppnorm/h1p_theta1_bySec[i]->Integral());
-		h1p_thetae_bySec[i]->Scale(ppnorm/h1p_thetae_bySec[i]->Integral());
-		h2p_theta1_bySec[i]->Scale(ppnorm/h2p_theta1_bySec[i]->Integral());	  
-		h2p_theta2_bySec[i]->Scale(ppnorm/h2p_theta2_bySec[i]->Integral());
-		h1p_theta1_bySec[i]->Write();
-		h1p_thetae_bySec[i]->Write();
-		h2p_theta1_bySec[i]->Write();
-		h2p_theta2_bySec[i]->Write();
-	}
+	// scale all the histograms, and write them out
+	for (int i=0 ; i<h1p_list.size() ; i++)
+	  {
+	    h1p_list[i]->Scale(pnorm/h1p_list[i]->Integral());
+	    h1p_list[i]->Write();
+	  }
+	for (int i=0 ; i<h2p_list.size() ; i++)
+	  {
+	    h2p_list[i]->Scale(ppnorm/h2p_list[i]->Integral()); // use the corresponding normalization factor.
+	    h2p_list[i]->Write();
+	  }
 
 	fo->Close();
 
