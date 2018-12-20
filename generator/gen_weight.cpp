@@ -240,18 +240,31 @@ int main(int argc, char ** argv)
   myInfo.set_Estar(Estar);
   if (byRat)
     myInfo.set_byRatio();
-  if (do_Cs)
-    {
-    std::vector<double>::size_type isize = 3;
-    if (Cs.size() != isize)
-      {
-	cerr << "Wrong number of contacts added. Require three values (Cpp0, Cpn0, Cpn1). Aborting...\n";
-	return 1;
-      }
-    myInfo.set_Contacts(Cs[0],Cs[1],Cs[2]);
-    }
   if (rand_flag)
     myInfo.randomize();
+  if (do_Cs)
+    { 
+      if (byRat)
+	{
+	  std::vector<double>::size_type isize = 1;
+	  if (Cs.size() != isize)
+	    {
+	      cerr << "If defining by contact ratio, please provide only one value. Aborting...\n";
+	      return 1;
+	    }
+	  myInfo.set_Ratio(Cs[0]);
+	}
+      else
+	{
+	  std::vector<double>::size_type isize = 3;
+	  if (Cs.size() != isize)
+	    {
+	      cerr << "Wrong number of contacts added. Require three values (Cpp0, Cpn0, Cpn1). Aborting...\n";
+	      return 1;
+	    }
+	  myInfo.set_Contacts(Cs[0],Cs[1],Cs[2]);
+	}
+    }
   
   Cross_Sections myCS(csMeth,ffMod);
   const double mA = myInfo.get_mA();

@@ -134,15 +134,27 @@ void Nuclear_Info::set_Contacts(double new_Cpp0, double new_Cpn0, double new_Cpn
   Cpn1 = new_Cpn1;
 }
 
+void Nuclear_Info::set_Ratio(double ratio)
+{
+  double C0 = 1.4;
+  Cpp0 = C0;
+  d_Cpp0 = 0.;
+  Cpn0 = C0;
+  d_Cpn0 = 0.;
+  Cpn1 = C0*ratio;
+  d_Cpn1 = 0.;
+}
+
+
 void Nuclear_Info::set_byRatio()
 {
   if (A==12)
     {
       double C0 = 1.4;
-      Cpp0=C0;
-      d_Cpp0=0.;
-      Cpn0=C0;
-      d_Cpn0=0.;      
+      Cpp0 = C0;
+      d_Cpp0 = 0.;
+      Cpn0 = C0;
+      d_Cpn0 = 0.;      
       if (u==1)
 	{
 	  Cpn1 = 14.*C0;
