@@ -145,7 +145,8 @@ double Cross_Sections::sigma_onShell_by_Etheta(double Ebeam, TVector3 k, bool is
 
   double sigmaMott = cmSqGeVSq * sq(2.*alpha*E3 * cos(theta/2.)/QSq) * (E3/Ebeam);
   
-  return sigmaMott * (sq(GE) + tau/epsilon * sq(GM))/(1. + tau);
+  double sigmaRosenbluth = sigmaMott * (sq(GE) + tau/epsilon * sq(GM))/(1. + tau);
+  return sigmaRosenbluth * Ebeam / (E3 * (2.*tau + 1.));
 }
 
 double Cross_Sections::GEp(double QSq)
