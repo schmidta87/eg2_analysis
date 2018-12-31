@@ -46,7 +46,8 @@ void help_mess()
        << "-f <Form Factor model>==<kelly>\n"
        << "-r: Randomize constants\n"
        << "-p: List output file parameter order\n"
-       << "-R: Define contacts only by ratio";
+       << "-R: Define contacts only by ratio\n"
+       << "-I: Define contacts only by inverted ratio\n";
 }
 
 void param_mess()
@@ -122,9 +123,10 @@ int main(int argc, char ** argv)
   ffModel ffMod=kelly;
   double rand_flag = false;
   bool byRat = false;
+  bool byInv = false;
 
   int c;  
-  while ((c=getopt (argc-2, &argv[2], "hvA:s:C:E:k:u:f:c:rpR")) != -1) // First two arguments are not optional flags.
+  while ((c=getopt (argc-2, &argv[2], "hvA:s:C:E:k:u:f:c:rpRI")) != -1) // First two arguments are not optional flags.
     switch(c)
       {
       case 'h':
@@ -189,6 +191,9 @@ int main(int argc, char ** argv)
       case 'R':
 	byRat = true;
 	break;
+      case 'I':
+	byInv = true;
+	break;
       case '?':
 	return -1;
       default:
@@ -240,19 +245,35 @@ int main(int argc, char ** argv)
   myInfo.set_Estar(Estar);
   if (byRat)
     myInfo.set_byRatio();
-  if (rand_flag)
-    myInfo.randomize();
   if (do_Cs)
     { 
       if (byRat)
 	{
 	  std::vector<double>::size_type isize = 1;
-	  if (Cs.size() != isize)
+	  std::vector<double>::size_type isize2 = 2;
+	  if ((Cs.size() != isize) and (Cs.size() != isize2))
 	    {
-	      cerr << "If defining by contact ratio, please provide only one value. Aborting...\n";
+	      cerr << "If defining by contact ratio, please provide only one value and optionally an uncertainty. Aborting...\n";
 	      return 1;
 	    }
-	  myInfo.set_Ratio(Cs[0]);
+	  if (Cs.size() == isize)
+	    myInfo.set_Ratio(Cs[0]);
+	  else
+	    myInfo.set_Ratio(Cs[0],Cs[1]);
+	}
+      else if (byInv)
+	{
+	  std::vector<double>::size_type isize = 1;
+	  std::vector<double>::size_type isize2 = 2;
+	  if ((Cs.size() != isize) and (Cs.size() != isize2))
+	    {
+	      cerr << "If defining by contact ratio, please provide only one value and optionally an uncertainty. Aborting...\n";
+	      return 1;
+	    }
+	  if (Cs.size() == isize)
+	    myInfo.set_Ratio_Inverse(Cs[0]);
+	  else
+	    myInfo.set_Ratio_Inverse(Cs[0],Cs[1]);
 	}
       else
 	{
@@ -265,6 +286,8 @@ int main(int argc, char ** argv)
 	  myInfo.set_Contacts(Cs[0],Cs[1],Cs[2]);
 	}
     }
+  if (rand_flag)
+    myInfo.randomize();
   
   Cross_Sections myCS(csMeth,ffMod);
   const double mA = myInfo.get_mA();
@@ -300,7 +323,7 @@ int main(int argc, char ** argv)
   // Loop over events
   for (int event=0 ; event < nEvents ; event++)
     {
-      if ((event %10000 ==0) and verbose)
+      if ((event %100000 ==0) and verbose)
 	cerr << "Working on event " << event << "\n";
 
       // Start with weight 1. Only multiply terms to weight. If trouble, set weight=0

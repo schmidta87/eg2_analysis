@@ -87,7 +87,7 @@ int main(int argc, char ** argv)
   const int nEvents = inTree->GetEntries(); // this is a key number for the weight
   for (int event=0 ; event < nEvents ; event++)
     {
-      if (event %10000==0)
+      if (event %100000==0)
 	cerr << "Working on event " << event << " out of " << nEvents <<"\n";
       
       inTree->GetEvent(event);

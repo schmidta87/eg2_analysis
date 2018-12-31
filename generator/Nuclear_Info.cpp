@@ -145,6 +145,42 @@ void Nuclear_Info::set_Ratio(double ratio)
   d_Cpn1 = 0.;
 }
 
+void Nuclear_Info::set_Ratio(double ratio, double sig_ratio)
+{
+  double C0 = 1.4;
+  Cpp0 = C0;
+  d_Cpp0 = 0.;
+  Cpn0 = C0;
+  d_Cpn0 = 0.;
+  Cpn1 = C0*ratio;
+  d_Cpn1 = C0*sig_ratio;
+}
+
+void Nuclear_Info::set_Ratio_Inverse(double ratio)
+{
+  double C1 = 20.;
+  double C0 = ratio*C1;
+  Cpp0 = C0;
+  d_Cpp0 = 0.;
+  Cpn0 = C0;
+  d_Cpn0 = 0.;
+  Cpn1 = C1;
+  d_Cpn1 = 0.;
+}
+
+void Nuclear_Info::set_Ratio_Inverse(double ratio, double sig_ratio)
+{
+  double C1 = 20;
+  double C0 = ratio*C1;
+  double sig_C0 = sig_ratio*C1;
+  Cpp0 = C0;
+  d_Cpp0 = sig_C0;
+  Cpn0 = C0;
+  d_Cpn0 = sig_C0;
+  Cpn1 = C1;
+  d_Cpn1 = 0;
+}
+
 
 void Nuclear_Info::set_byRatio()
 {

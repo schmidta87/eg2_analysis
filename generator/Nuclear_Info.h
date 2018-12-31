@@ -33,6 +33,9 @@
    void set_Contacts(double new_Cpp0, double new_Cpn0, double new_Cpn1);
    void set_byRatio();
    void set_Ratio(double ratio);
+   void set_Ratio(double ratio, double sig_ratio);
+   void set_Ratio_Inverse(double ratio);
+   void set_Ratio_Inverse(double ratio, double sig_ratio);
    void randomize();
    
    double get_Estar();
