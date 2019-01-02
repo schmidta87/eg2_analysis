@@ -148,9 +148,13 @@ int main(int argc, char ** argv)
 
 		// Do necessary cuts
 		if (fabs(Rp[0][2]+22.25)>2.25)
-			continue;
+		  continue;
 		if (Pp_size[0]>2.4)
-			continue;
+		  continue;
+
+		// Add an additional cut based on theta_pm_q
+		if (Pmiss_q_angle[0] < 125.)
+		  continue;
 
 		// Apply fiducial cuts
 		TVector3 ve(Pe[0],Pe[1],Pe[2]);
@@ -223,6 +227,10 @@ int main(int argc, char ** argv)
 			continue;
 		if (Pp_size[0]>2.4)
 			continue;
+
+		// Add an additional cut based on theta_pm_q
+		if (Pmiss_q_angle[0] < 125.)
+		  continue;
 
 		// Apply fiducial cuts
 		TVector3 ve(Pe[0],Pe[1],Pe[2]);
@@ -310,6 +318,8 @@ int main(int argc, char ** argv)
 	f1p->Close();
 	f2p->Close();
 
+	cerr << "The ep and epp integrals are: " << h1p_Pm->Integral() << " "  << h2p_Pm->Integral() << "\n";
+
 	// pp-to-p
 	pp_to_p->BayesDivide(h2p_Pm,h1p_Pm);
 	for (int binX=1 ; binX<=pp_to_p_2d->GetNbinsX() ; binX++)
@@ -329,18 +339,20 @@ int main(int argc, char ** argv)
 	pp_to_p->Write();
 	pp_to_p_2d->Write();
 
-	double pnorm = 9170;
-	double ppnorm = 437;
+	const double data_ep = 8547.;
+	const double data_epp = 422.;
+	const double pnorm = data_ep/h1p_Pm->Integral();
+	const double ppnorm = pnorm;
 
 	// scale all the histograms, and write them out
 	for (int i=0 ; i<h1p_list.size() ; i++)
 	  {
-	    h1p_list[i]->Scale(pnorm/h1p_list[i]->Integral());
+	    h1p_list[i]->Scale(pnorm);
 	    h1p_list[i]->Write();
 	  }
 	for (int i=0 ; i<h2p_list.size() ; i++)
 	  {
-	    h2p_list[i]->Scale(ppnorm/h2p_list[i]->Integral()); // use the corresponding normalization factor.
+	    h2p_list[i]->Scale(ppnorm);
 	    h2p_list[i]->Write();
 	  }
 

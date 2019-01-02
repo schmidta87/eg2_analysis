@@ -116,7 +116,8 @@ int main(int argc, char ** argv)
       double gen_pRec_Mag = vrec.Mag();
 
       // Apply weight for detecting e, p      
-      weight = gen_weight * eMap.accept(ve) * pMap.accept(vlead) * 1.E33; // put it in nb to make it macroscopic
+      //weight = gen_weight * eMap.accept(ve) * pMap.accept(vlead) * 1.E33; // put it in nb to make it macroscopic
+      weight = gen_weight * pMap.accept(vlead) * 1.E33; // put it in nb to make it macroscopic
 
       if (weight <= 0.)
 	continue;
