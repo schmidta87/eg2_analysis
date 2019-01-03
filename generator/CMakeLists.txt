@@ -14,6 +14,10 @@ target_link_libraries(simulator ${ROOT_LIBRARIES} AccMap Fid)
 add_executable(make_hists make_hists.cpp )
 target_link_libraries(make_hists ${ROOT_LIBRARIES} Fid)
 
+# Make ratios (when combining more than one histogram file)
+add_executable(make_ratios make_ratios.cpp)
+target_link_libraries(make_ratios ${ROOT_LIBRARIES})
+
 add_subdirectory(Jackson)
 
 
