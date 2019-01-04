@@ -12,6 +12,7 @@
 
 #include "Nuclear_Info.h"
 #include "fiducials.h"
+#include "helpers.h"
 
 using namespace std;
 
@@ -83,6 +84,8 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_Emiss);
 	TH2D * h2p_pmiss_E1 = new TH2D("epp_pmiss_E1","epp;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,20,0.5,0.9);
 	h2p_list.push_back(h2p_pmiss_E1);
+	TH2D * h2p_pmiss_appEstar = new TH2D("epp_pmiss_appEstar","epp;pmiss [GeV];Apparent Estar [GeV];Counts",28,0.3,1.0,20,-0.2,0.8);
+	h2p_list.push_back(h2p_pmiss_appEstar);
 
 	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.3,1.0,20,0.5,0.9);
 
@@ -192,7 +195,7 @@ int main(int argc, char ** argv)
 		h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
 
 		// Let's figure out missing energy! 
-		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pmiss_size[0]*Pmiss_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
+		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp[0]*Pp[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 
@@ -269,7 +272,7 @@ int main(int argc, char ** argv)
 		h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
 
 		// Let's figure out missing energy! 
-		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pmiss_size[0]*Pmiss_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
+		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp[0]*Pp[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
@@ -283,8 +286,10 @@ int main(int argc, char ** argv)
 		if (!accept_proton(vrec))
 			continue;
 
+		double Erec = sqrt(vrec.Mag2() + mN*mN);
 		TVector3 vq(q[0],q[1],q[2]);
 		TVector3 vmiss = vlead - vq;
+		TVector3 vcm = vmiss + vrec;
 
 		h2p_QSq->Fill(Q2,weight);
 		h2p_xB ->Fill(Xb,weight);
@@ -314,6 +319,9 @@ int main(int argc, char ** argv)
 		h2p_theta2->Fill(theta2_deg,weight);
 		h2p_theta2_bySec[sector2]->Fill(theta2_deg,weight);
 
+		// Histogram for the "apparent E*"
+		double apparent_Estar = sqrt(sq(sqrt(sq(m_10B) + vcm.Mag2()) + Erec) -vlead.Mag2()) - m_11B;
+		h2p_pmiss_appEstar->Fill(Pmiss_size[0],apparent_Estar,weight);
 	}
 	f1p->Close();
 	f2p->Close();
