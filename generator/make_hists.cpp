@@ -195,7 +195,7 @@ int main(int argc, char ** argv)
 		h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
 
 		// Let's figure out missing energy! 
-		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp[0]*Pp[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
+		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 
@@ -272,7 +272,7 @@ int main(int argc, char ** argv)
 		h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
 
 		// Let's figure out missing energy! 
-		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp[0]*Pp[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
+		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
