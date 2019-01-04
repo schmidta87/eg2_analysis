@@ -50,11 +50,11 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_theta1);
 	TH1D * h1p_thetae = new TH1D("ep_thetae","ep;Theta [deg];Counts",60,10.,40.);
 	h1p_list.push_back(h1p_thetae);
-	TH1D * h1p_Emiss = new TH1D("ep_Emiss","ep;Emiss [GeV];Counts",50,0.,2);
+	TH1D * h1p_Emiss = new TH1D("ep_Emiss","ep;Emiss [GeV];Counts",40,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss);
-	TH2D * h1p_pmiss_Emiss = new TH2D("ep_pmiss_Emiss","ep;pmiss [GeV];Emiss [GeV];Counts",28,0.3,1.0,25,0.,2.);
+	TH2D * h1p_pmiss_Emiss = new TH2D("ep_pmiss_Emiss","ep;pmiss [GeV];Emiss [GeV];Counts",28,0.3,1.0,20,-0.2,0.6);
 	h1p_list.push_back(h1p_pmiss_Emiss);
-	TH2D * h1p_pmiss_E1 = new TH2D("ep_pmiss_E1","ep;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,20,0.5,0.9);
+	TH2D * h1p_pmiss_E1 = new TH2D("ep_pmiss_E1","ep;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,25,0.5,1.0);
 	h1p_list.push_back(h1p_pmiss_E1);
 	TH1D * h2p_QSq = new TH1D("epp_QSq","epp;QSq [GeV^2];Counts",40,1.,5.);
 	h2p_list.push_back(h2p_QSq);
@@ -80,9 +80,9 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_theta1);
 	TH1D * h2p_theta2 = new TH1D("epp_theta2","ep;Theta [deg];Counts",60,10.,130.);
 	h2p_list.push_back(h2p_theta2);
-	TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",50,0.,2);
+	TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",40,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss);
-	TH2D * h2p_pmiss_E1 = new TH2D("epp_pmiss_E1","epp;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,20,0.5,0.9);
+	TH2D * h2p_pmiss_E1 = new TH2D("epp_pmiss_E1","epp;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,25,0.5,1.0);
 	h2p_list.push_back(h2p_pmiss_E1);
 	TH2D * h2p_pmiss_appEstar = new TH2D("epp_pmiss_appEstar","epp;pmiss [GeV];Apparent Estar [GeV];Counts",28,0.3,1.0,20,-0.2,0.8);
 	h2p_list.push_back(h2p_pmiss_appEstar);
