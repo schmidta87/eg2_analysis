@@ -107,41 +107,6 @@ bool accept_proton(TVector3 p)
   return false;
 }
 
-// Currently ECal only, to be improved
-bool accept_neutron(TVector3 pm){
-        double vtx_z = -22.25;
-	double dist = 10.0;
-        double r, pm_phi, x_rot, y_rot, angle, pm_theta, third_theta, d_intercept;
-
-        const double ec_theta =  65.*M_PI/180.; // degrees
-        const double z0       =563.1; // cm
-
-        // Using law of sines to determine distance from vertex to EC
-        pm_theta    = pm.Theta();
-        third_theta = (M_PI - ec_theta - pm_theta);
-
-        r = (z0-vtx_z)*sin(ec_theta)/sin(third_theta);
-
-        double Xmiss = r*sin(pm.Theta())*cos(pm.Phi());
-        double Ymiss = r*sin(pm.Theta())*sin(pm.Phi());
-
-        pm_phi = 180./M_PI*pm.Phi();
-        if (pm_phi < -30.) pm_phi += 360.;
-        int sec = (int)(pm_phi+30)/60;
-        if (sec>5) sec = 5;
-        if (sec<0) sec = 0;
-
-        angle = M_PI/180.*60.*(sec);
-
-        x_rot = Xmiss*cos(angle) + Ymiss*sin(angle);
-        y_rot = Xmiss*sin(angle) - Ymiss*cos(angle);
-
-        d_intercept = dist/cos(atan(1.73));
-
-        return((x_rot<390.-dist)&&(x_rot>1.73*fabs(y_rot)+55.+d_intercept));
-}
-
-
 // ############## ELECTRON FIDUCIAL CUT PARAMETERS (starting with e) #################
 // sector, side
 const double eFidAp0[6][2]={{25.9392,25.142},{26.3123,26.546},{25.2953,26.4484},{28.,23.},{28.,23.2826},{28.,23.8565}};
@@ -265,6 +230,97 @@ bool accept_electron(TVector3 p)
   //std::cout << mom << " " << theta << " " << phi << " " << sector << " " << aLow << " " << aHigh << "\n";
 
   if ((phi < phiCentral + deltaPhiHigh) && (phi > phiCentral - deltaPhiLow))
+    return true;
+
+  return false;
+}
+
+// ############## NEUTRON FIDUCIAL CUT FOR ECAL #################
+
+bool accept_neutron(TVector3 pm){
+        double vtx_z = -22.25;
+	double dist = 10.0;
+        double r, pm_phi, x_rot, y_rot, angle, pm_theta, third_theta, d_intercept;
+
+        const double ec_theta =  65.*M_PI/180.; // degrees
+        const double z0       =563.1; // cm
+
+        // Using law of sines to determine distance from vertex to EC
+        pm_theta    = pm.Theta();
+        third_theta = (M_PI - ec_theta - pm_theta);
+
+        r = (z0-vtx_z)*sin(ec_theta)/sin(third_theta);
+
+        double Xmiss = r*sin(pm.Theta())*cos(pm.Phi());
+        double Ymiss = r*sin(pm.Theta())*sin(pm.Phi());
+
+        pm_phi = 180./M_PI*pm.Phi();
+        if (pm_phi < -30.) pm_phi += 360.;
+        int sec = (int)(pm_phi+30)/60;
+        if (sec>5) sec = 5;
+        if (sec<0) sec = 0;
+
+        angle = M_PI/180.*60.*(sec);
+
+        x_rot = Xmiss*cos(angle) + Ymiss*sin(angle);
+        y_rot = Xmiss*sin(angle) - Ymiss*cos(angle);
+
+        d_intercept = dist/cos(atan(1.73));
+
+        return((x_rot<390.-dist)&&(x_rot>1.73*fabs(y_rot)+55.+d_intercept));
+}
+
+
+// ############## NEUTRON FIDUCIAL CUT FOR TOF #################
+
+bool accept_neutron_tof(TVector3 p)
+{
+  // This is our fiducial limit, 10 cm from the edge of each bar.
+  const double distFromEdge=10.;
+
+  // angle in degrees of the bar centers
+  double thetaBars[57]={8.6,10.3,11.9,13.6,15.3,17,18.8,20.5,22.3,24,25.8,27.6,29.3,31.1,32.8,34.5,36.2,37.9,39.6,
+			41.2,42.8,44.4,45.9,47.4,49.6,51.9,54.3,56.8,59.4,62,64.7,67.4,70.2,72.9,75.7,78.2,80.8,83.5,
+			86.3,89.3,92.2,95.3,98.4,101.6,104.8,108.8,112,114.9,118.1,121.4,124.7,128,131.4,134.2,136.5,138.8,141}; 
+  
+  // width (length?) of the bars in cm
+  double width[57]={32.3,48.1,64,79.8,95.7,106.6,122.4,138.3,154.1,170,185.8,201.7,217.6,233.4,249.3,265.1,281,296.8,312.7,
+		    328.5,344.4,360.2,376.1,371.3,378.2,385,391.9,398.7,405.6,412.5,419.3,426.2,433,439.9,445.1,439.3,433.6,427.8,
+		    422,416.3,410.5,404.8,399,393.3,387.5,380.1,363.5,347,330.4,313.9,297.3,280.8,264.2,246.8,235.4,224,212.7};
+
+  // Distance to the target center in cm
+  double distance[57]={513,509,503,500,498,496,495,494,493,493,493,494,495,496,498,501,504,507,511,
+		       515,519,524,529,514,504,495,487,480,473,468,463,460,458,457,457,446,437,428,
+		       421,414,409,405,402,400,399,402,395,389,384,381,378,377,378,379,380,383,385};
+  
+  
+  double thetaDeg = p.Theta()*180./M_PI;
+  if (thetaDeg<9 || thetaDeg>140)
+    return false;
+  
+  // Sanitize phi to [-30,330]
+  double phiDeg = p.Phi()*180./M_PI;
+  if (phiDeg <-30.) phiDeg += 360.;
+
+  // Get the value of phi within the relevant sector
+  int sector = phiDeg/60;
+  double PhiOneSector = phiDeg - 60.*sector;
+  
+  // Figure out the nearest bars
+  int dsBar, usBar;
+  for (dsBar=0, usBar=1; usBar < 57 ; dsBar++, usBar++)
+    {
+      if ((thetaBars[dsBar] < thetaDeg) && (thetaBars[usBar] > thetaDeg))
+	break;
+    }
+
+  // Make a linear interpolation between the nearest bars
+  double dsPhiMax = 180./M_PI*atan((width[dsBar] - distFromEdge)/(sin(thetaBars[dsBar]*M_PI/180.)*distance[dsBar]));
+  double usPhiMax = 180./M_PI*atan((width[usBar] - distFromEdge)/(sin(thetaBars[usBar]*M_PI/180.)*distance[usBar]));
+  double phiMax = dsPhiMax + (usPhiMax-dsPhiMax) * (thetaDeg - thetaBars[dsBar])/(thetaBars[usBar] - thetaBars[dsBar]);
+
+  // Test if our neutron is within the phi bound
+  if (fabs(PhiOneSector) < phiMax)
     return true;
 
   return false;

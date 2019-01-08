@@ -6,5 +6,6 @@
 bool accept_proton(TVector3 p);
 bool accept_electron(TVector3 p);
 bool accept_neutron(TVector3 pm);
+bool accept_neutron_tof(TVector3 p);
 
 #endif
