@@ -6,12 +6,17 @@
 #include "TTree.h"
 #include "TH1D.h"
 #include "TGraphAsymmErrors.h"
+#include "TRandom3.h"
 
 #include "AccMap.h"
 #include "fiducials.h"
 #include "Nuclear_Info.h"
 
 using namespace std;
+
+const bool doSmearing=false;
+const double eSmearing=0.003;
+const double pSmearing=0.01;
 
 int main(int argc, char ** argv)
 {
@@ -84,11 +89,14 @@ int main(int argc, char ** argv)
   T->Branch("Rp",Rp,"Rp[nmb][3]/F");
   T->Branch("weight",&weight,"weight/D");
 
+  // Other set up
+  TRandom3 myRand(0);
+
   // Loop over all events
   const int nEvents = inTree->GetEntries(); // this is a key number for the weight
   for (int event=0 ; event < nEvents ; event++)
     {
-      if (event %100000==0)
+      if (event %1000000==0)
 	cerr << "Working on event " << event << " out of " << nEvents <<"\n";
       
       inTree->GetEvent(event);
@@ -99,9 +107,30 @@ int main(int argc, char ** argv)
 
       // Create vectors for the particles
       TVector3 ve(gen_pe[0],gen_pe[1],gen_pe[2]);
-      TVector3 vq = TVector3(0.,0.,eg2beam) - ve;
       TVector3 vlead(gen_pLead[0],gen_pLead[1],gen_pLead[2]);
       TVector3 vrec(gen_pRec[0],gen_pRec[1],gen_pRec[2]);
+      
+      // Smearing
+      if (doSmearing)
+	{
+	  ve *= (1. + eSmearing * myRand.Gaus() * ve.Mag());
+	  gen_pe[0] = ve.X();
+	  gen_pe[1] = ve.Y();
+	  gen_pe[2] = ve.Z();
+
+	  vlead *= (1. + pSmearing * myRand.Gaus() * vlead.Mag());
+	  gen_pLead[0] = vlead.X();
+	  gen_pLead[1] = vlead.Y();
+	  gen_pLead[2] = vlead.Z();
+
+	  vrec *= (1. + pSmearing * myRand.Gaus() * vrec.Mag());
+	  gen_pRec[0] = vrec.X();
+	  gen_pRec[1] = vrec.Y();
+	  gen_pRec[2] = vrec.Z();
+	}
+
+      // Derived vectors
+      TVector3 vq = TVector3(0.,0.,eg2beam) - ve;
       TVector3 vmiss=vlead-vq;
       TVector3 vcm=vmiss+vrec;
       TVector3 vrel=0.5*(vmiss-vrec);

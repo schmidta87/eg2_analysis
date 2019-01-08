@@ -155,10 +155,6 @@ int main(int argc, char ** argv)
 		if (Pp_size[0]>2.4)
 		  continue;
 
-		// Add an additional cut based on theta_pm_q
-		if (Pmiss_q_angle[0] < 125.)
-		  continue;
-
 		// Apply fiducial cuts
 		TVector3 ve(Pe[0],Pe[1],Pe[2]);
 		TVector3 vp(Pp[0][0],Pp[0][1],Pp[0][2]);
@@ -230,10 +226,6 @@ int main(int argc, char ** argv)
 			continue;
 		if (Pp_size[0]>2.4)
 			continue;
-
-		// Add an additional cut based on theta_pm_q
-		if (Pmiss_q_angle[0] < 125.)
-		  continue;
 
 		// Apply fiducial cuts
 		TVector3 ve(Pe[0],Pe[1],Pe[2]);
@@ -347,8 +339,8 @@ int main(int argc, char ** argv)
 	pp_to_p->Write();
 	pp_to_p_2d->Write();
 
-	const double data_ep = 8547.;
-	const double data_epp = 422.;
+	const double data_ep = 9175.;
+	const double data_epp = 437.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
 	const double ppnorm = pnorm;
 
