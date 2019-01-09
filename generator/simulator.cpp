@@ -14,7 +14,7 @@
 
 using namespace std;
 
-const bool doSmearing=false;
+const bool doSmearing=true;
 const double eSmearing=0.003;
 const double pSmearing=0.01;
 
