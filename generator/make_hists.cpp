@@ -50,8 +50,16 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_theta1);
 	TH1D * h1p_thetae = new TH1D("ep_thetae","ep;Theta [deg];Counts",60,10.,40.);
 	h1p_list.push_back(h1p_thetae);
+	TH1D * h1p_mom1 = new TH1D("ep_mom1","ep;Mom [GeV/c];Counts",40,0.4,2.4);
+	h1p_list.push_back(h1p_mom1);
 	TH1D * h1p_Emiss = new TH1D("ep_Emiss","ep;Emiss [GeV];Counts",40,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss);
+	TH1D * h1p_Emiss_lo = new TH1D("ep_Emiss_lo","ep;Emiss [GeV];Counts",40,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_lo);
+	TH1D * h1p_Emiss_md = new TH1D("ep_Emiss_md","ep;Emiss [GeV];Counts",40,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_md);
+	TH1D * h1p_Emiss_hi = new TH1D("ep_Emiss_hi","ep;Emiss [GeV];Counts",40,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_hi);
 	TH2D * h1p_pmiss_Emiss = new TH2D("ep_pmiss_Emiss","ep;pmiss [GeV];Emiss [GeV];Counts",28,0.3,1.0,20,-0.2,0.6);
 	h1p_list.push_back(h1p_pmiss_Emiss);
 	TH2D * h1p_pmiss_E1 = new TH2D("ep_pmiss_E1","ep;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,25,0.5,1.0);
@@ -66,22 +74,28 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_Pmq);
 	TH1D * h2p_Pmr = new TH1D("epp_Pmr","epp;Theta_Pmr [deg];Counts",40,100.,180.);
 	h2p_list.push_back(h2p_Pmr);
-	TH1D * h2p_Pr = new TH1D("epp_Pr","epp;pRec [GeV];Counts",26,0.35,1.0);
-	h2p_list.push_back(h2p_Pr);
-	TH1D * h2p_phi1 = new TH1D("epp_phi1","ep;Phi [deg];Counts",60,-30.,330.);
+	TH1D * h2p_phi1 = new TH1D("epp_phi1","epp;Phi [deg];Counts",60,-30.,330.);
 	h2p_list.push_back(h2p_phi1);
-	TH1D * h2p_phi2 = new TH1D("epp_phi2","ep;Phi [deg];Counts",60,-30.,330.);
+	TH1D * h2p_phi2 = new TH1D("epp_phi2","epp;Phi [deg];Counts",60,-30.,330.);
 	h2p_list.push_back(h2p_phi2);
-	TH1D * h2p_phie = new TH1D("epp_phie","ep;Phi [deg];Counts",60,-30.,330.);
+	TH1D * h2p_phie = new TH1D("epp_phie","epp;Phi [deg];Counts",60,-30.,330.);
 	h2p_list.push_back(h2p_phie);
-	TH1D * h2p_thetae = new TH1D("epp_thetae","ep;Theta [deg];Counts",60,10.,40.);
+	TH1D * h2p_thetae = new TH1D("epp_thetae","epp;Theta [deg];Counts",60,10.,40.);
 	h2p_list.push_back(h2p_thetae);
-	TH1D * h2p_theta1 = new TH1D("epp_theta1","ep;Theta [deg];Counts",60,10.,130.);
+	TH1D * h2p_theta1 = new TH1D("epp_theta1","epp;Theta [deg];Counts",60,10.,130.);
 	h2p_list.push_back(h2p_theta1);
-	TH1D * h2p_theta2 = new TH1D("epp_theta2","ep;Theta [deg];Counts",60,10.,130.);
+	TH1D * h2p_theta2 = new TH1D("epp_theta2","epp;Theta [deg];Counts",60,10.,130.);
 	h2p_list.push_back(h2p_theta2);
+	TH1D * h2p_mom2 = new TH1D("epp_mom2","epp;Recoil Mom [GeV/c];Counts",17,0.35,1.2);
+	h2p_list.push_back(h2p_mom2);
 	TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",40,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss);
+	TH1D * h2p_Emiss_lo = new TH1D("epp_Emiss_lo","epp;Emiss [GeV];Counts",40,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_lo);
+	TH1D * h2p_Emiss_md = new TH1D("epp_Emiss_md","epp;Emiss [GeV];Counts",40,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_md);
+	TH1D * h2p_Emiss_hi = new TH1D("epp_Emiss_hi","epp;Emiss [GeV];Counts",40,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_hi);
 	TH2D * h2p_pmiss_E1 = new TH2D("epp_pmiss_E1","epp;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,25,0.5,1.0);
 	h2p_list.push_back(h2p_pmiss_E1);
 	TH2D * h2p_pmiss_appEstar = new TH2D("epp_pmiss_appEstar","epp;pmiss [GeV];Apparent Estar [GeV];Counts",28,0.3,1.0,20,-0.2,0.8);
@@ -189,11 +203,18 @@ int main(int argc, char ** argv)
 		h1p_phi1->Fill(phi1_deg,weight);
 		h1p_theta1->Fill(theta1_deg,weight);
 		h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
-
+		h1p_mom1->Fill(Pp_size[0],weight);
+		
 		// Let's figure out missing energy! 
 		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
+		if (Pmiss_size[0] < 0.4)
+		  h1p_Emiss_lo->Fill(Emiss,weight);
+		else if (Pmiss_size[0] < 0.6)
+		  h1p_Emiss_md->Fill(Emiss,weight);
+		else if (Pmiss_size[0] < 1.)
+		  h1p_Emiss_hi->Fill(Emiss,weight);
 
 		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vp.Mag2() + mN*mN) - omega,weight);
 	}
@@ -262,12 +283,19 @@ int main(int argc, char ** argv)
 		h1p_phi1->Fill(phi1_deg,weight);
 		h1p_theta1->Fill(theta1_deg,weight);
 		h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
+		h1p_mom1->Fill(Pp_size[0],weight);
 
 		// Let's figure out missing energy! 
 		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
+		if (Pmiss_size[0] < 0.4)
+		  h1p_Emiss_lo->Fill(Emiss,weight);
+		else if (Pmiss_size[0] < 0.6)
+		  h1p_Emiss_md->Fill(Emiss,weight);
+		else if (Pmiss_size[0] < 1.)
+		  h1p_Emiss_hi->Fill(Emiss,weight);
 
 		// Make a check on the recoils
 		if (fabs(Rp[1][2]+22.25)>2.25)
@@ -287,7 +315,6 @@ int main(int argc, char ** argv)
 		h2p_xB ->Fill(Xb,weight);
 		h2p_Pm ->Fill(Pmiss_size[0],weight);
 		h2p_Pmq->Fill(Pmiss_q_angle[0],weight);
-		h2p_Pr ->Fill(Pp_size[1],weight);
 		h2p_Pmr->Fill(vmiss.Angle(vrec)*180./M_PI,weight);
 
 		h2p_phie->Fill(phie_deg,weight);
@@ -300,6 +327,13 @@ int main(int argc, char ** argv)
 		h2p_Emiss->Fill(Emiss,weight);
 		h2p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
 
+		if (Pmiss_size[0] < 0.4)
+		  h2p_Emiss_lo->Fill(Emiss,weight);
+		else if (Pmiss_size[0] < 0.6)
+		  h2p_Emiss_md->Fill(Emiss,weight);
+		else if (Pmiss_size[0] < 1.)
+		  h2p_Emiss_hi->Fill(Emiss,weight);
+
 		// Let's make a sanitized phi and sector
 		double phi2_deg = vrec.Phi() * 180./M_PI;
 		if (phi2_deg < -30.)
@@ -310,6 +344,7 @@ int main(int argc, char ** argv)
 		h2p_phi2->Fill(phi2_deg,weight);
 		h2p_theta2->Fill(theta2_deg,weight);
 		h2p_theta2_bySec[sector2]->Fill(theta2_deg,weight);
+		h2p_mom2->Fill(Pp_size[1],weight);
 
 		// Histogram for the "apparent E*"
 		double apparent_Estar = sqrt(sq(sqrt(sq(m_10B) + vcm.Mag2()) + Erec) -vlead.Mag2()) - m_11B;
