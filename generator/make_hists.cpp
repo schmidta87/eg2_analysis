@@ -16,6 +16,9 @@
 
 using namespace std;
 
+const double pmiss_lo=0.45;
+const double pmiss_md=0.6;
+
 int main(int argc, char ** argv)
 {
 	if (argc != 4)
@@ -42,6 +45,8 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_Pm );
 	TH1D * h1p_Pmq = new TH1D("ep_Pmq","ep;Theta_Pmq [deg];Counts",40,100.,180.);
 	h1p_list.push_back(h1p_Pmq);
+	TH1D * h1p_cPmq = new TH1D("ep_cPmq","ep;cos(Theta_Pmq);Counts",40,-1.,0.);
+	h1p_list.push_back(h1p_cPmq);
 	TH1D * h1p_phi1 = new TH1D("ep_phi1","ep;Phi [deg];Counts",60,-30.,330.);
 	h1p_list.push_back(h1p_phi1);
 	TH1D * h1p_phie = new TH1D("ep_phie","ep;Phi [deg];Counts",60,-30.,330.);
@@ -70,31 +75,35 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_xB );
 	TH1D * h2p_Pm =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",28,0.3,1.0);
 	h2p_list.push_back(h2p_Pm );
-	TH1D * h2p_Pmq = new TH1D("epp_Pmq","epp;Theta_Pmq [deg];Counts",40,100.,180.);
+	TH1D * h2p_Pmq = new TH1D("epp_Pmq","epp;Theta_Pmq [deg];Counts",20,100.,180.);
 	h2p_list.push_back(h2p_Pmq);
-	TH1D * h2p_Pmr = new TH1D("epp_Pmr","epp;Theta_Pmr [deg];Counts",40,100.,180.);
+	TH1D * h2p_cPmq = new TH1D("epp_cPmq","epp;cos(Theta_Pmq);Counts",20,-1.,0.);
+	h2p_list.push_back(h2p_cPmq);
+	TH1D * h2p_Pmr = new TH1D("epp_Pmr","epp;Theta_Pmr [deg];Counts",20,100.,180.);
 	h2p_list.push_back(h2p_Pmr);
+	TH1D * h2p_cPmr = new TH1D("epp_cPmr","epp;cos(Theta_Pmr);Counts",20,-1.,0.);
+	h2p_list.push_back(h2p_cPmr);
 	TH1D * h2p_phi1 = new TH1D("epp_phi1","epp;Phi [deg];Counts",60,-30.,330.);
 	h2p_list.push_back(h2p_phi1);
 	TH1D * h2p_phi2 = new TH1D("epp_phi2","epp;Phi [deg];Counts",60,-30.,330.);
 	h2p_list.push_back(h2p_phi2);
 	TH1D * h2p_phie = new TH1D("epp_phie","epp;Phi [deg];Counts",60,-30.,330.);
 	h2p_list.push_back(h2p_phie);
-	TH1D * h2p_thetae = new TH1D("epp_thetae","epp;Theta [deg];Counts",60,10.,40.);
+	TH1D * h2p_thetae = new TH1D("epp_thetae","epp;Theta [deg];Counts",30,10.,40.);
 	h2p_list.push_back(h2p_thetae);
-	TH1D * h2p_theta1 = new TH1D("epp_theta1","epp;Theta [deg];Counts",60,10.,130.);
+	TH1D * h2p_theta1 = new TH1D("epp_theta1","epp;Theta [deg];Counts",30,10.,130.);
 	h2p_list.push_back(h2p_theta1);
-	TH1D * h2p_theta2 = new TH1D("epp_theta2","epp;Theta [deg];Counts",60,10.,130.);
+	TH1D * h2p_theta2 = new TH1D("epp_theta2","epp;Theta [deg];Counts",30,10.,130.);
 	h2p_list.push_back(h2p_theta2);
 	TH1D * h2p_mom2 = new TH1D("epp_mom2","epp;Recoil Mom [GeV/c];Counts",17,0.35,1.2);
 	h2p_list.push_back(h2p_mom2);
 	TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",40,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss);
-	TH1D * h2p_Emiss_lo = new TH1D("epp_Emiss_lo","epp;Emiss [GeV];Counts",40,-0.2,0.6);
+	TH1D * h2p_Emiss_lo = new TH1D("epp_Emiss_lo","epp;Emiss [GeV];Counts",20,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss_lo);
-	TH1D * h2p_Emiss_md = new TH1D("epp_Emiss_md","epp;Emiss [GeV];Counts",40,-0.2,0.6);
+	TH1D * h2p_Emiss_md = new TH1D("epp_Emiss_md","epp;Emiss [GeV];Counts",20,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss_md);
-	TH1D * h2p_Emiss_hi = new TH1D("epp_Emiss_hi","epp;Emiss [GeV];Counts",40,-0.2,0.6);
+	TH1D * h2p_Emiss_hi = new TH1D("epp_Emiss_hi","epp;Emiss [GeV];Counts",20,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss_hi);
 	TH2D * h2p_pmiss_E1 = new TH2D("epp_pmiss_E1","epp;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,25,0.5,1.0);
 	h2p_list.push_back(h2p_pmiss_E1);
@@ -181,6 +190,7 @@ int main(int argc, char ** argv)
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
+		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
 		double omega = Q2/(2.*mN*Xb);
 
 		// Let's make a sanitized phi and sector
@@ -209,9 +219,9 @@ int main(int argc, char ** argv)
 		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
-		if (Pmiss_size[0] < 0.4)
+		if (Pmiss_size[0] < pmiss_lo)
 		  h1p_Emiss_lo->Fill(Emiss,weight);
-		else if (Pmiss_size[0] < 0.6)
+		else if (Pmiss_size[0] < pmiss_md)
 		  h1p_Emiss_md->Fill(Emiss,weight);
 		else if (Pmiss_size[0] < 1.)
 		  h1p_Emiss_hi->Fill(Emiss,weight);
@@ -260,6 +270,7 @@ int main(int argc, char ** argv)
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
+		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
 		double omega = Q2/(2.*mN*Xb);
 
 		// Let's make a sanitized phi and sector
@@ -290,9 +301,9 @@ int main(int argc, char ** argv)
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
-		if (Pmiss_size[0] < 0.4)
+		if (Pmiss_size[0] < pmiss_lo)
 		  h1p_Emiss_lo->Fill(Emiss,weight);
-		else if (Pmiss_size[0] < 0.6)
+		else if (Pmiss_size[0] < pmiss_md)
 		  h1p_Emiss_md->Fill(Emiss,weight);
 		else if (Pmiss_size[0] < 1.)
 		  h1p_Emiss_hi->Fill(Emiss,weight);
@@ -316,6 +327,8 @@ int main(int argc, char ** argv)
 		h2p_Pm ->Fill(Pmiss_size[0],weight);
 		h2p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h2p_Pmr->Fill(vmiss.Angle(vrec)*180./M_PI,weight);
+		h2p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
+		h2p_cPmr->Fill(cos(vmiss.Angle(vrec)),weight);
 
 		h2p_phie->Fill(phie_deg,weight);
 		h2p_thetae->Fill(thetae_deg,weight);
@@ -327,9 +340,9 @@ int main(int argc, char ** argv)
 		h2p_Emiss->Fill(Emiss,weight);
 		h2p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
 
-		if (Pmiss_size[0] < 0.4)
+		if (Pmiss_size[0] < pmiss_lo)
 		  h2p_Emiss_lo->Fill(Emiss,weight);
-		else if (Pmiss_size[0] < 0.6)
+		else if (Pmiss_size[0] < pmiss_md)
 		  h2p_Emiss_md->Fill(Emiss,weight);
 		else if (Pmiss_size[0] < 1.)
 		  h2p_Emiss_hi->Fill(Emiss,weight);
@@ -354,6 +367,13 @@ int main(int argc, char ** argv)
 	f2p->Close();
 
 	cerr << "The ep and epp integrals are: " << h1p_Pm->Integral() << " "  << h2p_Pm->Integral() << "\n";
+	cerr << "Broken down by pmiss range...\n\n";
+	for (int j=4 ; j<=28 ; j+=4)
+	  {
+	    double min=0.3 + 0.1*(j-4)/4.;
+	    double max=0.3 + 0.1*j/4.;
+	    cerr << min << " < pmiss < " << max << " : " << h1p_Pm->Integral(j-3,j) << " " << h2p_Pm->Integral(j-3,j) << "\n";
+	  }
 
 	// pp-to-p
 	pp_to_p->BayesDivide(h2p_Pm,h1p_Pm);
