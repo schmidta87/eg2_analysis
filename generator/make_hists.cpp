@@ -43,6 +43,8 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_xB );
 	TH1D * h1p_Pm =  new TH1D("ep_Pm" ,"ep;pMiss [GeV];Counts",28,0.3,1.0);
 	h1p_list.push_back(h1p_Pm );
+	TH1D * h1p_Pm_coarse =  new TH1D("ep_Pm_coarse" ,"ep;pMiss [GeV];Counts",10,coarse_bin_edges);
+	h1p_list.push_back(h1p_Pm_coarse);
 	TH1D * h1p_Pmq = new TH1D("ep_Pmq","ep;Theta_Pmq [deg];Counts",40,100.,180.);
 	h1p_list.push_back(h1p_Pmq);
 	TH1D * h1p_cPmq = new TH1D("ep_cPmq","ep;cos(Theta_Pmq);Counts",40,-1.,0.);
@@ -75,6 +77,8 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_xB );
 	TH1D * h2p_Pm =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",28,0.3,1.0);
 	h2p_list.push_back(h2p_Pm );
+	TH1D * h2p_Pm_coarse =  new TH1D("epp_Pm_coarse" ,"epp;pMiss [GeV];Counts",10,coarse_bin_edges);
+	h2p_list.push_back(h2p_Pm_coarse);
 	TH1D * h2p_Pmq = new TH1D("epp_Pmq","epp;Theta_Pmq [deg];Counts",20,100.,180.);
 	h2p_list.push_back(h2p_Pmq);
 	TH1D * h2p_cPmq = new TH1D("epp_cPmq","epp;cos(Theta_Pmq);Counts",20,-1.,0.);
@@ -143,10 +147,13 @@ int main(int argc, char ** argv)
 	for (int i=0 ; i<h2p_list.size() ; i++)
 	  h2p_list[i]->Sumw2();
 
-	// pp2p graph
+	// pp2p graphs
 	TGraphAsymmErrors * pp_to_p = new TGraphAsymmErrors();
 	pp_to_p->SetName("pp_to_p");
 	pp_to_p->SetTitle("pp_to_p;p_miss [GeV];pp_to_p ratio");
+	TGraphAsymmErrors * pp_to_p_coarse = new TGraphAsymmErrors();
+	pp_to_p_coarse->SetName("pp_to_p_coarse");
+	pp_to_p_coarse->SetTitle("pp_to_p;p_miss [GeV];pp_to_p ratio");
 
 	// Loop over 1p tree
 	cerr << " Looping over 1p tree...\n";
@@ -189,6 +196,7 @@ int main(int argc, char ** argv)
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
+		h1p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
 		double omega = Q2/(2.*mN*Xb);
@@ -269,6 +277,7 @@ int main(int argc, char ** argv)
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
+		h1p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
 		double omega = Q2/(2.*mN*Xb);
@@ -325,6 +334,7 @@ int main(int argc, char ** argv)
 		h2p_QSq->Fill(Q2,weight);
 		h2p_xB ->Fill(Xb,weight);
 		h2p_Pm ->Fill(Pmiss_size[0],weight);
+		h2p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h2p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h2p_Pmr->Fill(vmiss.Angle(vrec)*180./M_PI,weight);
 		h2p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
@@ -377,6 +387,7 @@ int main(int argc, char ** argv)
 
 	// pp-to-p
 	pp_to_p->BayesDivide(h2p_Pm,h1p_Pm);
+	pp_to_p_coarse->BayesDivide(h2p_Pm_coarse,h1p_Pm_coarse);
 	for (int binX=1 ; binX<=pp_to_p_2d->GetNbinsX() ; binX++)
 	  for (int binY=1 ; binY<=pp_to_p_2d->GetNbinsY() ; binY++)
 	    {
@@ -392,6 +403,7 @@ int main(int argc, char ** argv)
 	// Write out
 	fo -> cd();
 	pp_to_p->Write();
+	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
 
 	const double data_ep = 9175.;
