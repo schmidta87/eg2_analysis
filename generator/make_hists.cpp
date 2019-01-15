@@ -189,9 +189,9 @@ int main(int argc, char ** argv)
 		TVector3 ve(Pe[0],Pe[1],Pe[2]);
 		TVector3 vp(Pp[0][0],Pp[0][1],Pp[0][2]);
 		if (!accept_electron(ve))
-			continue;
+		  continue;
 		if (!accept_proton(vp))
-			continue;
+		  continue;
 
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
@@ -270,9 +270,9 @@ int main(int argc, char ** argv)
 		TVector3 ve(Pe[0],Pe[1],Pe[2]);
 		TVector3 vlead(Pp[0][0],Pp[0][1],Pp[0][2]);
 		if (!accept_electron(ve))
-			continue;
+		  continue;
 		if (!accept_proton(vlead))
-			continue;
+		  continue;
 
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
@@ -319,12 +319,12 @@ int main(int argc, char ** argv)
 
 		// Make a check on the recoils
 		if (fabs(Rp[1][2]+22.25)>2.25)
-			continue;
+		  continue;
 		if (Pp_size[1] < 0.35)
-			continue;
+		  continue;
 		TVector3 vrec(Pp[1][0],Pp[1][1],Pp[1][2]);      
 		if (!accept_proton(vrec))
-			continue;
+		  continue;
 
 		double Erec = sqrt(vrec.Mag2() + mN*mN);
 		TVector3 vq(q[0],q[1],q[2]);

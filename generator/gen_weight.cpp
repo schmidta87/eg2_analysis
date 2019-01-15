@@ -36,6 +36,7 @@ void help_mess()
        << "Optional flags:\n"
        << "-h: Help\n"
        << "-v: Verbose\n"
+       << "-z: Print zero-weight events\n"
        << "-A <Nucleus number>==<12>\n"
        << "-s <Sigma_CM [GeV]>\n"
        << "-C <Nuclear Contact [%]> (Use for Cpp0, Cpn0, Cpn1)\n"
@@ -124,9 +125,10 @@ int main(int argc, char ** argv)
   double rand_flag = false;
   bool byRat = false;
   bool byInv = false;
+  bool print_zeros=false;
 
   int c;  
-  while ((c=getopt (argc-2, &argv[2], "hvA:s:C:E:k:u:f:c:rpRI")) != -1) // First two arguments are not optional flags.
+  while ((c=getopt (argc-2, &argv[2], "hvzA:s:C:E:k:u:f:c:rpRI")) != -1) // First two arguments are not optional flags.
     switch(c)
       {
       case 'h':
@@ -134,6 +136,9 @@ int main(int argc, char ** argv)
 	return -1;
       case 'v':
 	verbose = true;
+	break;
+      case 'z':
+	print_zeros = true;
 	break;
       case 'A':
 	Anum = atoi(optarg);
@@ -503,7 +508,8 @@ int main(int argc, char ** argv)
       myInfo.do_SXC(lead_type, rec_type,gRandom->Rndm());
       
       // Fill the tree
-      outtree->Fill();      
+      if ((weight > 0.) || print_zeros)
+	outtree->Fill();      
     }
 
   if (verbose)
