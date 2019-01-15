@@ -22,7 +22,7 @@ double sq(double x)
 
 int main(int argc, char ** argv)
 {
-  if (argc != 4)
+  if (argc != 3)
     {
       cerr << "Wrong number of arguments. Instead use:\n"
 	   << "\tsimulator /path/to/gen/file /path/to/file [# protons]\n";
@@ -32,7 +32,6 @@ int main(int argc, char ** argv)
   // Read arguments, create files
   TFile * infile = new TFile(argv[1]);
   TFile * outfile = new TFile(argv[2],"RECREATE");
-  double num_p = atof(argv[3]);
   
   // Input Tree
   TTree * inTree = (TTree*)infile->Get("genT");
@@ -55,6 +54,7 @@ int main(int argc, char ** argv)
   Double_t pRec_Mag;
   Double_t pLead_Mag;
   Int_t nmb = 2;
+  Int_t nump;
   
   T->Branch("Q2",&Q2,"Q2/F");
   T->Branch("Xb",&Xb,"Xb/F");
@@ -77,6 +77,7 @@ int main(int argc, char ** argv)
   T->Branch("weight",&weight,"weight/D");
   T->Branch("pRec",&pRec_Mag,"pRec/D");
   T->Branch("pLead",&pLead_Mag,"pLead/D");
+  T->Branch("nump",&nump,"nump/I");
 
   TRandom3 myRand(0);
   double a = 0.03;
@@ -96,9 +97,15 @@ int main(int argc, char ** argv)
       if (rec_type != pCode)
 	continue;
 
-      if ((lead_type == pCode) == (num_p == 1))
-	continue;
-      
+      if (lead_type == pCode)
+	{
+	  nump = 2;
+	}
+      else
+	{
+	  nump = 1;
+	}
+
       // Create vectors for the particles
       TVector3 vrec(gen_pRec[0],gen_pRec[1],gen_pRec[2]);
       TVector3 ve(gen_pe[0],gen_pe[1],gen_pe[2]);

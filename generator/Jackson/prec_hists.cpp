@@ -14,16 +14,15 @@ using namespace std;
 
 int main(int argc, char ** argv)
 {
-	if (argc != 4)
+	if (argc != 3)
 	{
 		cerr << "Wrong number of arguments. Instead try:\n"
-			<< "   make_hists /path/to/pp/file /path/to/np/file /path/to/output/file\n\n";
+			<< "   prec_hists /path/to/input/file /path/to/output/file\n\n";
 		exit(-1);
 	}
 
-	TFile * fpp = new TFile(argv[1]);
-	TFile * fnp = new TFile(argv[2]);
-	TFile * fo = new TFile(argv[3],"RECREATE");
+	TFile * fi = new TFile(argv[1]);;
+	TFile * fo = new TFile(argv[2],"RECREATE");
 
 	// Create histograms        
 	//TH1D * hpp_pRec = new TH1D("epp_Pr","epp;pRec [GeV];Counts",26,0.35,1.0);
@@ -44,55 +43,45 @@ int main(int argc, char ** argv)
 
 	
 	// Loop over pp tree
-	cerr << " Looping over pp tree...\n";
-	TTree * tpp = (TTree*)fpp->Get("T");
+	cerr << " Looping over tree...\n";
+	TTree * ti = (TTree*)fi->Get("T");
 	Double_t weight;
 	Double_t pRec;
+	Int_t nump;
 	//Double_t pLead;
 	//Float_t Pmiss[2][3];
 	//Double_t pMiss;
 	
-	tpp->SetBranchAddress("weight",&weight);
-	tpp->SetBranchAddress("pRec",&pRec);
-	//tpp->SetBranchAddress("pLead",&pLead);
-	//tpp->SetBranchAddress("Pmiss",&Pmiss);
+	ti->SetBranchAddress("weight",&weight);
+	ti->SetBranchAddress("pRec",&pRec);
+	ti->SetBranchAddress("nump",&nump);
+	//ti->SetBranchAddress("pLead",&pLead);
+	//ti->SetBranchAddress("Pmiss",&Pmiss);
 	
-	for (int event =0 ; event < tpp->GetEntries() ; event++)
+	for (int event =0 ; event < ti->GetEntries() ; event++)
 	  {
 	  
-		tpp->GetEvent(event);
+		ti->GetEvent(event);
 
 		//pMiss = sqrt(Pmiss[0][0]*Pmiss[0][0]+Pmiss[0][1]*Pmiss[0][1]+Pmiss[0][2]*Pmiss[0][2]);
 
-	        //hpp_pRec->Fill(pRec,weight);
-	        hpp_pRec_2->Fill(pRec,weight);
+		if (nump == 2)
+		  {
+		    //hpp_pRec->Fill(pRec,weight);
+		    hpp_pRec_2->Fill(pRec,weight);
+		    
+		    //hpp_pMiss->Fill(pMiss,weight);
+		  }
+		else
+		  {
+		    //hnp_pRec->Fill(pRec,weight);
+		    hnp_pRec_2->Fill(pRec,weight);
 
-		//hpp_pMiss->Fill(pMiss,weight);
-	}
-
-	// Loop over np tree
-	cerr << " Looping over np tree...\n";
-	TTree * tnp = (TTree*)fnp->Get("T");
-
-	tnp->SetBranchAddress("weight",&weight);
-	tnp->SetBranchAddress("pRec",&pRec);
-	//tnp->SetBranchAddress("pLead",&pLead);
-	//tnp->SetBranchAddress("Pmiss",&Pmiss);
-        
-      	for (int event =0 ; event < tnp->GetEntries() ; event++)
-	{
-		tnp->GetEvent(event);
-
-		//pMiss = sqrt(Pmiss[0][0]*Pmiss[0][0]+Pmiss[0][1]*Pmiss[0][1]+Pmiss[0][2]*Pmiss[0][2]);
-
-	        //hnp_pRec->Fill(pRec,weight);
-	        hnp_pRec_2->Fill(pRec,weight);
-
-		//hnp_pMiss->Fill(pMiss,weight);
-	}
+		    //hnp_pMiss->Fill(pMiss,weight);
+		  }
+	  }
 	
-	fpp->Close();
-	fnp->Close();
+	fi->Close();
 
 	// pp2np hist
 	//TH1F *pp_to_np = (TH1F*)hpp_pRec->Clone("pp_to_np");
@@ -112,7 +101,7 @@ int main(int argc, char ** argv)
 	
 	//pp_to_np->SetMaximum(0.4);
 	//pp_to_np->SetMinimum(0.0);
-	pp_to_np_2->SetMaximum(0.2);
+	pp_to_np_2->SetMaximum(0.4);
 	pp_to_np_2->SetMinimum(0.0);
 	//hpp_pRec->SetMinimum(0.0);
 	//hnp_pRec->SetMinimum(0.0);
