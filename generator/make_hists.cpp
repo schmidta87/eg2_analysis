@@ -49,15 +49,17 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_Pmq);
 	TH1D * h1p_cPmq = new TH1D("ep_cPmq","ep;cos(Theta_Pmq);Counts",40,-1.,0.);
 	h1p_list.push_back(h1p_cPmq);
-	TH1D * h1p_phi1 = new TH1D("ep_phi1","ep;Phi [deg];Counts",60,-30.,330.);
+	TH1D * h1p_phi1 = new TH1D("ep_phi1","ep;Phi_1 [deg];Counts",60,-30.,330.);
 	h1p_list.push_back(h1p_phi1);
-	TH1D * h1p_phie = new TH1D("ep_phie","ep;Phi [deg];Counts",60,-30.,330.);
+	TH1D * h1p_phie = new TH1D("ep_phie","ep;Phi_e [deg];Counts",60,-30.,330.);
 	h1p_list.push_back(h1p_phie);
-	TH1D * h1p_theta1 = new TH1D("ep_theta1","ep;Theta [deg];Counts",60,10.,130.);
+	TH1D * h1p_theta1 = new TH1D("ep_theta1","ep;Theta_1 [deg];Counts",60,10.,130.);
 	h1p_list.push_back(h1p_theta1);
-	TH1D * h1p_thetae = new TH1D("ep_thetae","ep;Theta [deg];Counts",60,10.,40.);
+	TH1D * h1p_thetae = new TH1D("ep_thetae","ep;Theta_2 [deg];Counts",60,10.,40.);
 	h1p_list.push_back(h1p_thetae);
-	TH1D * h1p_mom1 = new TH1D("ep_mom1","ep;Mom [GeV/c];Counts",40,0.4,2.4);
+	TH1D * h1p_mome = new TH1D("ep_mome","ep;Mom_e [GeV/c];Counts",40,1.0,5.0);
+	h1p_list.push_back(h1p_mome);
+	TH1D * h1p_mom1 = new TH1D("ep_mom1","ep;Mom_1 [GeV/c];Counts",40,0.4,2.4);
 	h1p_list.push_back(h1p_mom1);
 	TH1D * h1p_Emiss = new TH1D("ep_Emiss","ep;Emiss [GeV];Counts",40,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss);
@@ -87,20 +89,24 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_Pmr);
 	TH1D * h2p_cPmr = new TH1D("epp_cPmr","epp;cos(Theta_Pmr);Counts",20,-1.,0.);
 	h2p_list.push_back(h2p_cPmr);
-	TH1D * h2p_phi1 = new TH1D("epp_phi1","epp;Phi [deg];Counts",60,-30.,330.);
+	TH1D * h2p_phi1 = new TH1D("epp_phi1","epp;Phi_1 [deg];Counts",60,-30.,330.);
 	h2p_list.push_back(h2p_phi1);
-	TH1D * h2p_phi2 = new TH1D("epp_phi2","epp;Phi [deg];Counts",60,-30.,330.);
+	TH1D * h2p_phi2 = new TH1D("epp_phi2","epp;Phi_2 [deg];Counts",60,-30.,330.);
 	h2p_list.push_back(h2p_phi2);
-	TH1D * h2p_phie = new TH1D("epp_phie","epp;Phi [deg];Counts",60,-30.,330.);
+	TH1D * h2p_phie = new TH1D("epp_phie","epp;Phi_e [deg];Counts",60,-30.,330.);
 	h2p_list.push_back(h2p_phie);
-	TH1D * h2p_thetae = new TH1D("epp_thetae","epp;Theta [deg];Counts",30,10.,40.);
+	TH1D * h2p_thetae = new TH1D("epp_thetae","epp;Theta_e [deg];Counts",30,10.,40.);
 	h2p_list.push_back(h2p_thetae);
-	TH1D * h2p_theta1 = new TH1D("epp_theta1","epp;Theta [deg];Counts",30,10.,130.);
+	TH1D * h2p_mome = new TH1D("epp_mome","epp;Mom_e [GeV/c];Counts",40,1.0,5.0);
+	h2p_list.push_back(h2p_mome);
+	TH1D * h2p_theta1 = new TH1D("epp_theta1","epp;Theta_1 [deg];Counts",30,10.,130.);
 	h2p_list.push_back(h2p_theta1);
-	TH1D * h2p_theta2 = new TH1D("epp_theta2","epp;Theta [deg];Counts",30,10.,130.);
+	TH1D * h2p_theta2 = new TH1D("epp_theta2","epp;Theta_2 [deg];Counts",30,10.,130.);
 	h2p_list.push_back(h2p_theta2);
 	TH1D * h2p_mom2 = new TH1D("epp_mom2","epp;Recoil Mom [GeV/c];Counts",17,0.35,1.2);
 	h2p_list.push_back(h2p_mom2);
+	TH1D * h2p_mom1 = new TH1D("epp_mom1","epp;Mom_1 [GeV/c];Counts",40,0.4,2.4);
+	h2p_list.push_back(h2p_mom1);
 	TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",40,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss);
 	TH1D * h2p_Emiss_lo = new TH1D("epp_Emiss_lo","epp;Emiss [GeV];Counts",20,-0.2,0.6);
@@ -211,6 +217,7 @@ int main(int argc, char ** argv)
 		h1p_phie->Fill(phie_deg,weight);
 		h1p_thetae->Fill(thetae_deg,weight);
 		h1p_thetae_bySec[sec_e]->Fill(thetae_deg,weight);
+		h1p_mome->Fill(ve.Mag(),weight);
 
 		double phi1_deg = vp.Phi() * 180./M_PI;
 		if (phi1_deg < -30.)
@@ -292,7 +299,7 @@ int main(int argc, char ** argv)
 		h1p_phie->Fill(phie_deg,weight);
 		h1p_thetae->Fill(thetae_deg,weight);
 		h1p_thetae_bySec[sec_e]->Fill(thetae_deg,weight);
-
+		h1p_mome->Fill(ve.Mag(),weight);
 
 		double phi1_deg = vlead.Phi() * 180./M_PI;
 		if (phi1_deg < -30.)
@@ -342,10 +349,12 @@ int main(int argc, char ** argv)
 
 		h2p_phie->Fill(phie_deg,weight);
 		h2p_thetae->Fill(thetae_deg,weight);
+		h2p_mome->Fill(ve.Mag(),weight);
 
 		h2p_phi1->Fill(phi1_deg,weight);
 		h2p_theta1->Fill(theta1_deg,weight);
 		h2p_theta1_bySec[sector]->Fill(theta1_deg,weight);
+		h2p_mom1->Fill(Pp_size[0],weight);
 
 		h2p_Emiss->Fill(Emiss,weight);
 		h2p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
