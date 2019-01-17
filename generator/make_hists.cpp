@@ -55,9 +55,9 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_phie);
 	TH1D * h1p_theta1 = new TH1D("ep_theta1","ep;Theta_1 [deg];Counts",60,10.,130.);
 	h1p_list.push_back(h1p_theta1);
-	TH1D * h1p_thetae = new TH1D("ep_thetae","ep;Theta_2 [deg];Counts",60,10.,40.);
+	TH1D * h1p_thetae = new TH1D("ep_thetae","ep;Theta_e [deg];Counts",60,10.,40.);
 	h1p_list.push_back(h1p_thetae);
-	TH1D * h1p_mome = new TH1D("ep_mome","ep;Mom_e [GeV/c];Counts",40,1.0,5.0);
+	TH1D * h1p_mome = new TH1D("ep_mome","ep;Mom_e [GeV/c];Counts",40,3.0,5.0);
 	h1p_list.push_back(h1p_mome);
 	TH1D * h1p_mom1 = new TH1D("ep_mom1","ep;Mom_1 [GeV/c];Counts",40,0.4,2.4);
 	h1p_list.push_back(h1p_mom1);
@@ -97,7 +97,7 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_phie);
 	TH1D * h2p_thetae = new TH1D("epp_thetae","epp;Theta_e [deg];Counts",30,10.,40.);
 	h2p_list.push_back(h2p_thetae);
-	TH1D * h2p_mome = new TH1D("epp_mome","epp;Mom_e [GeV/c];Counts",40,1.0,5.0);
+	TH1D * h2p_mome = new TH1D("epp_mome","epp;Mom_e [GeV/c];Counts",40,3.0,5.0);
 	h2p_list.push_back(h2p_mome);
 	TH1D * h2p_theta1 = new TH1D("epp_theta1","epp;Theta_1 [deg];Counts",30,10.,130.);
 	h2p_list.push_back(h2p_theta1);

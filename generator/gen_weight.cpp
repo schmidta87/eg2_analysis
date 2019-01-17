@@ -292,8 +292,11 @@ int main(int argc, char ** argv)
 	}
     }
   if (rand_flag)
+    {
     myInfo.randomize();
-  
+    pRel_cut = 0.23 + myRand.Uniform()*0.04;
+    }
+
   Cross_Sections myCS(csMeth,ffMod);
   const double mA = myInfo.get_mA();
   const double mAm2 = myInfo.get_mAm2();
