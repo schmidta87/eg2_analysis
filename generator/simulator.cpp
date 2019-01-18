@@ -1,6 +1,10 @@
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #include "TFile.h"
 #include "TTree.h"
@@ -15,12 +19,12 @@
 using namespace std;
 
 const bool doSmearing=true;
-const double eSmearing=0.003;
-const double pSmearing=0.01;
+double eSmearing=0.003;
+double pSmearing=0.01;
 
 int main(int argc, char ** argv)
 {
-  if (argc != 5)
+  if (argc < 5)
     {
       cerr << "Wrong number of arguments. Instead use:\n"
 	   << "\tsimulator /path/to/gen/file /path/to/map/file /path/to/output/file [# of protons (1 or 2)]\n\n";
@@ -32,6 +36,31 @@ int main(int argc, char ** argv)
   AccMap pMap(argv[2]);
   AccMap eMap(argv[2],"e");
   TFile * outfile = new TFile(argv[3],"RECREATE");
+
+  bool verbose = false;
+  bool rand_flag = false;
+
+  int c;
+  while ((c=getopt (argc-4, &argv[4], "vre:p:")) != -1)
+    switch(c)
+      {
+      case 'v':
+	verbose = true;
+	break;
+      case 'r':
+	rand_flag = true;
+	break;
+      case 'e':
+	eSmearing = atof(optarg);
+	break;
+      case 'p':
+	pSmearing = atof(optarg);
+	break;
+      case '?':
+	return -1;
+      default:
+	abort();
+      }
 
   // Histograms
   TH1D * h_rec_p_all = new TH1D("rec_p_all","All recoil protons;pMiss [GeV];Counts",28,0.3,1.0);
@@ -92,11 +121,22 @@ int main(int argc, char ** argv)
   // Other set up
   TRandom3 myRand(0);
 
+  if (rand_flag)
+    {
+      eSmearing = 0.0025 + myRand.Uniform()*0.001;
+      pSmearing = 0.008 + myRand.Uniform()*0.004;
+      if (verbose)
+	{
+	  cout << "Electron resolution selected as " << eSmearing*100 << "%.\n";
+	  cout << "Proton resolution selected as " << pSmearing*100 << "%.\n";
+	}
+    }
+
   // Loop over all events
   const int nEvents = inTree->GetEntries(); // this is a key number for the weight
   for (int event=0 ; event < nEvents ; event++)
     {
-      if (event %1000000==0)
+      if (event %1000000==0 and verbose) 
 	cerr << "Working on event " << event << " out of " << nEvents <<"\n";
       
       inTree->GetEvent(event);

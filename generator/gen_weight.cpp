@@ -75,7 +75,8 @@ void param_mess()
        << "     17 | pNN2PP\n"
        << "     18 | kRel Cut [GeV]\n"
        << "     19 | Nuclear Potential\n"
-       << "     20 | Cross Section\n";
+       << "     20 | Cross Section\n"
+       << "     21 | Form Factor Model\n ";
 }
 
 int main(int argc, char ** argv)
