@@ -9,6 +9,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "TGraphAsymmErrors.h"
+#include "TVectorT.h"
 
 #include "Nuclear_Info.h"
 #include "fiducials.h"
@@ -69,6 +70,14 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_Emiss_md);
 	TH1D * h1p_Emiss_hi = new TH1D("ep_Emiss_hi","ep;Emiss [GeV];Counts",40,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss_hi);
+	TH1D * h1p_Emiss_fine = new TH1D("ep_Emiss_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_fine);
+	TH1D * h1p_Emiss_lo_fine = new TH1D("ep_Emiss_lo_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_lo_fine);
+	TH1D * h1p_Emiss_md_fine = new TH1D("ep_Emiss_md_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_md_fine);
+	TH1D * h1p_Emiss_hi_fine = new TH1D("ep_Emiss_hi_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_hi_fine);
 	TH2D * h1p_pmiss_Emiss = new TH2D("ep_pmiss_Emiss","ep;pmiss [GeV];Emiss [GeV];Counts",28,0.3,1.0,20,-0.2,0.6);
 	h1p_list.push_back(h1p_pmiss_Emiss);
 	TH2D * h1p_pmiss_E1 = new TH2D("ep_pmiss_E1","ep;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,25,0.5,1.0);
@@ -115,6 +124,14 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_Emiss_md);
 	TH1D * h2p_Emiss_hi = new TH1D("epp_Emiss_hi","epp;Emiss [GeV];Counts",20,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss_hi);
+	TH1D * h2p_Emiss_fine = new TH1D("epp_Emiss_fine","epp;Emiss [GeV];Counts",160,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_fine);
+	TH1D * h2p_Emiss_lo_fine = new TH1D("epp_Emiss_lo_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_lo_fine);
+	TH1D * h2p_Emiss_md_fine = new TH1D("epp_Emiss_md_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_md_fine);
+	TH1D * h2p_Emiss_hi_fine = new TH1D("epp_Emiss_hi_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_hi_fine);
 	TH2D * h2p_pmiss_E1 = new TH2D("epp_pmiss_E1","epp;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,25,0.5,1.0);
 	h2p_list.push_back(h2p_pmiss_E1);
 	TH2D * h2p_pmiss_appEstar = new TH2D("epp_pmiss_appEstar","epp;pmiss [GeV];Apparent Estar [GeV];Counts",28,0.3,1.0,20,-0.2,0.8);
@@ -233,13 +250,23 @@ int main(int argc, char ** argv)
 		// Let's figure out missing energy! 
 		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
+		h1p_Emiss_fine->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 		if (Pmiss_size[0] < pmiss_lo)
-		  h1p_Emiss_lo->Fill(Emiss,weight);
+		  {
+		    h1p_Emiss_lo->Fill(Emiss,weight);
+		    h1p_Emiss_lo_fine->Fill(Emiss,weight);
+		  }
 		else if (Pmiss_size[0] < pmiss_md)
-		  h1p_Emiss_md->Fill(Emiss,weight);
+		  {
+		    h1p_Emiss_md->Fill(Emiss,weight);
+		    h1p_Emiss_md_fine->Fill(Emiss,weight);
+		  }
 		else if (Pmiss_size[0] < 1.)
-		  h1p_Emiss_hi->Fill(Emiss,weight);
+		  {
+		    h1p_Emiss_hi->Fill(Emiss,weight);
+		    h1p_Emiss_hi_fine->Fill(Emiss,weight);
+		  }
 
 		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vp.Mag2() + mN*mN) - omega,weight);
 	}
@@ -315,14 +342,24 @@ int main(int argc, char ** argv)
 		// Let's figure out missing energy! 
 		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
+		h1p_Emiss_fine->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
 		if (Pmiss_size[0] < pmiss_lo)
-		  h1p_Emiss_lo->Fill(Emiss,weight);
+		  {
+		    h1p_Emiss_lo->Fill(Emiss,weight);
+		    h1p_Emiss_lo_fine->Fill(Emiss,weight);
+		  }
 		else if (Pmiss_size[0] < pmiss_md)
-		  h1p_Emiss_md->Fill(Emiss,weight);
+		  {
+		    h1p_Emiss_md->Fill(Emiss,weight);
+		    h1p_Emiss_md_fine->Fill(Emiss,weight);
+		  }
 		else if (Pmiss_size[0] < 1.)
-		  h1p_Emiss_hi->Fill(Emiss,weight);
+		  {
+		    h1p_Emiss_hi->Fill(Emiss,weight);
+		    h1p_Emiss_hi_fine->Fill(Emiss,weight);
+		  }
 
 		// Make a check on the recoils
 		if (fabs(Rp[1][2]+22.25)>2.25)
@@ -357,14 +394,24 @@ int main(int argc, char ** argv)
 		h2p_mom1->Fill(Pp_size[0],weight);
 
 		h2p_Emiss->Fill(Emiss,weight);
+		h2p_Emiss_fine->Fill(Emiss,weight);
 		h2p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
 
 		if (Pmiss_size[0] < pmiss_lo)
-		  h2p_Emiss_lo->Fill(Emiss,weight);
+		  {
+		    h2p_Emiss_lo->Fill(Emiss,weight);
+		    h2p_Emiss_lo_fine->Fill(Emiss,weight);
+		  }
 		else if (Pmiss_size[0] < pmiss_md)
-		  h2p_Emiss_md->Fill(Emiss,weight);
+		  {
+		    h2p_Emiss_md->Fill(Emiss,weight);
+		    h2p_Emiss_md_fine->Fill(Emiss,weight);
+		  }
 		else if (Pmiss_size[0] < 1.)
-		  h2p_Emiss_hi->Fill(Emiss,weight);
+		  {
+		    h2p_Emiss_hi->Fill(Emiss,weight);
+		    h2p_Emiss_hi_fine->Fill(Emiss,weight);
+		  }
 
 		// Let's make a sanitized phi and sector
 		double phi2_deg = vrec.Phi() * 180./M_PI;
@@ -419,6 +466,12 @@ int main(int argc, char ** argv)
 	const double data_epp = 437.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
 	const double ppnorm = pnorm;
+
+	// Including a factor if we watn to rescale data to match epp luminosity
+	const double renorm = data_epp/h2p_Pm->Integral()/(data_ep/h1p_Pm->Integral());
+	TVectorT<double> renorm_factor(1);
+	renorm_factor[0] = renorm;
+	renorm_factor.Write("factor");
 
 	// scale all the histograms, and write them out
 	for (int i=0 ; i<h1p_list.size() ; i++)
