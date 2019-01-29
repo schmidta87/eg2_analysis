@@ -300,7 +300,7 @@ int main(int argc, char ** argv)
 
   Cross_Sections myCS(csMeth,ffMod);
   const double mA = myInfo.get_mA();
-  const double mAm2 = myInfo.get_mAm2();
+  const double mAm2 = myInfo.get_mAm2(); // this includes the effect of Estar
   const double sigCM = myInfo.get_sigmaCM();
 
   // Prepare vector of parameters to be output
