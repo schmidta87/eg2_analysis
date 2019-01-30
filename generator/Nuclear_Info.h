@@ -4,9 +4,6 @@
  #include <vector>
  #include "constants.h"
 
- // EG2 info
- const double eg2beam=5.014;
-
  // nuclear masses
  const double m_1H = mN;
  const double m_2H = 2.01410178*mU;
