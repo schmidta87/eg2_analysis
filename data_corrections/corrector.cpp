@@ -11,6 +11,9 @@ using namespace std;
 
 double correct_theta(TVector3 v_uncorr);
 
+// Subtract these from the measured electron momentum for each sector.
+const double Ee_offsets[6]={-0.00597309,0.0211157,-0.00535153,-0.0260952,-0.00339546,0.0095037};
+
 int main(int argc, char ** argv)
 {
   // Must take in an uncorrected file, and spit out a corrected file.
@@ -102,9 +105,14 @@ int main(int argc, char ** argv)
       for (int p=0 ; p< nmb ; p++)
 	vps_uncorr[p].SetXYZ(Pp[p][0],Pp[p][1],Pp[p][2]);
 
+      // Determine the sector
+      double temp_phi=ve_uncorr.Phi();
+      if (temp_phi < -M_PI/6.) temp_phi+= 2.*M_PI;
+      int sector = temp_phi/(M_PI/3.);
+
       // Do the correction
       TVector3 ve;
-      ve.SetMagThetaPhi(ve_uncorr.Mag(),correct_theta(ve_uncorr), ve_uncorr.Phi());
+      ve.SetMagThetaPhi(ve_uncorr.Mag()-Ee_offsets[sector],correct_theta(ve_uncorr), ve_uncorr.Phi());
       
       for (int p=0 ; p<nmb ; p++)
 	  vps[p].SetMagThetaPhi(vps_uncorr[p].Mag(),correct_theta(vps_uncorr[p]),vps_uncorr[p].Phi());
@@ -197,3 +205,4 @@ double correct_theta(TVector3 v_uncorr)
   
   return theta + delta_theta;
 }
+
