@@ -10,9 +10,19 @@ target_link_libraries(gen_weight ${ROOT_LIBRARIES} Cross_Sections)
 add_executable(simulator simulator.cpp)
 target_link_libraries(simulator ${ROOT_LIBRARIES} AccMap Fid)
 
+# ep_cut
+add_executable(ep_cut ep_cut.cpp)
+target_link_libraries(ep_cut ${ROOT_LIBRARIES})
+
 # Make histograms
 add_executable(make_hists make_hists.cpp )
 target_link_libraries(make_hists ${ROOT_LIBRARIES} Fid)
+
+add_executable(make_hists_023 make_hists_023.cpp )
+target_link_libraries(make_hists_023 ${ROOT_LIBRARIES} Fid)
+
+add_executable(make_hists_145 make_hists_145.cpp )
+target_link_libraries(make_hists_145 ${ROOT_LIBRARIES} Fid)
 
 # Make ratios (when combining more than one histogram file)
 add_executable(make_ratios make_ratios.cpp)

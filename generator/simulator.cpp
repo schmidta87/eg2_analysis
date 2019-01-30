@@ -173,7 +173,7 @@ int main(int argc, char ** argv)
 	}
 
       // Derived vectors
-      TVector3 vq = TVector3(0.,0.,eg2beam) - ve;
+      TVector3 vq = TVector3(0.,0.,eg2beam_set) - ve;
       TVector3 vmiss=vlead-vq;
       TVector3 vcm=vmiss+vrec;
       TVector3 vrel=0.5*(vmiss-vrec);
@@ -220,7 +220,7 @@ int main(int argc, char ** argv)
 	  
 	  // Test if the recoil was in the fiducial region and above threshold
 	  if (accept_proton(vrec) && (vrec.Mag() > 0.35))
-	    h_rec_p_acc->Fill(gen_pMiss_Mag,weight*recoil_accept*Tpp/Tp);
+	    h_rec_p_acc->Fill(gen_pMiss_Mag,weight*recoil_accept);
 	}
 
       if (rec_type == pCode)

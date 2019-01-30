@@ -207,7 +207,7 @@ int main(int argc, char ** argv)
       }
 
 
-  const double Ebeam=eg2beam;
+  const double Ebeam=eg2beam_set;
   const TVector3 v1(0.,0.,Ebeam);
   const double lambda_ei = alpha/M_PI * (log( 4.*Ebeam*Ebeam/(me*me)) - 1.);
 
