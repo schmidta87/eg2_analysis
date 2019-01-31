@@ -243,10 +243,6 @@ int main(int argc, char ** argv)
 	continue;
 
       // Apply weight for cross sections
-      double gen_theta = ve.Theta();
-      double tau = gen_QSq/(4*mN*mN);
-      double epsilon = 1/(1.0+2.0*(1.+tau)*sq(tan(gen_theta/2)));
-
       weightp = gen_weight * pMap.accept(vlead) * Tp * 1.E33;
       weightpn = gen_weight * pMap.accept(vlead) * Tpp * 1.E33 * ndet;
 
