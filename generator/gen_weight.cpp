@@ -36,6 +36,7 @@ void help_mess()
        << "Optional flags:\n"
        << "-h: Help\n"
        << "-v: Verbose\n"
+       << "-z: Print zero-weight events\n"
        << "-A <Nucleus number>==<12>\n"
        << "-s <Sigma_CM [GeV]>\n"
        << "-C <Nuclear Contact [%]> (Use for Cpp0, Cpn0, Cpn1)\n"
@@ -45,7 +46,9 @@ void help_mess()
        << "-c <Cross section method>==<cc1>\n"
        << "-f <Form Factor model>==<kelly>\n"
        << "-r: Randomize constants\n"
-       << "-p: List output file parameter order\n";
+       << "-p: List output file parameter order\n"
+       << "-R: Define contacts only by ratio\n"
+       << "-I: Define contacts only by inverted ratio\n";
 }
 
 void param_mess()
@@ -72,7 +75,8 @@ void param_mess()
        << "     17 | pNN2PP\n"
        << "     18 | kRel Cut [GeV]\n"
        << "     19 | Nuclear Potential\n"
-       << "     20 | Cross Section\n";
+       << "     20 | Cross Section\n"
+       << "     21 | Form Factor Model\n ";
 }
 
 int main(int argc, char ** argv)
@@ -120,9 +124,12 @@ int main(int argc, char ** argv)
   csMethod csMeth=cc1;
   ffModel ffMod=kelly;
   double rand_flag = false;
+  bool byRat = false;
+  bool byInv = false;
+  bool print_zeros=false;
 
   int c;  
-  while ((c=getopt (argc-2, &argv[2], "hvA:s:C:E:k:u:f:c:rp")) != -1) // First two arguments are not optional flags.
+  while ((c=getopt (argc-2, &argv[2], "hvzA:s:C:E:k:u:f:c:rpRI")) != -1) // First two arguments are not optional flags.
     switch(c)
       {
       case 'h':
@@ -130,6 +137,9 @@ int main(int argc, char ** argv)
 	return -1;
       case 'v':
 	verbose = true;
+	break;
+      case 'z':
+	print_zeros = true;
 	break;
       case 'A':
 	Anum = atoi(optarg);
@@ -184,6 +194,12 @@ int main(int argc, char ** argv)
       case 'p':
 	param_mess();
 	return -1;
+      case 'R':
+	byRat = true;
+	break;
+      case 'I':
+	byInv = true;
+	break;
       case '?':
 	return -1;
       default:
@@ -233,23 +249,58 @@ int main(int argc, char ** argv)
   if (do_sCM)
     myInfo.set_sigmaCM(sCM);
   myInfo.set_Estar(Estar);
+  if (byRat)
+    myInfo.set_byRatio();
   if (do_Cs)
+    { 
+      if (byRat)
+	{
+	  std::vector<double>::size_type isize = 1;
+	  std::vector<double>::size_type isize2 = 2;
+	  if ((Cs.size() != isize) and (Cs.size() != isize2))
+	    {
+	      cerr << "If defining by contact ratio, please provide only one value and optionally an uncertainty. Aborting...\n";
+	      return 1;
+	    }
+	  if (Cs.size() == isize)
+	    myInfo.set_Ratio(Cs[0]);
+	  else
+	    myInfo.set_Ratio(Cs[0],Cs[1]);
+	}
+      else if (byInv)
+	{
+	  std::vector<double>::size_type isize = 1;
+	  std::vector<double>::size_type isize2 = 2;
+	  if ((Cs.size() != isize) and (Cs.size() != isize2))
+	    {
+	      cerr << "If defining by contact ratio, please provide only one value and optionally an uncertainty. Aborting...\n";
+	      return 1;
+	    }
+	  if (Cs.size() == isize)
+	    myInfo.set_Ratio_Inverse(Cs[0]);
+	  else
+	    myInfo.set_Ratio_Inverse(Cs[0],Cs[1]);
+	}
+      else
+	{
+	  std::vector<double>::size_type isize = 3;
+	  if (Cs.size() != isize)
+	    {
+	      cerr << "Wrong number of contacts added. Require three values (Cpp0, Cpn0, Cpn1). Aborting...\n";
+	      return 1;
+	    }
+	  myInfo.set_Contacts(Cs[0],Cs[1],Cs[2]);
+	}
+    }
+  if (rand_flag)
     {
-    std::vector<double>::size_type isize = 3;
-    if (Cs.size() != isize)
-      {
-	cerr << "Wrong number of contacts added. Require three values (Cpp0, Cpn0, Cpn1). Aborting...\n";
-	return 1;
-      }
-    myInfo.set_Contacts(Cs[0],Cs[1],Cs[2]);
+    myInfo.randomize();
+    pRel_cut = 0.23 + myRand.Uniform()*0.04;
     }
 
-  if (rand_flag)
-    myInfo.randomize();
-  
   Cross_Sections myCS(csMeth,ffMod);
   const double mA = myInfo.get_mA();
-  const double mAm2 = myInfo.get_mAm2();
+  const double mAm2 = myInfo.get_mAm2(); // this includes the effect of Estar
   const double sigCM = myInfo.get_sigmaCM();
 
   // Prepare vector of parameters to be output
@@ -281,7 +332,7 @@ int main(int argc, char ** argv)
   // Loop over events
   for (int event=0 ; event < nEvents ; event++)
     {
-      if ((event %10000 ==0) and verbose)
+      if ((event %100000 ==0) and verbose)
 	cerr << "Working on event " << event << "\n";
 
       // Start with weight 1. Only multiply terms to weight. If trouble, set weight=0
@@ -461,7 +512,8 @@ int main(int argc, char ** argv)
       myInfo.do_SXC(lead_type, rec_type,gRandom->Rndm());
       
       // Fill the tree
-      outtree->Fill();      
+      if ((weight > 0.) || print_zeros)
+	outtree->Fill();      
     }
 
   if (verbose)

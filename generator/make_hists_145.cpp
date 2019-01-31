@@ -243,6 +243,14 @@ int main(int argc, char ** argv)
 		if (!accept_proton(vp))
 		  continue;
 
+		// Apply sector cuts
+		double phie_deg = ve.Phi() * 180./M_PI;
+		if (phie_deg < -30.)
+			phie_deg += 360.;
+		int sec_e = phie_deg/60.;
+		if ((sec_e != 1) and (sec_e != 4) and (sec_e != 5))
+		  continue;
+
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
@@ -252,10 +260,6 @@ int main(int argc, char ** argv)
 		double omega = Q2/(2.*mN*Xb);
 
 		// Let's make a sanitized phi and sector
-		double phie_deg = ve.Phi() * 180./M_PI;
-		if (phie_deg < -30.)
-			phie_deg += 360.;
-		int sec_e = phie_deg/60.;
 		double thetae_deg = ve.Theta() * 180./M_PI;
 
 		h1p_phie->Fill(phie_deg,weight);
@@ -351,6 +355,14 @@ int main(int argc, char ** argv)
 		if (!accept_proton(vlead))
 		  continue;
 
+		// Apply sector cuts
+		double phie_deg = ve.Phi() * 180./M_PI;
+		if (phie_deg < -30.)
+			phie_deg += 360.;
+		int sec_e = phie_deg/60.;
+		if ((sec_e != 1) and (sec_e != 4) and (sec_e != 5))
+		  continue;
+
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
@@ -360,10 +372,6 @@ int main(int argc, char ** argv)
 		double omega = Q2/(2.*mN*Xb);
 
 		// Let's make a sanitized phi and sector
-		double phie_deg = ve.Phi() * 180./M_PI;
-		if (phie_deg < -30.)
-			phie_deg += 360.;
-		int sec_e = phie_deg/60.;
 		double thetae_deg = ve.Theta() * 180./M_PI;
 
 		h1p_phie->Fill(phie_deg,weight);

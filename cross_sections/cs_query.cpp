@@ -62,10 +62,14 @@ int main(int argc, char **argv)
       TVector3 pp(mom_p * sin(thetaDeg_p * M_PI/180.) * cos(phiDeg_p*M_PI/180.),
 		  mom_p * sin(thetaDeg_p * M_PI/180.) * sin(phiDeg_p*M_PI/180.),
 		  mom_p * cos(thetaDeg_p * M_PI/180.));
-		  
+
+      // Calculate a few more things for Ronen
+      TVector3 q = TVector3(0.,0.,Ebeam) - pe;
+      double phiAngleDeg = q.Cross(pe).Angle(q.Cross(pp))*180./M_PI;
+      double gammaDeg = q.Angle(pp) * 180./M_PI;
 
       cout << Ebeam << " " << mom_e << " " << thetaDeg_e << " " << phiDeg_e << " " << mom_p << " " <<thetaDeg_p << " " << phiDeg_p << " "
-	   << myCS.sigmaCC1(Ebeam,pe,pp,true) << "\n";
+	   << " " << phiAngleDeg << " " << gammaDeg << " " << myCS.sigma_eN(Ebeam,pe,pp,true) << "\n";
 
     }
   return 0;

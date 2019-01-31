@@ -4,9 +4,6 @@
  #include <vector>
  #include "constants.h"
 
- // EG2 info
- const double eg2beam=5.014;
-
  // nuclear masses
  const double m_1H = mN;
  const double m_2H = 2.01410178*mU;
@@ -31,6 +28,11 @@
    void set_sigmaCM(double new_sigmaCM);
    void set_Estar(double new_Estar);
    void set_Contacts(double new_Cpp0, double new_Cpn0, double new_Cpn1);
+   void set_byRatio();
+   void set_Ratio(double ratio);
+   void set_Ratio(double ratio, double sig_ratio);
+   void set_Ratio_Inverse(double ratio);
+   void set_Ratio_Inverse(double ratio, double sig_ratio);
    void randomize();
    
    double get_Estar();
@@ -50,6 +52,7 @@
 
  private:
   int A;
+  int u;
   double mA;
   double mAm2;
   double Estar;
