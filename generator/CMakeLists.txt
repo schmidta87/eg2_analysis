@@ -13,3 +13,6 @@ target_link_libraries(simulator ${ROOT_LIBRARIES} AccMap Fid)
 # Make histograms
 add_executable(make_hists make_hists.cpp )
 target_link_libraries(make_hists ${ROOT_LIBRARIES} Fid)
+
+add_subdirectory(Andrew)
+
