@@ -2,17 +2,7 @@
  #define __NUCLEAR_INFO_H__
  #include <cstdlib>
  #include <vector>
-
- // EG2 info
- const double eg2beam=5.014;
-
- // constants
- const double me = 0.000511;
- const double mN = 0.93892;
- const double mU=0.931;
- const double GeVfm=0.1973;
- const double alpha=0.0072973525664;
- const double cmSqGeVSq = GeVfm*GeVfm*1.E-26;
+ #include "constants.h"
 
  // nuclear masses
  const double m_1H = mN;
@@ -38,6 +28,11 @@
    void set_sigmaCM(double new_sigmaCM);
    void set_Estar(double new_Estar);
    void set_Contacts(double new_Cpp0, double new_Cpn0, double new_Cpn1);
+   void set_byRatio();
+   void set_Ratio(double ratio);
+   void set_Ratio(double ratio, double sig_ratio);
+   void set_Ratio_Inverse(double ratio);
+   void set_Ratio_Inverse(double ratio, double sig_ratio);
    void randomize();
    
    double get_Estar();
@@ -57,6 +52,7 @@
 
  private:
   int A;
+  int u;
   double mA;
   double mAm2;
   double Estar;

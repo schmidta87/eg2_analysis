@@ -14,6 +14,7 @@
 
 #include "Nuclear_Info.h"
 #include "Cross_Sections.h"
+#include "helpers.h"
 
 using namespace std;
 
@@ -25,7 +26,6 @@ const double Xmax=2.;
 
 const bool doRad=true;
 
-double sq(double x){ return x*x; };
 double sigmaCC1(double E1, TVector3 k, TVector3 p, bool isProton);
 void do_SXC(int &lead_type, int &rec_type, double r);
 double deltaHard(double QSq);
@@ -36,15 +36,19 @@ void help_mess()
        << "Optional flags:\n"
        << "-h: Help\n"
        << "-v: Verbose\n"
+       << "-z: Print zero-weight events\n"
        << "-A <Nucleus number>==<12>\n"
        << "-s <Sigma_CM [GeV]>\n"
        << "-C <Nuclear Contact [%]> (Use for Cpp0, Cpn0, Cpn1)\n"
        << "-E <E* [GeV]>\n"
        << "-k <kRel cutoff [GeV]==0.25>\n"
        << "-u <Nuclear potential>==<1> (1=AV18, 2=N2LO, 3=N3LO)\n"
-       << "-c <Cross section type>==<1>\n"
+       << "-c <Cross section method>==<cc1>\n"
+       << "-f <Form Factor model>==<kelly>\n"
        << "-r: Randomize constants\n"
-       << "-p: List output file parameter order\n";
+       << "-p: List output file parameter order\n"
+       << "-R: Define contacts only by ratio\n"
+       << "-I: Define contacts only by inverted ratio\n";
 }
 
 void param_mess()
@@ -71,7 +75,8 @@ void param_mess()
        << "     17 | pNN2PP\n"
        << "     18 | kRel Cut [GeV]\n"
        << "     19 | Nuclear Potential\n"
-       << "     20 | Cross Section\n";
+       << "     20 | Cross Section\n"
+       << "     21 | Form Factor Model\n ";
 }
 
 int main(int argc, char ** argv)
@@ -116,11 +121,15 @@ int main(int argc, char ** argv)
   double Estar = 0.;
   double pRel_cut = 0.25;
   int pType = 1;
-  int cType = 1;
+  csMethod csMeth=cc1;
+  ffModel ffMod=kelly;
   double rand_flag = false;
+  bool byRat = false;
+  bool byInv = false;
+  bool print_zeros=false;
 
   int c;  
-  while ((c=getopt (argc-2, &argv[2], "hvA:s:C:E:k:u:c:rp")) != -1) // First two arguments are not optional flags.
+  while ((c=getopt (argc-2, &argv[2], "hvzA:s:C:E:k:u:f:c:rpRI")) != -1) // First two arguments are not optional flags.
     switch(c)
       {
       case 'h':
@@ -128,6 +137,9 @@ int main(int argc, char ** argv)
 	return -1;
       case 'v':
 	verbose = true;
+	break;
+      case 'z':
+	print_zeros = true;
 	break;
       case 'A':
 	Anum = atoi(optarg);
@@ -150,12 +162,31 @@ int main(int argc, char ** argv)
 	pType = atoi(optarg);
 	break;
       case 'c':
-	cType = atoi(optarg);
-	if ((cType != 1) and (cType != 2))
+	if (strcmp(optarg,"onshell")==0)
+	  csMeth=onshell;
+	else if (strcmp(optarg,"cc1")==0)
+	  csMeth=cc1;
+	else if (strcmp(optarg,"cc2")==0)
+	  csMeth=cc2;
+	else if (atoi(optarg)==1)
+	  csMeth=cc1;
+	else if (atoi(optarg)==2)
+	  csMeth=cc2;
+	else
 	  {
-	    cerr << "Invalid cross section designation. Allowed values are 1 and 2. Aborting...\n";
+	    cerr << "Invalid cross section designation. Allowed values are onshell, cc1 and cc2. Aborting...\n";
 	    return -1;
 	  }
+	break;
+      case 'f':
+	if (strcmp(optarg,"kelly")==0)
+	  ffMod=kelly;
+	else if (strcmp(optarg,"dipole")==0)
+	  ffMod=dipole;
+	else{
+	  cerr << "Invalid form factor model provided. Allowed options are kelly and dipole. Aborting...\n";
+	  return -1;
+	}
 	break;
       case 'r':
 	rand_flag = true;
@@ -163,6 +194,12 @@ int main(int argc, char ** argv)
       case 'p':
 	param_mess();
 	return -1;
+      case 'R':
+	byRat = true;
+	break;
+      case 'I':
+	byInv = true;
+	break;
       case '?':
 	return -1;
       default:
@@ -212,27 +249,62 @@ int main(int argc, char ** argv)
   if (do_sCM)
     myInfo.set_sigmaCM(sCM);
   myInfo.set_Estar(Estar);
+  if (byRat)
+    myInfo.set_byRatio();
   if (do_Cs)
+    { 
+      if (byRat)
+	{
+	  std::vector<double>::size_type isize = 1;
+	  std::vector<double>::size_type isize2 = 2;
+	  if ((Cs.size() != isize) and (Cs.size() != isize2))
+	    {
+	      cerr << "If defining by contact ratio, please provide only one value and optionally an uncertainty. Aborting...\n";
+	      return 1;
+	    }
+	  if (Cs.size() == isize)
+	    myInfo.set_Ratio(Cs[0]);
+	  else
+	    myInfo.set_Ratio(Cs[0],Cs[1]);
+	}
+      else if (byInv)
+	{
+	  std::vector<double>::size_type isize = 1;
+	  std::vector<double>::size_type isize2 = 2;
+	  if ((Cs.size() != isize) and (Cs.size() != isize2))
+	    {
+	      cerr << "If defining by contact ratio, please provide only one value and optionally an uncertainty. Aborting...\n";
+	      return 1;
+	    }
+	  if (Cs.size() == isize)
+	    myInfo.set_Ratio_Inverse(Cs[0]);
+	  else
+	    myInfo.set_Ratio_Inverse(Cs[0],Cs[1]);
+	}
+      else
+	{
+	  std::vector<double>::size_type isize = 3;
+	  if (Cs.size() != isize)
+	    {
+	      cerr << "Wrong number of contacts added. Require three values (Cpp0, Cpn0, Cpn1). Aborting...\n";
+	      return 1;
+	    }
+	  myInfo.set_Contacts(Cs[0],Cs[1],Cs[2]);
+	}
+    }
+  if (rand_flag)
     {
-    std::vector<double>::size_type isize = 3;
-    if (Cs.size() != isize)
-      {
-	cerr << "Wrong number of contacts added. Require three values (Cpp0, Cpn0, Cpn1). Aborting...\n";
-	return 1;
-      }
-    myInfo.set_Contacts(Cs[0],Cs[1],Cs[2]);
+    myInfo.randomize();
+    pRel_cut = 0.23 + myRand.Uniform()*0.04;
     }
 
-  if (rand_flag)
-    myInfo.randomize();
-  
-  Cross_Sections myCS;
+  Cross_Sections myCS(csMeth,ffMod);
   const double mA = myInfo.get_mA();
-  const double mAm2 = myInfo.get_mAm2();
+  const double mAm2 = myInfo.get_mAm2(); // this includes the effect of Estar
   const double sigCM = myInfo.get_sigmaCM();
 
   // Prepare vector of parameters to be output
-  TVectorT<double> params(21);
+  TVectorT<double> params(22);
   params[0] = Anum;
   params[1] = sigCM;
   params[2] = myInfo.get_Cpp0();
@@ -254,12 +326,13 @@ int main(int argc, char ** argv)
   params[17] = Ps[11];
   params[18] = pRel_cut;
   params[19] = pType;
-  params[20] = cType;
+  params[20] = csMeth;
+  params[21] = ffMod;
   
   // Loop over events
   for (int event=0 ; event < nEvents ; event++)
     {
-      if ((event %10000 ==0) and verbose)
+      if ((event %100000 ==0) and verbose)
 	cerr << "Working on event " << event << "\n";
 
       // Start with weight 1. Only multiply terms to weight. If trouble, set weight=0
@@ -358,15 +431,19 @@ int main(int argc, char ** argv)
 	{
 	  double momRec1 = 0.5*(YSq*Z*cosThetaZRec + sqrt(D))/(sq(X) - vZ.Mag2()*sq(cosThetaZRec));
 	  double momRec2 = 0.5*(YSq*Z*cosThetaZRec - sqrt(D))/(sq(X) - vZ.Mag2()*sq(cosThetaZRec));
-	  if ((momRec1 < 0) && (momRec2 <0))
+
+	  bool momRec1Valid = (momRec1>=0.) && (X - sqrt(sq(momRec1) + sq(mN)) >=0.) && (sq(X) - sq(Z) + 2.*Z*momRec1*cosThetaZRec > 0.);
+	  bool momRec2Valid = (momRec2>=0.) && (X - sqrt(sq(momRec2) + sq(mN)) >=0.) && (sq(X) - sq(Z) + 2.*Z*momRec2*cosThetaZRec >= 0.);
+
+	  if ( (!momRec1Valid) && (!momRec2Valid))
 	    {
 	      weight=0.;
 	    }
 	  else
 	    {
-	      if (momRec1 < 0)
+	      if (!momRec1Valid)
 		pRec_Mag = momRec2;
-	      else if (momRec2 < 0)
+	      else if (!momRec2Valid)
 		pRec_Mag = momRec1;
 	      else
 		{
@@ -420,7 +497,7 @@ int main(int argc, char ** argv)
 	      double Erec = sqrt(sq(mN) + vRec.Mag2());
 
 	      // Calculate the weight
-	      weight *= myCS.sigmaCCn(Ebeam_eff, v3_eff, vLead, (lead_type==pCode),cType) // eN cross section
+	      weight *= myCS.sigma_eN(Ebeam_eff, v3_eff, vLead, (lead_type==pCode)) // eN cross section
 		* nu_eff/(2.*xB_eff*Ebeam_eff*pe_Mag_eff) * (Qmax-Qmin) * (Xmax-Xmin) // Jacobian for QSq,xB
 		* (doRad ? (1. - deltaHard(QSq_eff)) * pow(Ebeam/sqrt(Ebeam*pe_Mag),lambda_ei) * pow(pe_Mag_eff/sqrt(Ebeam*pe_Mag),lambda_ef) : 1.) // Radiative weights
 		* 1./(4.*sq(M_PI)) // Angular terms
@@ -435,7 +512,8 @@ int main(int argc, char ** argv)
       myInfo.do_SXC(lead_type, rec_type,gRandom->Rndm());
       
       // Fill the tree
-      outtree->Fill();      
+      if ((weight > 0.) || print_zeros)
+	outtree->Fill();      
     }
 
   if (verbose)

@@ -7,22 +7,23 @@
 #include <vector>
 #include "TRandom1.h"
 
-Nuclear_Info::Nuclear_Info(int thisA, int pType)
+Nuclear_Info::Nuclear_Info(int thisA, int uType)
 {
   A = thisA;
+  u = uType;
 
-  if(pType == 1){
+  if(u == 1){
   fill_arrays();
   std::cerr <<"You are using the AV18 potential\n";
   }
-  else if (pType == 2){
+  else if (u == 2){
     fill_arrays_chiral();
     std::cerr <<"You are using the N2L0 potential\n";
   }
-  else if (pType == 3){
+  else if (u == 3){
     fill_arrays_chiral_n3lo();
     std::cerr <<"You are using the N3L0 potential\n";
-    
+
   }
   else{
     std::cerr <<"You are using a potential not in the library. \n Aborting...\n";
@@ -64,7 +65,7 @@ Nuclear_Info::Nuclear_Info(int thisA, int pType)
       //Cpn1 = 16.;
       //mA = m_12C;
       //mAm2 = m_10B;
-
+      
       sigmaCM=0.15;
       d_sigmaCM = 0.02;
       Cpp0 = 1.3;
@@ -133,6 +134,91 @@ void Nuclear_Info::set_Contacts(double new_Cpp0, double new_Cpn0, double new_Cpn
   Cpn1 = new_Cpn1;
 }
 
+void Nuclear_Info::set_Ratio(double ratio)
+{
+  double C0 = 1.4;
+  Cpp0 = C0;
+  d_Cpp0 = 0.;
+  Cpn0 = C0;
+  d_Cpn0 = 0.;
+  Cpn1 = C0*ratio;
+  d_Cpn1 = 0.;
+}
+
+void Nuclear_Info::set_Ratio(double ratio, double sig_ratio)
+{
+  double C0 = 1.4;
+  Cpp0 = C0;
+  d_Cpp0 = 0.;
+  Cpn0 = C0;
+  d_Cpn0 = 0.;
+  Cpn1 = C0*ratio;
+  d_Cpn1 = C0*sig_ratio;
+}
+
+void Nuclear_Info::set_Ratio_Inverse(double ratio)
+{
+  double C1 = 20.;
+  double C0 = ratio*C1;
+  Cpp0 = C0;
+  d_Cpp0 = 0.;
+  Cpn0 = C0;
+  d_Cpn0 = 0.;
+  Cpn1 = C1;
+  d_Cpn1 = 0.;
+}
+
+void Nuclear_Info::set_Ratio_Inverse(double ratio, double sig_ratio)
+{
+  double C1 = 20;
+  double C0 = ratio*C1;
+  double sig_C0 = sig_ratio*C1;
+  Cpp0 = C0;
+  d_Cpp0 = sig_C0;
+  Cpn0 = C0;
+  d_Cpn0 = sig_C0;
+  Cpn1 = C1;
+  d_Cpn1 = 0;
+}
+
+
+void Nuclear_Info::set_byRatio()
+{
+  if (A==12)
+    {
+      double C0 = 1.4;
+      Cpp0 = C0;
+      d_Cpp0 = 0.;
+      Cpn0 = C0;
+      d_Cpn0 = 0.;      
+      if (u==1)
+	{
+	  Cpn1 = 14.*C0;
+	  d_Cpn1 = 3.*C0;
+	}
+      else if (u==2)
+	{
+	  Cpn1 = 19.*C0;
+	  d_Cpn1 = 4.*C0;
+	}
+      else if (u==3)
+	{
+	  Cpn1 = 25.*C0;
+	  d_Cpn1 = 5.*C0;
+	}
+      else
+	{
+    std::cerr <<"You are using a potential not in the library. \n Aborting...\n";
+  exit(-2);
+	}
+    }
+  else
+    {
+      std::cerr << "You selected a nucleus with A=" << A << "\n"
+	   << " which does not have a ratio in the library. Aborting...\n";
+      exit(-2);
+    }
+}
 void Nuclear_Info::randomize()
 {
   TRandom1 myRand(0);
@@ -146,12 +232,13 @@ void Nuclear_Info::randomize()
   pPN2NN += myRand.Gaus(0.,d_pPN2NN);
   pPN2PP += myRand.Gaus(0.,d_pPN2PP);
   pPN2NP += myRand.Gaus(0.,d_pPN2NP);
-  pNP2PP += myRand.Gaus(0.,d_pNP2PP);
-  pNP2NN += myRand.Gaus(0.,d_pNP2NN);
-  pNP2PN += myRand.Gaus(0.,d_pNP2PN);
-  pNN2PN += myRand.Gaus(0.,d_pNN2PN);
-  pNN2NP += myRand.Gaus(0.,d_pNN2NP);
-  pNN2PP += myRand.Gaus(0.,d_pNN2PP);
+  pNP2PP = pPN2NN;
+  pNP2NN = pPN2PP;
+  pNP2PN = pPN2NP;
+  pNN2PN = pPP2NP;
+  pNN2NP = pPP2PN;
+  pNN2PP = pPP2NN;
+  Estar = myRand.Uniform()*0.030;
 }
 
 double Nuclear_Info::get_Estar()
