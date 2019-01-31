@@ -30,10 +30,4 @@ target_link_libraries(make_ratios ${ROOT_LIBRARIES})
 
 add_subdirectory(Jackson)
 
-add_executable(H2T H2T.cpp)
-target_link_libraries(H2T ${ROOT_LIBRARIES})
-
-add_executable(TGAE2T TGAE2T.cpp)
-target_link_libraries(TGAE2T ${ROOT_LIBRARIES})
-
 add_subdirectory(Andrew)
