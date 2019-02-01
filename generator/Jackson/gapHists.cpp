@@ -54,8 +54,22 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_Pmzq);
 	TH1D * h1p_PmTq =  new TH1D("ep_PmTq" ,"ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
 	h1p_list.push_back(h1p_PmTq);
+	TH1D * h2p_Pmzrel =  new TH1D("epp_Pmzrel" ,"ep;pMiss_zrel [GeV];Counts",30,0.0,1.0);
+	h1p_list.push_back(h2p_Pmzrel);
+	TH1D * h2p_PmTrel =  new TH1D("epp_PmTrel" ,"ep;pMiss_Trel [GeV];Counts",30,0.0,0.5);
+	h1p_list.push_back(h2p_PmTrel);
+	TH1D * h2p_Pmzrec =  new TH1D("epp_Pmzrec" ,"ep;pMiss_zrec [GeV];Counts",30,-1.0,1.0);
+	h1p_list.push_back(h2p_Pmzrec);
+	TH1D * h2p_PmTrec =  new TH1D("epp_PmTrec" ,"ep;pMiss_Trec [GeV];Counts",30,0.0,1.0);
+	h1p_list.push_back(h2p_PmTrec);
+	TH1D * h2p_PmzCM =  new TH1D("epp_PmzCM" ,"ep;pMiss_zCM [GeV];Counts",30,-1.0,1.0);
+	h1p_list.push_back(h2p_PmzCM);
+	TH1D * h2p_PmTCM =  new TH1D("epp_PmTCM" ,"ep;pMiss_TCM [GeV];Counts",30,0.0,1.0);
+	h1p_list.push_back(h2p_PmTCM);
 	TH1D * h1p_Pm =  new TH1D("ep_Pm" ,"ep;pMiss [GeV];Counts",28,0.3,1.0);
 	h1p_list.push_back(h1p_Pm);
+	TH1D * h2p_Pm =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",28,0.3,1.0);
+	h1p_list.push_back(h2p_Pm);
 	TH1D * h1p_Pm_10 =  new TH1D("ep_Pm_10" ,"ep;pMiss [GeV];Counts",28,0.3,1.0);
 	h1p_list.push_back(h1p_Pm_10);
 	TH1D * h1p_Pm_15 =  new TH1D("ep_Pm_15" ,"ep;pMiss [GeV];Counts",28,0.3,1.0);
@@ -72,6 +86,8 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_cP1q);
 	TH1D * h1p_cPm1 = new TH1D("ep_cPm1","ep;cos(Theta_Pm1);Counts",40,-1.,0.);
 	h1p_list.push_back(h1p_cPm1);
+	TH1D * h2p_cPm2 = new TH1D("epp_cPm2","ep;cos(Theta_Pm2);Counts",40,-1.,0.);
+	h1p_list.push_back(h2p_cPm2);
 	TH1D * h1p_theta1 = new TH1D("ep_theta1","ep;Theta_1 [deg];Counts",40,10.,90.);
 	h1p_list.push_back(h1p_theta1);
 	TH1D * h1p_thetae = new TH1D("ep_thetae","ep;Theta_e [deg];Counts",60,10.,40.);
@@ -120,11 +136,85 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h2p_mom2Tq);
 	TH1D * h2p_pCM = new TH1D("epp_pCM","ep;p_CM [GeV/c];Counts",60,0.0,1.0);
 	h1p_list.push_back(h2p_pCM);
+	TH1D * h2p_pCMz = new TH1D("epp_pCMz","ep;p_CMz [GeV/c];Counts",60,-1.0,1.0);
+	h1p_list.push_back(h2p_pCMz);
+	TH1D * h2p_pCMT = new TH1D("epp_pCMT","ep;p_CMT [GeV/c];Counts",60,0.0,1.0);
+	h1p_list.push_back(h2p_pCMT);
+	TH1D * h2p_pCMzPm = new TH1D("epp_pCMzPm","ep;p_CMzPm [GeV/c];Counts",60,-1.0,1.0);
+	h1p_list.push_back(h2p_pCMzPm);
+	TH1D * h2p_pCMTPm = new TH1D("epp_pCMTPm","ep;p_CMTPm [GeV/c];Counts",60,0.0,1.0);
+	h1p_list.push_back(h2p_pCMTPm);
+	TH1D * h2p_pCMzq = new TH1D("epp_pCMzq","ep;p_CMzq [GeV/c];Counts",60,-1.0,1.0);
+	h1p_list.push_back(h2p_pCMzq);
+	TH1D * h2p_pCMTq = new TH1D("epp_pCMTq","ep;p_CMTq [GeV/c];Counts",60,0.0,1.0);
+	h1p_list.push_back(h2p_pCMTq);
+	TH1D * h2p_pCMzPr = new TH1D("epp_pCMzPr","ep;p_CMzPr [GeV/c];Counts",60,-1.0,1.0);
+	h1p_list.push_back(h2p_pCMzPr);
+	TH1D * h2p_pCMTPr = new TH1D("epp_pCMTPr","ep;p_CMTPr [GeV/c];Counts",60,0.0,1.0);
+	h1p_list.push_back(h2p_pCMTPr);
+	TH1D * h2p_prelz = new TH1D("epp_prelz","ep;p_relz [GeV/c];Counts",60,-1.0,1.0);
+	h1p_list.push_back(h2p_prelz);
+	TH1D * h2p_prelT = new TH1D("epp_prelT","ep;p_relT [GeV/c];Counts",60,0.0,1.0);
+	h1p_list.push_back(h2p_prelT);
+	TH1D * h2p_prelzPm = new TH1D("epp_prelzPm","ep;p_relzPm [GeV/c];Counts",60,0.0,1.0);
+	h1p_list.push_back(h2p_prelzPm);
+	TH1D * h2p_prelTPm = new TH1D("epp_prelTPm","ep;p_relTPm [GeV/c];Counts",60,0.0,0.7);
+	h1p_list.push_back(h2p_prelTPm);
+	TH1D * h2p_prelzq = new TH1D("epp_prelzq","ep;p_relzq [GeV/c];Counts",60,-1.0,0.0);
+	h1p_list.push_back(h2p_prelzq);
+	TH1D * h2p_prelTq = new TH1D("epp_prelTq","ep;p_relTq [GeV/c];Counts",60,0.0,0.7);
+	h1p_list.push_back(h2p_prelTq);
+	TH1D * h2p_prelzPr = new TH1D("epp_prelzPr","ep;p_relzPr [GeV/c];Counts",60,-1.0,0.0);
+	h1p_list.push_back(h2p_prelzPr);
+	TH1D * h2p_prelTPr = new TH1D("epp_prelTPr","ep;p_relTPr [GeV/c];Counts",60,0.0,0.5);
+	h1p_list.push_back(h2p_prelTPr);
 	TH1D * h2p_prel = new TH1D("epp_prel","ep;p_rel [GeV/c];Counts",60,0.0,1.0);
 	h1p_list.push_back(h2p_prel);
+
+	TH1D * h2p_e1 =  new TH1D("epp_e1" ,"epp;e1 [GeV];Counts",28,0.3,1.1);
+	h1p_list.push_back(h2p_e1);
+	TH1D * h2p_e1_lo =  new TH1D("epp_e1_lo" ,"epp;e1 [GeV];Counts",28,0.3,1.1);
+	h1p_list.push_back(h2p_e1_lo);
+	TH1D * h2p_e1_md =  new TH1D("epp_e1_md" ,"epp;e1 [GeV];Counts",28,0.3,1.1);
+	h1p_list.push_back(h2p_e1_md);
+	TH1D * h2p_e1_hi =  new TH1D("epp_e1_hi" ,"epp;e1 [GeV];Counts",28,0.3,1.1);
+	h1p_list.push_back(h2p_e1_hi);
+
 	
 	TH2D * thetaq_vs_phiq = new TH2D("thetaq_vs_phiq","ep; theta_q [degrees]; phi_q [degrees]",40,30.,70.,60,-30.,330.);
 	h1p_list.push_back(thetaq_vs_phiq);
+
+	TH2D * prel_vs_Qsq = new TH2D("prel_vs_Qsq","ep; p_rel [GeV/c]; QSq [GeV^2]",40,0.0,1.0,40,1.,5.);
+	h1p_list.push_back(prel_vs_Qsq);
+	TH2D * prel_vs_xB = new TH2D("prel_vs_xB","ep; p_rel [GeV/c]; xB",40,0.0,1.0,26,1.2,2.5);
+	h1p_list.push_back(prel_vs_xB);
+	TH2D * prel_vs_Pm = new TH2D("prel_vs_Pm","ep; p_rel [GeV/c]; Pm [GeV/c]",40,0.0,1.0,28,0.3,1.0);
+	h1p_list.push_back(prel_vs_Pm);
+	TH2D * prel_vs_Em = new TH2D("prel_vs_Em","ep; p_rel [GeV/c]; Em [GeV]",40,0.0,1.0,40,-0.2,0.6);
+	h1p_list.push_back(prel_vs_Em);
+	TH2D * prel_vs_cPmq = new TH2D("prel_vs_cPmq","ep; p_rel [GeV/c]; cos(Theta_Pmq)",40,0.0,1.0,40,-1.,0);
+	h1p_list.push_back(prel_vs_cPmq);
+	TH2D * prel_vs_cPm2 = new TH2D("prel_vs_cPm2","ep; p_rel [GeV/c]; cos(Theta_Pm2)",40,0.0,1.0,40,-1.,0.);
+	h1p_list.push_back(prel_vs_cPm2);
+	TH2D * prel_vs_mom2 = new TH2D("prel_vs_mom2","ep; p_rel [GeV/c]; mom2 [GeV/c]",40,0.0,1.0,17,0.35,1.2);
+	h1p_list.push_back(prel_vs_mom2);
+
+	TH2D * prec_vs_e1 = new TH2D("prec_vs_e1","ep; p_rec [GeV/c]; e1 [GeV]",17,0.35,1.2,40,0.6,1.6);
+	h1p_list.push_back(prec_vs_e1);
+
+	TH2D * Pm_vs_Thetam = new TH2D("Pm_vs_Thetam","ep; p_miss [GeV/c]; Theta_m [degrees]",28,0.3,1.0,40,10.,170.);
+	h1p_list.push_back(Pm_vs_Thetam);
+	TH2D * Pmz_vs_PmT = new TH2D("Pmz_vs_PmT","ep; p_mz [GeV/c]; p_mT [GeV/c]",30,0.,0.4,30,0.0,1.0);
+	h1p_list.push_back(Pmz_vs_PmT);
+	TH2D * Pmzq_vs_PmTq = new TH2D("Pmzq_vs_PmTq","ep; p_mzq [GeV/c]; p_mTq [GeV/c]",30,-1.0,0.0,30,0.0,1.0);
+	h1p_list.push_back(Pmzq_vs_PmTq);
+
+	TH2D * P1_vs_Theta1 = new TH2D("Pm_vs_Theta1","ep; p_1 [GeV/c]; Theta_1 [degrees]",40,0.4,2.4,40,10.,90.);
+	h1p_list.push_back(P1_vs_Theta1);
+	TH2D * P1z_vs_P1T = new TH2D("P1z_vs_P1T","ep; p_1z [GeV/c]; p_1T [GeV/c]",60,0.0,2.0,60,0.0,2.0);
+	h1p_list.push_back(P1z_vs_P1T);
+	TH2D * P1zq_vs_P1Tq = new TH2D("P1zq_vs_P1Tq","ep; p_1zq [GeV/c]; p_1Tq [GeV/c]",60,0.5,3.0,60,0.0,1.0);
+	h1p_list.push_back(P1zq_vs_P1Tq);
 
 	TH1D * h1p_thetae_bySec[6];
 	TH1D * h1p_theta1_bySec[6];
@@ -323,6 +413,14 @@ int main(int argc, char ** argv)
 		h1p_cP1q->Fill(cos(vp.Angle(vq)),weight);
 		h1p_cPm1->Fill(cos(vm.Angle(vp)),weight);
 
+		Pm_vs_Thetam->Fill(Pmiss_size[0],thetam_deg,weight);
+		Pmz_vs_PmT->Fill(vm.z(),vm.XYvector().Mod(),weight);
+		Pmzq_vs_PmTq->Fill(vm.Dot(qu),vm.Perp(qu),weight);
+		
+		P1_vs_Theta1->Fill(Pp_size[0],theta1_deg,weight);
+		P1z_vs_P1T->Fill(vp.z(),vp.XYvector().Mod(),weight);
+		P1zq_vs_P1Tq->Fill(vp.Dot(qu),vp.Perp(qu),weight);
+
 		if ((0.35<Pmiss_size[0]) and (Pmiss_size[0]<0.55))
 		  {
 
@@ -411,6 +509,7 @@ int main(int argc, char ** argv)
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
 
 		double omega = Q2/(2.*mN*Xb);
+		double e1 = sqrt(vp.Mag2()+mN*mN)-omega;
 
 		// Let's make a sanitized phi and sector
 		double phie_deg = ve.Phi() * 180./M_PI;
@@ -445,6 +544,7 @@ int main(int argc, char ** argv)
 		h1p_qT ->Fill(vq.XYvector().Mod(),weight);
 
 		TVector3 vm = vp - vq;
+		TVector3 mu = vm.Unit();
 		double thetam_deg = vm.Theta() * 180./M_PI;
 
 		h1p_thetam->Fill(thetam_deg,weight);
@@ -472,17 +572,13 @@ int main(int argc, char ** argv)
 		h1p_cP1q->Fill(cos(vp.Angle(vq)),weight);
 		h1p_cPm1->Fill(cos(vm.Angle(vp)),weight);
 
-		TVector3 vrec(Pp[1][0],Pp[1][1],Pp[1][2]);
-		h2p_mom2z ->Fill(vrec.z(),weight);
-		h2p_mom2T ->Fill(vrec.XYvector().Mod(),weight);
-		h2p_mom2zq ->Fill(vrec.Dot(qu),weight);
-		h2p_mom2Tq ->Fill(vrec.Perp(qu),weight);
+		Pm_vs_Thetam->Fill(Pmiss_size[0],thetam_deg,weight);
+		Pmz_vs_PmT->Fill(vm.z(),vm.XYvector().Mod(),weight);
+		Pmzq_vs_PmTq->Fill(vm.Dot(qu),vm.Perp(qu),weight);
 		
-		TVector3 vcm = vm + vrec;
-		TVector3 vrel = (vm - vrec)*(0.5);
-		h2p_pCM ->Fill(vcm.Mag(),weight);
-		h2p_prel ->Fill(vrel.Mag(),weight);
-		
+		P1_vs_Theta1->Fill(Pp_size[0],theta1_deg,weight);
+		P1z_vs_P1T->Fill(vp.z(),vp.XYvector().Mod(),weight);
+		P1zq_vs_P1Tq->Fill(vp.Dot(qu),vp.Perp(qu),weight);
 
 		if ((0.35<Pmiss_size[0]) and (Pmiss_size[0]<0.55))
 		  {
@@ -502,7 +598,6 @@ int main(int argc, char ** argv)
 		h1p_Em_bySece_tot[sec_e]->Fill(Emiss,weight); 
 
 		thetaq_vs_phiq->Fill(thetaq_deg,phiq_deg,weight);
-
 
 		if (thetae_deg > 10)
 		  {
@@ -524,6 +619,69 @@ int main(int argc, char ** argv)
 		    h1p_Pm_20 ->Fill(Pmiss_size[0],weight);
 		    h1p_Pm_bySece_tot_20[sec_e] ->Fill(Pmiss_size[0],weight);
 		  }
+
+		if (Pp_size[1] < 0.35)
+		  continue;
+		h2p_Pm ->Fill(Pmiss_size[0],weight);
+
+		h2p_e1 ->Fill(e1,weight);
+		if (Pp_size[1] < 0.45)
+		  h2p_e1_lo ->Fill(e1,weight);
+		else if (Pp_size[1] < 0.55)
+		  h2p_e1_md ->Fill(e1,weight);
+		else
+		  h2p_e1_hi ->Fill(e1,weight);
+
+		TVector3 vrec(Pp[1][0],Pp[1][1],Pp[1][2]);
+		TVector3 ru = vrec.Unit();
+		h2p_mom2z ->Fill(vrec.z(),weight);
+		h2p_mom2T ->Fill(vrec.XYvector().Mod(),weight);
+		h2p_mom2zq ->Fill(vrec.Dot(qu),weight);
+		h2p_mom2Tq ->Fill(vrec.Perp(qu),weight);
+		
+		TVector3 vcm = vm + vrec;
+		TVector3 ucm = vcm.Unit();
+		TVector3 vrel = (vm - vrec)*(0.5);
+		TVector3 urel = vrel.Unit();
+		Double_t prel = vrel.Mag();
+		h2p_pCM ->Fill(vcm.Mag(),weight);
+		h2p_pCMz ->Fill(vcm.z(),weight);
+		h2p_pCMT ->Fill(vcm.XYvector().Mod(),weight);
+		h2p_pCMzPm ->Fill(vcm.Dot(mu),weight);
+		h2p_pCMTPm ->Fill(vcm.Perp(mu),weight);
+		h2p_pCMzq ->Fill(vcm.Dot(qu),weight);
+		h2p_pCMTq ->Fill(vcm.Perp(qu),weight);
+		h2p_pCMzPr ->Fill(vcm.Dot(ru),weight);
+		h2p_pCMTPr ->Fill(vcm.Perp(ru),weight);
+		h2p_prel ->Fill(prel,weight);
+		h2p_prelz ->Fill(vrel.z(),weight);
+		h2p_prelT ->Fill(vrel.XYvector().Mod(),weight);
+		h2p_prelzPm ->Fill(vrel.Dot(mu),weight);
+		h2p_prelTPm ->Fill(vrel.Perp(mu),weight);
+		h2p_prelzq ->Fill(vrel.Dot(qu),weight);
+		h2p_prelTq ->Fill(vrel.Perp(qu),weight);
+		h2p_prelzPr ->Fill(vrel.Dot(ru),weight);
+		h2p_prelTPr ->Fill(vrel.Perp(ru),weight);
+
+		h2p_Pmzrel ->Fill(vm.Dot(urel),weight);
+		h2p_PmTrel ->Fill(vm.Perp(urel),weight);
+		h2p_Pmzrec ->Fill(vm.Dot(ru),weight);
+		h2p_PmTrec ->Fill(vm.Perp(ru),weight);
+		h2p_PmzCM ->Fill(vm.Dot(ucm),weight);
+		h2p_PmTCM ->Fill(vm.Perp(ucm),weight);
+		
+		h2p_cPm2 ->Fill(cos(vm.Angle(vrec)),weight);
+
+		prel_vs_Qsq->Fill(prel,Q2,weight);
+		prel_vs_xB->Fill(prel,Xb,weight);
+		prel_vs_Pm->Fill(prel,Pmiss_size[0],weight);
+		prel_vs_Em->Fill(prel,Emiss,weight);
+		prel_vs_cPmq->Fill(prel,cos(Pmiss_q_angle[0]*M_PI/180),weight);
+		prel_vs_cPm2->Fill(prel,cos(vm.Angle(vrec)),weight);
+		prel_vs_mom2->Fill(prel,Pp_size[1],weight);
+
+		prec_vs_e1->Fill(Pp_size[1],e1,weight);
+
 		h2p_mom2->Fill(Pp_size[1],weight);
 
 	}
@@ -544,7 +702,7 @@ int main(int argc, char ** argv)
 
 	const double data_ep = 9175.;
 	const double data_epp = 437.;
-	const double pnorm = data_ep/h1p_Pm->Integral();
+	const double pnorm = data_epp/h2p_Pm->Integral();
 
 	// scale all the histograms, and write them out
 	for (int i=0 ; i<h1p_list.size() ; i++)
