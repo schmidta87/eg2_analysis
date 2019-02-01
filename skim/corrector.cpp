@@ -12,7 +12,9 @@ using namespace std;
 double correct_theta(TVector3 v_uncorr);
 
 // Subtract these from the measured electron momentum for each sector.
-const double Ee_offsets[6]={-0.00597309,0.0211157,-0.00535153,-0.0260952,-0.00339546,0.0095037};
+const double Ee_offsets[6]={-0.00597309,0.0211157,-0.00535153,-0.0260952,-0.00339546,0.0095037}; // x>0.85
+//const double Ee_offsets[6]={0.,0.,0.,0.,0.,0};
+//const double Ee_offsets[6]={0.0117447, 0.0340183, 0.0098942, -0.0183738, 0.0120436, 0.0276024}; // x>1.1
 
 int main(int argc, char ** argv)
 {
@@ -97,6 +99,8 @@ int main(int argc, char ** argv)
   TVector3 vps[maxNP];
   for (int event=0 ; event < inTree->GetEntries() ; event++)
     {
+      if (event%100000 == 0)
+	cerr << "Working on event " << event << " out of " << inTree->GetEntries() << "\n";
       // Load the input vectors
       inTree->GetEvent(event);
 

@@ -101,6 +101,8 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_pmiss_Emiss);
 	TH2D * h1p_pmiss_E1 = new TH2D("ep_pmiss_E1","ep;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,25,0.5,1.0);
 	h1p_list.push_back(h1p_pmiss_E1);
+	TH2D * h1p_Emiss_by_sector = new TH2D("ep_Emiss_sec","ep;Electron Sector;Emiss [GeV];Counts",6,-0.5,5.5,80,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_by_sector);
 	TH1D * h2p_QSq = new TH1D("epp_QSq","epp;QSq [GeV^2];Counts",40,1.,5.);
 	h2p_list.push_back(h2p_QSq);
 	TH1D * h2p_xB =  new TH1D("epp_xB" ,"epp;xB;Counts",26,1.2,2.5);
@@ -280,6 +282,8 @@ int main(int argc, char ** argv)
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_Emiss_fine->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
+		h1p_Emiss_by_sector->Fill(sec_e,Emiss);
+
 		if (Pmiss_size[0] < pmiss_lo)
 		  {
 		    h1p_Emiss_lo->Fill(Emiss,weight);
@@ -389,6 +393,7 @@ int main(int argc, char ** argv)
 		h1p_Emiss_fine->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
+		h1p_Emiss_by_sector->Fill(sec_e,Emiss);
 		if (Pmiss_size[0] < pmiss_lo)
 		  {
 		    h1p_Emiss_lo->Fill(Emiss,weight);
