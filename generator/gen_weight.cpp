@@ -24,7 +24,6 @@ const double Qmax=5.;
 const double Xmin=1.;
 const double Xmax=2.;
 
-const bool doRad=true;
 
 double sigmaCC1(double E1, TVector3 k, TVector3 p, bool isProton);
 void do_SXC(int &lead_type, int &rec_type, double r);
@@ -48,7 +47,8 @@ void help_mess()
        << "-r: Randomize constants\n"
        << "-p: List output file parameter order\n"
        << "-R: Define contacts only by ratio\n"
-       << "-I: Define contacts only by inverted ratio\n";
+       << "-I: Define contacts only by inverted ratio\n"
+       << "-O: Turn off radiative corrections\n";
 }
 
 void param_mess()
@@ -127,9 +127,10 @@ int main(int argc, char ** argv)
   bool byRat = false;
   bool byInv = false;
   bool print_zeros=false;
-
+  bool doRad = true;
+  
   int c;  
-  while ((c=getopt (argc-2, &argv[2], "hvzA:s:C:E:k:u:f:c:rpRI")) != -1) // First two arguments are not optional flags.
+  while ((c=getopt (argc-2, &argv[2], "hvzA:s:C:E:k:u:f:c:rpRIO")) != -1) // First two arguments are not optional flags.
     switch(c)
       {
       case 'h':
@@ -199,6 +200,9 @@ int main(int argc, char ** argv)
 	break;
       case 'I':
 	byInv = true;
+	break;
+      case 'O':
+	doRad = false;
 	break;
       case '?':
 	return -1;
