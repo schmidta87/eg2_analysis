@@ -18,7 +18,6 @@
 
 using namespace std;
 
-const bool doSmearing=true;
 double eSmearing=0.003;
 double pSmearing=0.01;
 double Tp = 0.53;
@@ -42,9 +41,10 @@ int main(int argc, char ** argv)
 
   bool verbose = false;
   bool rand_flag = false;
+  bool doSmearing=true;
 
   int c;
-  while ((c=getopt (argc-4, &argv[4], "vre:p:")) != -1)
+  while ((c=getopt (argc-4, &argv[4], "vre:p:O")) != -1)
     switch(c)
       {
       case 'v':
@@ -58,6 +58,9 @@ int main(int argc, char ** argv)
 	break;
       case 'p':
 	pSmearing = atof(optarg);
+	break;
+      case 'O':
+	doSmearing = false;
 	break;
       case '?':
 	return -1;
