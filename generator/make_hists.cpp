@@ -172,10 +172,6 @@ int main(int argc, char ** argv)
 
 	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.3,1.0,20,0.5,0.9);
 
-
-
-
-
 	TH1D * h1p_thetae_bySec[6];
 	TH1D * h1p_theta1_bySec[6];
 	TH1D * h2p_theta1_bySec[6];
@@ -259,7 +255,13 @@ int main(int argc, char ** argv)
 		h1p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
+
+		// Kinematic variables we need
 		double omega = Q2/(2.*mN*Xb);
+		double Ep = sqrt(Pp_size[0]*Pp_size[0] + mN*mN);
+		double Emiss = -m_12C + mN + sqrt( sq(omega + m_12C - Ep) - (Pmiss_size[0]*Pmiss_size[0]));
+		double Tmiss = sqrt(Pmiss_size[0]*Pmiss_size[0]+mN*mN)+m_10B-sqrt(Pmiss_size[0]*Pmiss_size[0]+m_11B*m_11B);
+		double epsilon = Ep - omega;
 
 		// Let's make a sanitized phi and sector
 		double phie_deg = ve.Phi() * 180./M_PI;
@@ -285,9 +287,6 @@ int main(int argc, char ** argv)
 		h1p_mom1->Fill(Pp_size[0],weight);
 		
 		// Let's figure out missing energy! 
-		double Emiss = -m_12C + mN + sqrt( sq(omega + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN)) - (Pmiss_size[0]*Pmiss_size[0]));
-		//double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
-		double Tmiss = sqrt(Pmiss_size[0]*Pmiss_size[0]+mN*mN)+m_10B-sqrt(Pmiss_size[0]*Pmiss_size[0]+m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_Emiss_fine->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
@@ -324,7 +323,7 @@ int main(int argc, char ** argv)
 		      }
 		  }
 
-		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vp.Mag2() + mN*mN) - omega,weight);
+		h1p_pmiss_E1->Fill(Pmiss_size[0],epsilon,weight);
 	}
 
 	// Loop over 2p tree
@@ -370,7 +369,13 @@ int main(int argc, char ** argv)
 		h1p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
+
+		// Kinematic variables we need
 		double omega = Q2/(2.*mN*Xb);
+		double Elead = sqrt(Pp_size[0]*Pp_size[0] + mN*mN);
+		double Emiss = -m_12C + mN + sqrt( sq(omega + m_12C - Elead) - (Pmiss_size[0]*Pmiss_size[0]));
+		double Tmiss = sqrt(Pmiss_size[0]*Pmiss_size[0]+mN*mN)+m_10B-sqrt(Pmiss_size[0]*Pmiss_size[0]+m_11B*m_11B);
+		double epsilon = Elead - omega;
 
 		// Let's make a sanitized phi and sector
 		double phie_deg = ve.Phi() * 180./M_PI;
@@ -394,17 +399,11 @@ int main(int argc, char ** argv)
 		h1p_theta1->Fill(theta1_deg,weight);
 		h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
 		h1p_mom1->Fill(Pp_size[0],weight);
-
-		// Let's figure out missing energy!
 		
-		double epsilon = sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - (Q2/(2.*mN*Xb));
-		//double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
-		double Emiss = -m_12C + mN + sqrt( sq(omega + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN)) - (Pmiss_size[0]*Pmiss_size[0]));
-		double Tmiss = sqrt(Pmiss_size[0]*Pmiss_size[0]+mN*mN)+m_10B-sqrt(Pmiss_size[0]*Pmiss_size[0]+m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_Emiss_fine->Fill(Emiss,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
-		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
+		h1p_pmiss_E1->Fill(Pmiss_size[0],epsilon,weight);
 		h1p_Emiss_by_sector->Fill(sec_e,Emiss);
 		if (Pmiss_size[0] < pmiss_lo)
 		  {
@@ -471,7 +470,7 @@ int main(int argc, char ** argv)
 
 		h2p_Emiss->Fill(Emiss,weight);
 		h2p_Emiss_fine->Fill(Emiss,weight);
-		h2p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
+		h2p_pmiss_E1->Fill(Pmiss_size[0],epsilon,weight);
 
 		h2p_pRec_epsilon->Fill(Pp_size[1],epsilon,weight);
 	        h2p_pRec_eMiss->Fill(Pp_size[1],Emiss,weight);
