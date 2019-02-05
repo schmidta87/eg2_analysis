@@ -163,8 +163,16 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_pmiss_E1);
 	TH2D * h2p_pmiss_appEstar = new TH2D("epp_pmiss_appEstar","epp;pmiss [GeV];Apparent Estar [GeV];Counts",28,0.3,1.0,20,-0.2,0.8);
 	h2p_list.push_back(h2p_pmiss_appEstar);
+	TH2D * h2p_pRec_epsilon = new TH2D("pRec_epsilon","pRec_epsilon;pRec;epsilon;Counts",20,0.35,0.9,20,0,1.5);
+	h2p_list.push_back(h2p_pRec_epsilon);
+	TH2D * h2p_pRec_eMiss = new TH2D("pRec_eMiss","pRec_eMiss;pRec;eMiss;Counts",20,0.35,0.9,20,-0.5,1);
+	h2p_list.push_back(h2p_pRec_eMiss);
 
 	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.3,1.0,20,0.5,0.9);
+
+
+
+
 
 	TH1D * h1p_thetae_bySec[6];
 	TH1D * h1p_theta1_bySec[6];
@@ -382,7 +390,8 @@ int main(int argc, char ** argv)
 		h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
 		h1p_mom1->Fill(Pp_size[0],weight);
 
-		// Let's figure out missing energy! 
+		// Let's figure out missing energy!
+		double epsilon = sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - (Q2/(2.*mN*Xb));
 		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		double Tmiss = sqrt(Pmiss_size[0]*Pmiss_size[0]+mN*mN)+m_10B-sqrt(Pmiss_size[0]*Pmiss_size[0]+m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
@@ -455,6 +464,9 @@ int main(int argc, char ** argv)
 		h2p_Emiss->Fill(Emiss,weight);
 		h2p_Emiss_fine->Fill(Emiss,weight);
 		h2p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vlead.Mag2() + mN*mN) - omega,weight);
+
+		h2p_pRec_epsilon->Fill(Pp_size[1],epsilon,weight);
+	        h2p_pRec_eMiss->Fill(Pp_size[1],Emiss,weight);
 
 		if (Pmiss_size[0] < pmiss_lo)
 		  {
