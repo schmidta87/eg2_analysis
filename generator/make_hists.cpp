@@ -285,7 +285,8 @@ int main(int argc, char ** argv)
 		h1p_mom1->Fill(Pp_size[0],weight);
 		
 		// Let's figure out missing energy! 
-		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
+		double Emiss = -m_12C + mN + sqrt( sq(omega + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN)) - (Pmiss_size[0]*Pmiss_size[0]));
+		//double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		double Tmiss = sqrt(Pmiss_size[0]*Pmiss_size[0]+mN*mN)+m_10B-sqrt(Pmiss_size[0]*Pmiss_size[0]+m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_Emiss_fine->Fill(Emiss,weight);
@@ -395,8 +396,10 @@ int main(int argc, char ** argv)
 		h1p_mom1->Fill(Pp_size[0],weight);
 
 		// Let's figure out missing energy!
+		
 		double epsilon = sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - (Q2/(2.*mN*Xb));
-		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
+		//double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
+		double Emiss = -m_12C + mN + sqrt( sq(omega + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN)) - (Pmiss_size[0]*Pmiss_size[0]));
 		double Tmiss = sqrt(Pmiss_size[0]*Pmiss_size[0]+mN*mN)+m_10B-sqrt(Pmiss_size[0]*Pmiss_size[0]+m_11B*m_11B);
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_Emiss_fine->Fill(Emiss,weight);
