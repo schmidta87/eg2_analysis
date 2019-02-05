@@ -17,7 +17,9 @@
 
 using namespace std;
 
-const double pmiss_lo=0.45;
+const double pmiss_cut=0.4;
+
+const double pmiss_lo=0.5;
 const double pmiss_md=0.6;
 const double pmiss_hi=0.75;
 
@@ -43,9 +45,9 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_QSq);
 	TH1D * h1p_xB =  new TH1D("ep_xB" ,"ep;xB;Counts",26,1.2,2.5);
 	h1p_list.push_back(h1p_xB );
-	TH1D * h1p_Pm =  new TH1D("ep_Pm" ,"ep;pMiss [GeV];Counts",28,0.3,1.0);
+	TH1D * h1p_Pm =  new TH1D("ep_Pm" ,"ep;pMiss [GeV];Counts",24,0.4,1.0);
 	h1p_list.push_back(h1p_Pm );
-	TH1D * h1p_Pm_coarse =  new TH1D("ep_Pm_coarse" ,"ep;pMiss [GeV];Counts",10,coarse_bin_edges);
+	TH1D * h1p_Pm_coarse =  new TH1D("ep_Pm_coarse" ,"ep;pMiss [GeV];Counts",9,coarse_bin_edges_new);
 	h1p_list.push_back(h1p_Pm_coarse);
 	TH1D * h1p_Pmq = new TH1D("ep_Pmq","ep;Theta_Pmq [deg];Counts",40,100.,180.);
 	h1p_list.push_back(h1p_Pmq);
@@ -97,9 +99,9 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_Emiss_hi1_fine);
 	TH1D * h1p_Emiss_hi2_fine = new TH1D("ep_Emiss_hi2_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss_hi2_fine);
-	TH2D * h1p_pmiss_Emiss = new TH2D("ep_pmiss_Emiss","ep;pmiss [GeV];Emiss [GeV];Counts",28,0.3,1.0,20,-0.2,0.6);
+	TH2D * h1p_pmiss_Emiss = new TH2D("ep_pmiss_Emiss","ep;pmiss [GeV];Emiss [GeV];Counts",24,0.4,1.0,20,-0.2,0.6);
 	h1p_list.push_back(h1p_pmiss_Emiss);
-	TH2D * h1p_pmiss_E1 = new TH2D("ep_pmiss_E1","ep;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,25,0.5,1.0);
+	TH2D * h1p_pmiss_E1 = new TH2D("ep_pmiss_E1","ep;pmiss [GeV];E1 [GeV];Counts",24,0.4,1.0,25,0.5,1.0);
 	h1p_list.push_back(h1p_pmiss_E1);
 	TH2D * h1p_Emiss_by_sector = new TH2D("ep_Emiss_sec","ep;Electron Sector;Emiss [GeV];Counts",6,-0.5,5.5,80,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss_by_sector);
@@ -107,9 +109,9 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_QSq);
 	TH1D * h2p_xB =  new TH1D("epp_xB" ,"epp;xB;Counts",26,1.2,2.5);
 	h2p_list.push_back(h2p_xB );
-	TH1D * h2p_Pm =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",28,0.3,1.0);
+	TH1D * h2p_Pm =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",24,0.4,1.0);
 	h2p_list.push_back(h2p_Pm );
-	TH1D * h2p_Pm_coarse =  new TH1D("epp_Pm_coarse" ,"epp;pMiss [GeV];Counts",10,coarse_bin_edges);
+	TH1D * h2p_Pm_coarse =  new TH1D("epp_Pm_coarse" ,"epp;pMiss [GeV];Counts",9,coarse_bin_edges_new);
 	h2p_list.push_back(h2p_Pm_coarse);
 	TH1D * h2p_Pmq = new TH1D("epp_Pmq","epp;Theta_Pmq [deg];Counts",20,100.,180.);
 	h2p_list.push_back(h2p_Pmq);
@@ -161,37 +163,52 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_Emiss_hi1_fine);
 	TH1D * h2p_Emiss_hi2_fine = new TH1D("epp_Emiss_hi2_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss_hi2_fine);
-	TH2D * h2p_pmiss_E1 = new TH2D("epp_pmiss_E1","epp;pmiss [GeV];E1 [GeV];Counts",28,0.3,1.0,25,0.5,1.0);
+	TH2D * h2p_pmiss_E1 = new TH2D("epp_pmiss_E1","epp;pmiss [GeV];E1 [GeV];Counts",24,0.4,1.0,25,0.5,1.0);
 	h2p_list.push_back(h2p_pmiss_E1);
-	TH2D * h2p_pmiss_appEstar = new TH2D("epp_pmiss_appEstar","epp;pmiss [GeV];Apparent Estar [GeV];Counts",28,0.3,1.0,20,-0.2,0.8);
+	TH2D * h2p_pmiss_appEstar = new TH2D("epp_pmiss_appEstar","epp;pmiss [GeV];Apparent Estar [GeV];Counts",24,0.4,1.0,20,-0.2,0.8);
 	h2p_list.push_back(h2p_pmiss_appEstar);
 
 	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.3,1.0,20,0.5,0.9);
+
+	TH1D * h1p_Emiss_byBin[12];
+	TH1D * h2p_Emiss_byBin[12];
+	for (int i=0 ; i<12 ; i++)
+	  {
+	    char temp[100];
+
+	    sprintf(temp,"ep_Emiss_%d",i);
+	    h1p_Emiss_byBin[i] = new TH1D(temp,"ep;Emiss [GeV];Counts",160,-0.2,0.6);
+	    h1p_list.push_back(h1p_Emiss_byBin[i]);
+
+	    sprintf(temp,"epp_Emiss_%d",i);
+	    h2p_Emiss_byBin[i] = new TH1D(temp,"epp;Emiss [GeV];Counts",120,-0.2,0.6);
+	    h2p_list.push_back(h2p_Emiss_byBin[i]);
+	  }
 
 	TH1D * h1p_thetae_bySec[6];
 	TH1D * h1p_theta1_bySec[6];
 	TH1D * h2p_theta1_bySec[6];
 	TH1D * h2p_theta2_bySec[6];
 	for (int i=0 ; i<6 ; i++)
-	{
-		char temp[100];
-
-		sprintf(temp,"ep_theta1_%d",i);
-		h1p_theta1_bySec[i] = new TH1D(temp,"ep;Theta [deg];Counts",60,10.,130.);
-		h1p_list.push_back(h1p_theta1_bySec[i]);
-
-		sprintf(temp,"ep_thetae_%d",i);
-		h1p_thetae_bySec[i] = new TH1D(temp,"ep;Theta [deg];Counts",60,10.,40.);
-		h1p_list.push_back(h1p_thetae_bySec[i]);
-
-		sprintf(temp,"epp_theta1_%d",i);
-		h2p_theta1_bySec[i] = new TH1D(temp,"epp;Theta [deg];Counts",60,10.,130.);
-		h2p_list.push_back(h2p_theta1_bySec[i]);
-
-		sprintf(temp,"epp_theta2_%d",i);
-		h2p_theta2_bySec[i] = new TH1D(temp,"epp;Theta [deg];Counts",60,10.,130.);
-		h2p_list.push_back(h2p_theta2_bySec[i]);
-	}
+	  {
+	    char temp[100];
+	    
+	    sprintf(temp,"ep_theta1_%d",i);
+	    h1p_theta1_bySec[i] = new TH1D(temp,"ep;Theta [deg];Counts",60,10.,130.);
+	    h1p_list.push_back(h1p_theta1_bySec[i]);
+	    
+	    sprintf(temp,"ep_thetae_%d",i);
+	    h1p_thetae_bySec[i] = new TH1D(temp,"ep;Theta [deg];Counts",60,10.,40.);
+	    h1p_list.push_back(h1p_thetae_bySec[i]);
+	    
+	    sprintf(temp,"epp_theta1_%d",i);
+	    h2p_theta1_bySec[i] = new TH1D(temp,"epp;Theta [deg];Counts",60,10.,130.);
+	    h2p_list.push_back(h2p_theta1_bySec[i]);
+	    
+	    sprintf(temp,"epp_theta2_%d",i);
+	    h2p_theta2_bySec[i] = new TH1D(temp,"epp;Theta [deg];Counts",60,10.,130.);
+	    h2p_list.push_back(h2p_theta2_bySec[i]);
+	  }
 
 	// Now that all histograms have been defined, set them to Sumw2
 	for (int i=0 ; i<h1p_list.size() ; i++)
@@ -235,6 +252,8 @@ int main(int argc, char ** argv)
 		if (fabs(Rp[0][2]+22.25)>2.25)
 		  continue;
 		if (Pp_size[0]>2.4)
+		  continue;
+		if (Pmiss_size[0]<pmiss_cut)
 		  continue;
 
 		// Apply fiducial cuts
@@ -316,6 +335,9 @@ int main(int argc, char ** argv)
 		  }
 
 		h1p_pmiss_E1->Fill(Pmiss_size[0],sqrt(vp.Mag2() + mN*mN) - omega,weight);
+
+		int pmiss_bin = (Pmiss_size[0]-0.4)/0.05;
+		h1p_Emiss_byBin[pmiss_bin]->Fill(Emiss,weight);
 	}
 
 	// Loop over 2p tree
@@ -346,6 +368,8 @@ int main(int argc, char ** argv)
 			continue;
 		if (Pp_size[0]>2.4)
 			continue;
+		if (Pmiss_size[0]<pmiss_cut)
+		  continue;
 
 		// Apply fiducial cuts
 		TVector3 ve(Pe[0],Pe[1],Pe[2]);
@@ -425,6 +449,9 @@ int main(int argc, char ** argv)
 		      }
 		  }
 
+		int pmiss_bin = (Pmiss_size[0]-0.4)/0.05;
+		h1p_Emiss_byBin[pmiss_bin]->Fill(Emiss,weight);
+
 		// Make a check on the recoils
 		if (fabs(Rp[1][2]+22.25)>2.25)
 		  continue;
@@ -502,16 +529,18 @@ int main(int argc, char ** argv)
 		// Histogram for the "apparent E*"
 		double apparent_Estar = sqrt(sq(sqrt(sq(m_10B) + vcm.Mag2()) + Erec) -vlead.Mag2()) - m_11B;
 		h2p_pmiss_appEstar->Fill(Pmiss_size[0],apparent_Estar,weight);
+
+		h2p_Emiss_byBin[pmiss_bin]->Fill(Emiss,weight);
 	}
 	f1p->Close();
 	f2p->Close();
 
 	cerr << "The ep and epp integrals are: " << h1p_Pm->Integral() << " "  << h2p_Pm->Integral() << "\n";
 	cerr << "Broken down by pmiss range...\n\n";
-	for (int j=4 ; j<=28 ; j+=4)
+	for (int j=4 ; j<=24 ; j+=4)
 	  {
-	    double min=0.3 + 0.1*(j-4)/4.;
-	    double max=0.3 + 0.1*j/4.;
+	    double min=0.4 + 0.1*(j-4)/4.;
+	    double max=0.4 + 0.1*j/4.;
 	    cerr << min << " < pmiss < " << max << " : " << h1p_Pm->Integral(j-3,j) << " " << h2p_Pm->Integral(j-3,j) << "\n";
 	  }
 
@@ -536,8 +565,89 @@ int main(int argc, char ** argv)
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
 
-	const double data_ep = 9175.;
-	const double data_epp = 437.;
+	// Composite pMiss bin Emiss plots
+	TH1D * h1p_Emiss_4_5 = (TH1D*)h1p_Emiss_byBin[0]->Clone("ep_Emiss_4_5");
+	h1p_Emiss_4_5->Add(h1p_Emiss_byBin[1]);
+	h1p_list.push_back(h1p_Emiss_4_5);
+
+	TH1D * h1p_Emiss_5_6 = (TH1D*)h1p_Emiss_byBin[2]->Clone("ep_Emiss_5_6");
+	h1p_Emiss_5_6->Add(h1p_Emiss_byBin[3]);
+	h1p_list.push_back(h1p_Emiss_5_6);
+
+	TH1D * h1p_Emiss_6_75 = (TH1D*)h1p_Emiss_byBin[4]->Clone("ep_Emiss_6_75");
+	h1p_Emiss_6_75->Add(h1p_Emiss_byBin[5]);
+	h1p_Emiss_6_75->Add(h1p_Emiss_byBin[6]);
+	h1p_list.push_back(h1p_Emiss_6_75);
+
+	TH1D * h1p_Emiss_75_10 = (TH1D*)h1p_Emiss_byBin[7]->Clone("ep_Emiss_75_10");
+	h1p_Emiss_75_10->Add(h1p_Emiss_byBin[8]);
+	h1p_Emiss_75_10->Add(h1p_Emiss_byBin[9]);
+	h1p_Emiss_75_10->Add(h1p_Emiss_byBin[10]);
+	h1p_Emiss_75_10->Add(h1p_Emiss_byBin[11]);
+	h1p_list.push_back(h1p_Emiss_75_10);
+
+	TH1D * h1p_Emiss_6_7 = (TH1D*)h1p_Emiss_byBin[4]->Clone("ep_Emiss_6_7");
+	h1p_Emiss_6_7->Add(h1p_Emiss_byBin[5]);
+	h1p_list.push_back(h1p_Emiss_6_7);
+
+	TH1D * h1p_Emiss_7_10 = (TH1D*)h1p_Emiss_byBin[6]->Clone("ep_Emiss_7_10");
+	h1p_Emiss_7_10->Add(h1p_Emiss_byBin[7]);
+	h1p_Emiss_7_10->Add(h1p_Emiss_byBin[8]);
+	h1p_Emiss_7_10->Add(h1p_Emiss_byBin[9]);
+	h1p_Emiss_7_10->Add(h1p_Emiss_byBin[10]);
+	h1p_Emiss_7_10->Add(h1p_Emiss_byBin[11]);
+	h1p_list.push_back(h1p_Emiss_7_10);
+
+	TH1D * h2p_Emiss_4_6 = (TH1D*)h2p_Emiss_byBin[0]->Clone("epp_Emiss_4_6");
+	h2p_Emiss_4_6->Add(h2p_Emiss_byBin[1]);
+	h2p_Emiss_4_6->Add(h2p_Emiss_byBin[2]);
+	h2p_Emiss_4_6->Add(h2p_Emiss_byBin[3]);
+	h2p_list.push_back(h2p_Emiss_4_6);
+
+	TH1D * h2p_Emiss_4_5 = (TH1D*)h2p_Emiss_byBin[0]->Clone("epp_Emiss_4_5");
+	h2p_Emiss_4_5->Add(h2p_Emiss_byBin[1]);
+	h2p_list.push_back(h2p_Emiss_4_5);
+	
+	TH1D * h2p_Emiss_5_6 = (TH1D*)h2p_Emiss_byBin[2]->Clone("epp_Emiss_5_6");
+	h2p_Emiss_5_6->Add(h2p_Emiss_byBin[3]);
+	h2p_list.push_back(h2p_Emiss_5_6);
+	
+	TH1D * h2p_Emiss_6_10 = (TH1D*)h2p_Emiss_byBin[4]->Clone("epp_Emiss_6_10");
+	h2p_Emiss_6_10->Add(h2p_Emiss_byBin[5]);
+	h2p_Emiss_6_10->Add(h2p_Emiss_byBin[6]);
+	h2p_Emiss_6_10->Add(h2p_Emiss_byBin[7]);
+	h2p_Emiss_6_10->Add(h2p_Emiss_byBin[8]);
+	h2p_Emiss_6_10->Add(h2p_Emiss_byBin[9]);
+	h2p_Emiss_6_10->Add(h2p_Emiss_byBin[10]);
+	h2p_Emiss_6_10->Add(h2p_Emiss_byBin[11]);
+	h2p_list.push_back(h2p_Emiss_6_10);
+
+	TH1D * h2p_Emiss_6_7 = (TH1D*)h2p_Emiss_byBin[4]->Clone("epp_Emiss_6_7");
+	h2p_Emiss_6_7->Add(h2p_Emiss_byBin[5]);
+	h2p_list.push_back(h2p_Emiss_6_7);
+
+	TH1D * h2p_Emiss_7_10 = (TH1D*)h2p_Emiss_byBin[6]->Clone("epp_Emiss_7_10");
+	h2p_Emiss_7_10->Add(h2p_Emiss_byBin[7]);
+	h2p_Emiss_7_10->Add(h2p_Emiss_byBin[8]);
+	h2p_Emiss_7_10->Add(h2p_Emiss_byBin[9]);
+	h2p_Emiss_7_10->Add(h2p_Emiss_byBin[10]);
+	h2p_Emiss_7_10->Add(h2p_Emiss_byBin[11]);
+	h2p_list.push_back(h2p_Emiss_7_10);
+
+	TH1D * h2p_Emiss_6_75 = (TH1D*)h2p_Emiss_byBin[4]->Clone("epp_Emiss_6_75");
+	h2p_Emiss_6_75->Add(h2p_Emiss_byBin[5]);
+	h2p_Emiss_6_75->Add(h2p_Emiss_byBin[6]);
+	h2p_list.push_back(h2p_Emiss_6_75);
+
+	TH1D * h2p_Emiss_75_10 = (TH1D*)h2p_Emiss_byBin[7]->Clone("epp_Emiss_75_10");
+	h2p_Emiss_75_10->Add(h2p_Emiss_byBin[8]);
+	h2p_Emiss_75_10->Add(h2p_Emiss_byBin[9]);
+	h2p_Emiss_75_10->Add(h2p_Emiss_byBin[10]);
+	h2p_Emiss_75_10->Add(h2p_Emiss_byBin[11]);
+	h2p_list.push_back(h2p_Emiss_75_10);
+	
+	const double data_ep = 5574.;//9175.;
+	const double data_epp = 411.;//437.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
 	const double ppnorm = pnorm;
 
