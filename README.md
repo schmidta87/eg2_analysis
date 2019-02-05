@@ -9,5 +9,5 @@ The directory structure:
     fiducials: a library for applying proton fiducial cuts
     generator: directory for simulating the experiment with the SRC generator
     cross_sections: a library for calculating off-shell eN cross sections.
-    data_corrections: for applying any missing calibrations to data files.
+    skim: for applying any missing calibrations to data files, and reskimming
     include: self-explanatory

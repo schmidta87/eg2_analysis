@@ -27,7 +27,7 @@ add_subdirectory(acceptance)
 add_subdirectory(fiducials)
 add_subdirectory(cross_sections)
 add_subdirectory(generator)
-add_subdirectory(data_corrections)
+add_subdirectory(skim)
 
 include_directories(${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include )
 

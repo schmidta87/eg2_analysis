@@ -15,6 +15,8 @@ using namespace std;
 double expected_E(TVector3 ve, TVector3 vp);
 double sq(double x){return x*x;};
 
+const double Xbcut=0.85;
+
 int main(int argc, char ** argv)
 {
   if (argc != 3)
@@ -69,7 +71,7 @@ int main(int argc, char ** argv)
         continue;
 
       // avoid low Xb
-      if (Xb<0.85)
+      if (Xb<Xbcut)
 	continue;
 
       TVector3 ve(Pe[0],Pe[1],Pe[2]);
