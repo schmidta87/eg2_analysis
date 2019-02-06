@@ -702,7 +702,7 @@ int main(int argc, char ** argv)
 
 	const double data_ep = 9175.;
 	const double data_epp = 437.;
-	const double pnorm = data_epp/h2p_Pm->Integral();
+	const double pnorm = data_ep/h1p_Pm->Integral();
 
 	// scale all the histograms, and write them out
 	for (int i=0 ; i<h1p_list.size() ; i++)

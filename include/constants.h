@@ -18,6 +18,7 @@ const int n_pseudo=10;
 const int n_pmiss_bins=28; // fine binning
 const int n_pmiss_bins_coarse=10; // coarse binning
 const double coarse_bin_edges[11]={0.3,0.375,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.875,1.0};
+const double coarse_bin_edges_new[10]={0.4,0.45,0.5,0.55,0.6,0.65,0.7,0.75,0.875,1.0};
 
 // Things specific to EG2
 const double eg2beam     = 5.0094;
