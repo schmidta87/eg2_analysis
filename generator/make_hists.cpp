@@ -167,7 +167,7 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_pmiss_appEstar);
 	TH2D * h2p_pRec_epsilon = new TH2D("pRec_epsilon","pRec_epsilon;pRec;epsilon;Counts",20,0.35,0.9,20,0,1.5);
 	h2p_list.push_back(h2p_pRec_epsilon);
-	TH2D * h2p_pRec_eMiss = new TH2D("pRec_eMiss","pRec_eMiss;pRec;eMiss;Counts",20,0.35,0.9,20,-0.5,1);
+	TH2D * h2p_pRec_eMiss = new TH2D("pRec_eMiss","pRec_eMiss;pRec;eMiss;Counts",20,0.35,0.9,50,-0.5,1);
 	h2p_list.push_back(h2p_pRec_eMiss);
 
 	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.3,1.0,20,0.5,0.9);
