@@ -167,9 +167,9 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_pmiss_E1);
 	TH2D * h2p_pmiss_appEstar = new TH2D("epp_pmiss_appEstar","epp;pmiss [GeV];Apparent Estar [GeV];Counts",24,0.4,1.0,20,-0.2,0.8);
 	h2p_list.push_back(h2p_pmiss_appEstar);
-	TH2D * h2p_pRec_epsilon = new TH2D("pRec_epsilon","pRec_epsilon;pRec;epsilon;Counts",100,0.35,0.9,100,0,1.5);
+	TH2D * h2p_pRec_epsilon = new TH2D("pRec_epsilon","pRec_epsilon;pRec;epsilon;Counts",100,0.35,0.9,100,0.45,0.9);
 	h2p_list.push_back(h2p_pRec_epsilon);
-	TH2D * h2p_pRec_eMiss = new TH2D("pRec_eMiss","pRec_eMiss;pRec;eMiss;Counts",100,0.35,0.9,100,-0.5,1);
+	TH2D * h2p_pRec_eMiss = new TH2D("pRec_eMiss","pRec_eMiss;pRec;eMiss;Counts",100,0.35,0.9,100,0.05,0.4);
 	h2p_list.push_back(h2p_pRec_eMiss);
 
 	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.3,1.0,20,0.5,0.9);

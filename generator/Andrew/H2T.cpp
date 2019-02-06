@@ -24,7 +24,7 @@ int main(int argc, char ** argv){
   const string endchar = "goatsMaToats";
   bool isTH1D = false;
   bool isTH2D = false;
-  for(int j = -1; j < 60; j++){
+  for(int j = -1; j < 300; j++){
     cout<<"Entry number:"<<j<<endl;
     int k = 0;
     for(int i = 0; i < (List->GetEntries()); i++){
