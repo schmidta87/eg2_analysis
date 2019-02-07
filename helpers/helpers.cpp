@@ -13,5 +13,7 @@ int clas_sector(double phi_deg)
   while (phi_deg > 330.)
     phi_deg-=360.;
 
-  return (phi_deg+30)/6;
+  int sec = (phi_deg+30.)/60.;
+
+  return sec;
 }
