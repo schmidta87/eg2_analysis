@@ -286,7 +286,7 @@ int main(int argc, char ** argv)
 		double phie_deg = ve.Phi() * 180./M_PI;
 		if (phie_deg < -30.)
 			phie_deg += 360.;
-		int sec_e = (phie_deg-30.)/60.;
+		int sec_e = clas_sector(phie_deg);
 		double thetae_deg = ve.Theta() * 180./M_PI;
 
 		h1p_phie->Fill(phie_deg,weight);
@@ -297,7 +297,7 @@ int main(int argc, char ** argv)
 		double phi1_deg = vp.Phi() * 180./M_PI;
 		if (phi1_deg < -30.)
 			phi1_deg += 360.;
-		int sector = (phi1_deg-30.)/60.;
+		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vp.Theta() * 180./M_PI;
 
 		h1p_phi1->Fill(phi1_deg,weight);
@@ -406,7 +406,7 @@ int main(int argc, char ** argv)
 		double phie_deg = ve.Phi() * 180./M_PI;
 		if (phie_deg < -30.)
 			phie_deg += 360.;
-		int sec_e = (phie_deg-30.)/60.;
+		int sec_e = clas_sector(phie_deg);
 		double thetae_deg = ve.Theta() * 180./M_PI;
 
 		h1p_phie->Fill(phie_deg,weight);
@@ -417,7 +417,7 @@ int main(int argc, char ** argv)
 		double phi1_deg = vlead.Phi() * 180./M_PI;
 		if (phi1_deg < -30.)
 			phi1_deg += 360.;
-		int sector = (phi1_deg-30.)/60.;
+		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vlead.Theta() * 180./M_PI;
 
 		h1p_phi1->Fill(phi1_deg,weight);
@@ -533,7 +533,7 @@ int main(int argc, char ** argv)
 		double phi2_deg = vrec.Phi() * 180./M_PI;
 		if (phi2_deg < -30.)
 			phi2_deg += 360.;
-		int sector2 = (phi2_deg-30.)/60.;
+		int sector2 = clas_sector(phi2_deg);
 		double theta2_deg = vrec.Theta() * 180./M_PI;
 
 		h2p_phi2->Fill(phi2_deg,weight);
