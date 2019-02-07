@@ -6,15 +6,15 @@
 #include "TVector3.h"
 
 #include "constants.h"
+#include "helpers.h"
 
 using namespace std;
 
 double correct_theta(TVector3 v_uncorr);
 
 // Subtract these from the measured electron momentum for each sector.
-const double Ee_offsets[6]={-0.00597309,0.0211157,-0.00535153,-0.0260952,-0.00339546,0.0095037}; // x>0.85
+const double Ee_offsets[6]={-0.00910773,0.0164327,0.00972094,-0.0222812,-0.0208806,0.0129006};
 //const double Ee_offsets[6]={0.,0.,0.,0.,0.,0};
-//const double Ee_offsets[6]={0.0117447, 0.0340183, 0.0098942, -0.0183738, 0.0120436, 0.0276024}; // x>1.1
 
 int main(int argc, char ** argv)
 {
@@ -110,9 +110,7 @@ int main(int argc, char ** argv)
 	vps_uncorr[p].SetXYZ(Pp[p][0],Pp[p][1],Pp[p][2]);
 
       // Determine the sector
-      double temp_phi=ve_uncorr.Phi();
-      if (temp_phi < -M_PI/6.) temp_phi+= 2.*M_PI;
-      int sector = temp_phi/(M_PI/3.);
+      int sector = clas_sector(ve_uncorr.Phi() * 180./M_PI);
 
       // Do the correction
       TVector3 ve;
@@ -198,7 +196,7 @@ double correct_theta(TVector3 v_uncorr)
   if (phi < -M_PI/6.) phi += 2.*M_PI;
   double phi_deg = phi*180./M_PI;
   
-  int n_sector = phi_deg/60.;
+  int n_sector = clas_sector(phi_deg);
   
   double theta = v_uncorr.Theta();
 

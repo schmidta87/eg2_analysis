@@ -10,10 +10,11 @@
 #include "TVector3.h"
 #include "TF1.h"
 
+#include "helpers.h"
+
 using namespace std;
 
 double expected_E(TVector3 ve, TVector3 vp);
-double sq(double x){return x*x;};
 
 const double Xbcut=0.85;
 
@@ -77,7 +78,7 @@ int main(int argc, char ** argv)
       TVector3 ve(Pe[0],Pe[1],Pe[2]);
       TVector3 vp(Pp[0][0], Pp[0][1], Pp[0][2]);
 
-      int sec = phi_e/60.;
+      int sec = clas_sector(phi_e);
       double delta_Ee = ve.Mag() - expected_E(ve,vp);
 
       corr_by_theta[sec]->Fill(ve.Theta()*180./M_PI,delta_Ee);

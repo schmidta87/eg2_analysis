@@ -7,10 +7,4 @@ include_directories( ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR} ${R
 
 # Corrector
 add_executable(corrector corrector.cpp)
-target_link_libraries(corrector ${ROOT_LIBRARIES})
-
-
-
-
-
-
+target_link_libraries(corrector ${ROOT_LIBRARIES} Helpers)
