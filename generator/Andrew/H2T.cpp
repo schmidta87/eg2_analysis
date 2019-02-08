@@ -29,7 +29,7 @@ int main(int argc, char ** argv){
 
     int k = 1;
     for(int i = 0; i < (List->GetEntries()); i++){
-      isTH1D = false;//Data->Get(List->At(i)->GetName())->InheritsFrom(TH1D::Class());
+      isTH1D = Data->Get(List->At(i)->GetName())->InheritsFrom(TH1D::Class());
       isTH2D = Data->Get(List->At(i)->GetName())->InheritsFrom(TH2D::Class());
 
       if(j>-1){
@@ -50,8 +50,6 @@ int main(int argc, char ** argv){
 	    TH1D * HistProj = SHist->ProjectionY("epsilonProj",j,(j+1));
 	    double n = HistProj->GetEntries();
 	    double std = HistProj->GetStdDev();
-	    cout<<std<<" "<<std/sqrt(n)<<endl;
-
 	    file << SHist->GetXaxis()->GetBinCenter(j) << " " << HistProj->GetMean() << " " <<std<<" "<<(std/sqrt(n)) << " ";
 	  }
 	  else file <<"N N N N ";
