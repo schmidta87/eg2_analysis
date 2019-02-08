@@ -226,6 +226,7 @@ int main(int argc, char ** argv)
 	TH1D * h1p_mom1_bySec[6];
 	TH1D * h1p_cPmq_bySec[6];
 	TH1D * h1p_Pm_bySec[6];
+	TH1D * h1p_Pm_bySec_tot[6];
 	TH1D * h1p_Pm_bySece[6];
 	TH1D * h1p_Em_bySece[6];
 	TH1D * h1p_Pm_bySece_tot[6];
@@ -270,6 +271,10 @@ int main(int argc, char ** argv)
 		sprintf(temp,"ep_Pm_%d",i);
 		h1p_Pm_bySec[i] = new TH1D(temp,"ep;pMiss [GeV];Counts",10,0.35,0.55);
 		h1p_list.push_back(h1p_Pm_bySec[i]);
+
+		sprintf(temp,"ep_Pm_tot_%d",i);
+		h1p_Pm_bySec_tot[i] = new TH1D(temp,"ep;pMiss [GeV];Counts",28,0.3,1.0);
+		h1p_list.push_back(h1p_Pm_bySec_tot[i]);
 
 		sprintf(temp,"ep_Pm_e_%d",i);
 		h1p_Pm_bySece[i] = new TH1D(temp,"ep;pMiss [GeV];Counts",10,0.35,0.55);
@@ -428,8 +433,6 @@ int main(int argc, char ** argv)
 
 		    h1p_thetae_bySec[sec_e]->Fill(thetae_deg,weight);
 		    h1p_mome_bySec[sec_e]->Fill(ve.Mag(),weight);
-		    h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
-		    h1p_mom1_bySec[sector]->Fill(Pp_size[0],weight);
 		    h1p_thetaq_bySec[sec_e]->Fill(thetaq_deg,weight);
 		    h1p_q_bySec[sec_e]->Fill(vq.Mag(),weight);
 		    h1p_cPmq_bySec[sec_e]->Fill(cos(Pmiss_q_angle[0]*M_PI/180),weight); 
@@ -437,7 +440,11 @@ int main(int argc, char ** argv)
 		    h1p_Pm_bySece[sec_e]->Fill(Pmiss_size[0],weight); 
 		    h1p_Em_bySece[sec_e]->Fill(Emiss,weight); 
 		  }
+
+		h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
+		h1p_mom1_bySec[sector]->Fill(Pp_size[0],weight);
 		h1p_Pm_bySece_tot[sec_e]->Fill(Pmiss_size[0],weight); 
+		h1p_Pm_bySec_tot[sector]->Fill(Pmiss_size[0],weight); 
 		h1p_Em_bySece_tot[sec_e]->Fill(Emiss,weight); 
 
 		thetaq_vs_phiq->Fill(thetaq_deg,phiq_deg,weight);
@@ -588,8 +595,6 @@ int main(int argc, char ** argv)
 
 		    h1p_thetae_bySec[sec_e]->Fill(thetae_deg,weight);
 		    h1p_mome_bySec[sec_e]->Fill(ve.Mag(),weight);
-		    h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
-		    h1p_mom1_bySec[sector]->Fill(Pp_size[0],weight);
 		    h1p_thetaq_bySec[sec_e]->Fill(thetaq_deg,weight);
 		    h1p_q_bySec[sec_e]->Fill(vq.Mag(),weight);
 		    h1p_cPmq_bySec[sec_e]->Fill(cos(Pmiss_q_angle[0]*M_PI/180),weight); 
@@ -597,6 +602,9 @@ int main(int argc, char ** argv)
 		    h1p_Pm_bySece[sec_e]->Fill(Pmiss_size[0],weight); 
 		    h1p_Em_bySece[sec_e]->Fill(Emiss,weight); 
 		  }
+
+		h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
+		h1p_mom1_bySec[sector]->Fill(Pp_size[0],weight);
 		h1p_Pm_bySece_tot[sec_e]->Fill(Pmiss_size[0],weight); 
 		h1p_Em_bySece_tot[sec_e]->Fill(Emiss,weight); 
 
