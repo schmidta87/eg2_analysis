@@ -22,4 +22,6 @@ target_link_libraries(pn_p_hists ${ROOT_LIBRARIES} Fid)
 add_executable(gapHists gapHists.cpp )
 target_link_libraries(gapHists ${ROOT_LIBRARIES} Fid)
 
-
+# sim_w_farm
+add_executable(sim_w_farm sim_w_farm.cpp )
+target_link_libraries(sim_w_farm ${ROOT_LIBRARIES} Fid)

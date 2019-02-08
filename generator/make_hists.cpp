@@ -346,6 +346,9 @@ int main(int argc, char ** argv)
 		if (!accept_proton(vp))
 		  continue;
 
+		if (Xb>1.4)
+		  continue;
+		
                 // A few more vectors                                                            
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
@@ -493,6 +496,9 @@ int main(int argc, char ** argv)
 		if (!accept_electron(ve))
 		  continue;
 		if (!accept_proton(vlead))
+		  continue;
+
+		if (Xb>1.4)
 		  continue;
 
                 // A few more vectors                                                             
@@ -736,8 +742,8 @@ int main(int argc, char ** argv)
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
 	
-	const double data_ep = 6077.;//9175.;
-	const double data_epp = 411.;//437.;
+	const double data_ep = 3460.;//6077.;//9175.;
+	const double data_epp = 291.;//411.;//437.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
 	const double ppnorm = pnorm;
 
