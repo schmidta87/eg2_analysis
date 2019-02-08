@@ -423,6 +423,7 @@ int main(int argc, char ** argv)
 		// A few more vectors
 		TVector3 vq(q[0],q[1],q[2]);
 		TVector3 vqUnit = vq.Unit();
+		TVector3 vmiss = vlead - vq;
 
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
@@ -447,6 +448,7 @@ int main(int argc, char ** argv)
 		h2p_alphaLead->Fill(alphaLead,weight);
 		h2p_alphaM->Fill(alphaM,weight);
 		
+
 		// Let's make a sanitized phi and sector
 		double phie_deg = ve.Phi() * 180./M_PI;
 		if (phie_deg < -30.)
@@ -480,29 +482,45 @@ int main(int argc, char ** argv)
 		    h1p_Emiss_lo->Fill(Emiss,weight);
 		    h1p_Tmiss_lo->Fill(Tmiss,weight);
 		    h1p_Emiss_lo_fine->Fill(Emiss,weight);
+
+		    h1p_Pmq_lo->Fill(Pmiss_q_angle[0],weight);
+		    h1p_Pmzq_lo->Fill(vmiss.Dot(vqUnit),weight);
+		    h1p_PmTq_lo->Fill(vmiss.Perp(vqUnit),weight);
 		  }
 		else if (Pmiss_size[0] < pmiss_md)
 		  {
 		    h1p_Emiss_md->Fill(Emiss,weight);
 		    h1p_Tmiss_md->Fill(Tmiss,weight);
 		    h1p_Emiss_md_fine->Fill(Emiss,weight);
+		    h1p_Pmq_md->Fill(Pmiss_q_angle[0],weight);
+		    h1p_Pmzq_md->Fill(vmiss.Dot(vqUnit),weight);
+		    h1p_PmTq_md->Fill(vmiss.Perp(vqUnit),weight);
 		  }
 		else if (Pmiss_size[0] < 1.)
 		  {
 		    h1p_Emiss_hi->Fill(Emiss,weight);
 		    h1p_Tmiss_hi->Fill(Tmiss,weight);
 		    h1p_Emiss_hi_fine->Fill(Emiss,weight);
+		    h1p_Pmq_hi->Fill(Pmiss_q_angle[0],weight);
+		    h1p_Pmzq_hi->Fill(vmiss.Dot(vqUnit),weight);
+		    h1p_PmTq_hi->Fill(vmiss.Perp(vqUnit),weight);
 		    if (Pmiss_size[0] < pmiss_hi)
 		      {
 			h1p_Emiss_hi1->Fill(Emiss,weight);
 			h1p_Tmiss_hi1->Fill(Tmiss,weight);
 			h1p_Emiss_hi1_fine->Fill(Emiss,weight);
+			h1p_Pmq_hi1->Fill(Pmiss_q_angle[0],weight);
+			h1p_Pmzq_hi1->Fill(vmiss.Dot(vqUnit),weight);
+			h1p_PmTq_hi1->Fill(vmiss.Perp(vqUnit),weight);
 		      }
 		    else
 		      {
 			h1p_Emiss_hi2->Fill(Emiss,weight);
 			h1p_Tmiss_hi2->Fill(Tmiss,weight);
 			h1p_Emiss_hi2_fine->Fill(Emiss,weight);
+			h1p_Pmq_hi2->Fill(Pmiss_q_angle[0],weight);
+			h1p_Pmzq_hi2->Fill(vmiss.Dot(vqUnit),weight);
+			h1p_PmTq_hi2->Fill(vmiss.Perp(vqUnit),weight);
 		      }
 		  }
 
@@ -558,25 +576,40 @@ int main(int argc, char ** argv)
 		  {
 		    h2p_Emiss_lo->Fill(Emiss,weight);
 		    h2p_Emiss_lo_fine->Fill(Emiss,weight);
+		    h2p_Pmq_lo->Fill(Pmiss_q_angle[0],weight);
+		    h2p_Pmzq_lo->Fill(vmiss.Dot(vqUnit),weight);
+		    h2p_PmTq_lo->Fill(vmiss.Perp(vqUnit),weight);
 		  }
 		else if (Pmiss_size[0] < pmiss_md)
 		  {
 		    h2p_Emiss_md->Fill(Emiss,weight);
 		    h2p_Emiss_md_fine->Fill(Emiss,weight);
+		    h2p_Pmq_md->Fill(Pmiss_q_angle[0],weight);
+		    h2p_Pmzq_md->Fill(vmiss.Dot(vqUnit),weight);
+		    h2p_PmTq_md->Fill(vmiss.Perp(vqUnit),weight);
 		  }
 		else if (Pmiss_size[0] < 1.)
 		  {
 		    h2p_Emiss_hi->Fill(Emiss,weight);
 		    h2p_Emiss_hi_fine->Fill(Emiss,weight);
+		    h2p_Pmq_hi->Fill(Pmiss_q_angle[0],weight);
+		    h2p_Pmzq_hi->Fill(vmiss.Dot(vqUnit),weight);
+		    h2p_PmTq_hi->Fill(vmiss.Perp(vqUnit),weight);
 		    if (Pmiss_size[0] < pmiss_hi)
 		      {
 			h2p_Emiss_hi1->Fill(Emiss,weight);
 			h2p_Emiss_hi1_fine->Fill(Emiss,weight);
+			h2p_Pmq_hi1->Fill(Pmiss_q_angle[0],weight);
+			h2p_Pmzq_hi1->Fill(vmiss.Dot(vqUnit),weight);
+			h2p_PmTq_hi1->Fill(vmiss.Perp(vqUnit),weight);
 		      }
 		    else
 		      {
 			h2p_Emiss_hi2->Fill(Emiss,weight);
 			h2p_Emiss_hi2_fine->Fill(Emiss,weight);
+			h2p_Pmq_hi2->Fill(Pmiss_q_angle[0],weight);
+			h2p_Pmzq_hi2->Fill(vmiss.Dot(vqUnit),weight);
+			h2p_PmTq_hi2->Fill(vmiss.Perp(vqUnit),weight);
 		      }
 		  }
 
