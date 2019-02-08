@@ -47,7 +47,9 @@ int main(int argc, char ** argv){
 	  TH2D * SHist = (TH2D*)Data->Get(List->At(i)->GetName());
 	  if(j < SHist->GetXaxis()->GetNbins()){
 	    TH1D * HistProj = SHist->ProjectionY("epsilonProj",j,(j+1));
-	    file << SHist->GetXaxis()->GetBinCenter(j) << " " << HistProj->GetMean() << " " << HistProj->GetStdDev() << " ";
+	    double n = HistProj->GetEntries();
+	    double std = HistProj->GetStdDev();
+	    file << SHist->GetXaxis()->GetBinCenter(j) << " " << HistProj->GetMean() << " " << (std/sqrt(n)) << " ";
 	  }
 	  else file <<"N N N ";
 	  
