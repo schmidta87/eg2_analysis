@@ -119,7 +119,8 @@ int main(int argc, char ** argv)
   bool do_Cs = false;
   std::vector<double> Cs;
   double Estar = 0.;
-  double pRel_cut = 0.25;
+  double pRel_cut = 0.30;
+  double pRel_range = 0.10;
   int pType = 1;
   csMethod csMeth=cc1;
   ffModel ffMod=kelly;
@@ -299,7 +300,7 @@ int main(int argc, char ** argv)
   if (rand_flag)
     {
     myInfo.randomize();
-    pRel_cut = 0.23 + myRand.Uniform()*0.04;
+    pRel_cut = pRel_cut + (myRand.Uniform() - 0.5)*pRel_range;
     }
 
   Cross_Sections myCS(csMeth,ffMod);

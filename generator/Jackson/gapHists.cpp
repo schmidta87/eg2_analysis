@@ -183,6 +183,8 @@ int main(int argc, char ** argv)
 	
 	TH2D * thetaq_vs_phiq = new TH2D("thetaq_vs_phiq","ep; theta_q [degrees]; phi_q [degrees]",40,30.,70.,60,-30.,330.);
 	h1p_list.push_back(thetaq_vs_phiq);
+	TH2D * theta1_vs_phi1 = new TH2D("theta1_vs_phi1","ep; theta_1 [degrees]; phi_1 [degrees]",80,10.,90.,60,-30.,330.);
+	h1p_list.push_back(theta1_vs_phi1);
 
 	TH2D * prel_vs_Qsq = new TH2D("prel_vs_Qsq","ep; p_rel [GeV/c]; QSq [GeV^2]",40,0.0,1.0,40,1.,5.);
 	h1p_list.push_back(prel_vs_Qsq);
@@ -357,7 +359,7 @@ int main(int argc, char ** argv)
 		double phie_deg = ve.Phi() * 180./M_PI;
 		if (phie_deg < -30.)
 			phie_deg += 360.;
-		int sec_e = phie_deg/60.;
+		int sec_e = clas_sector(phie_deg);
 		double thetae_deg = ve.Theta() * 180./M_PI;
 
 		h1p_phie->Fill(phie_deg,weight);
@@ -366,7 +368,7 @@ int main(int argc, char ** argv)
 		double phi1_deg = vp.Phi() * 180./M_PI;
 		if (phi1_deg < -30.)
 			phi1_deg += 360.;
-		int sector = phi1_deg/60.;
+		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vp.Theta() * 180./M_PI;
 
 		h1p_phi1->Fill(phi1_deg,weight);
@@ -439,6 +441,7 @@ int main(int argc, char ** argv)
 		h1p_Em_bySece_tot[sec_e]->Fill(Emiss,weight); 
 
 		thetaq_vs_phiq->Fill(thetaq_deg,phiq_deg,weight);
+		theta1_vs_phi1->Fill(theta1_deg,phi1_deg,weight);
 
 
 		if (thetae_deg > 10)
@@ -515,7 +518,7 @@ int main(int argc, char ** argv)
 		double phie_deg = ve.Phi() * 180./M_PI;
 		if (phie_deg < -30.)
 			phie_deg += 360.;
-		int sec_e = phie_deg/60.;
+		int sec_e = clas_sector(phie_deg)/60.;
 		double thetae_deg = ve.Theta() * 180./M_PI;
 
 		h1p_phie->Fill(phie_deg,weight);
@@ -524,7 +527,7 @@ int main(int argc, char ** argv)
 		double phi1_deg = vp.Phi() * 180./M_PI;
 		if (phi1_deg < -30.)
 			phi1_deg += 360.;
-		int sector = phi1_deg/60.;
+		int sector = clas_sector(phi1_deg)/60.;
 		double theta1_deg = vp.Theta() * 180./M_PI;
 
 		h1p_phi1->Fill(phi1_deg,weight);
@@ -598,6 +601,7 @@ int main(int argc, char ** argv)
 		h1p_Em_bySece_tot[sec_e]->Fill(Emiss,weight); 
 
 		thetaq_vs_phiq->Fill(thetaq_deg,phiq_deg,weight);
+		theta1_vs_phi1->Fill(theta1_deg,phi1_deg,weight);
 
 		if (thetae_deg > 10)
 		  {

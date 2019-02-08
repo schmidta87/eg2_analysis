@@ -4,4 +4,7 @@
 // Useful math
 double sq(double x);
 
+// CLAS sectors
+int clas_sector(double phi_deg);
+
 #endif
