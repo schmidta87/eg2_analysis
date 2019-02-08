@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <cmath>
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
@@ -25,8 +26,8 @@ int main(int argc, char ** argv){
   bool isTH1D = false;
   bool isTH2D = false;
   for(int j = -1; j < 300; j++){
-    cout<<"Entry number:"<<j<<endl;
-    int k = 0;
+
+    int k = 1;
     for(int i = 0; i < (List->GetEntries()); i++){
       isTH1D = false;//Data->Get(List->At(i)->GetName())->InheritsFrom(TH1D::Class());
       isTH2D = Data->Get(List->At(i)->GetName())->InheritsFrom(TH2D::Class());
@@ -49,20 +50,29 @@ int main(int argc, char ** argv){
 	    TH1D * HistProj = SHist->ProjectionY("epsilonProj",j,(j+1));
 	    double n = HistProj->GetEntries();
 	    double std = HistProj->GetStdDev();
-	    file << SHist->GetXaxis()->GetBinCenter(j) << " " << HistProj->GetMean() << " " << (std/sqrt(n)) << " ";
+	    cout<<std<<" "<<std/sqrt(n)<<endl;
+
+	    file << SHist->GetXaxis()->GetBinCenter(j) << " " << HistProj->GetMean() << " " <<std<<" "<<(std/sqrt(n)) << " ";
 	  }
-	  else file <<"N N N ";
+	  else file <<"N N N N ";
 	  
 
 	}
       }
       else{
 	if(isTH1D || isTH2D){     
-	  file <<"[Column "<<3*k+1<<": "<<List->At(i)->GetName()<<" xAxis]"<<"[Column "<<3*k+2<<": "<<List->At(i)->GetName()<<" yAxis]"<<"[Column "<<3*k+3<<": "<<List->At(i)->GetName()<<" yError]";
+	  file <<"[Column "<<k<<": "<<List->At(i)->GetName()<<" xAxis]";
 	  k++;
-
+	  file <<"[Column "<<k<<": "<<List->At(i)->GetName()<<" yAxis]";
+	  k++;
+	  file <<"[Column "<<k<<": "<<List->At(i)->GetName()<<" ySTD]";
+	  k++;
 	  if(isTH1D) file<<" TH1D"<<endl;
-	  else if(isTH2D) file<<" TH2D"<<endl;
+	  else if(isTH2D){
+	    file <<"[Column "<<k<<": "<<List->At(i)->GetName()<<" yError]";
+	    k++;
+	    file<<" TH2D"<<endl;
+	  }
 	}
       }
     }
