@@ -53,7 +53,7 @@ int main(int argc, char ** argv){
 	else if((j>=0)&&(j<N)){
 	  file << WHist->GetBinCenter(j) << " " << WHist->GetBinContent(j) << " " << WHist->GetBinError(j) << " ";
 	}
-	else file <<"N N N ";
+	else if(j>=N) file <<"N N N ";
       }
       
     
@@ -72,7 +72,7 @@ int main(int argc, char ** argv){
 	  double std = HistProj->GetStdDev();
 	  file << SHist->GetXaxis()->GetBinCenter(j) << " " << HistProj->GetMean() << " " <<std<<" "<<(std/sqrt(n)) << " ";
 	}
-	else file <<"N N N N ";
+	else if(j>=N) file <<"N N N N ";
       }
       
       //For TGAE
@@ -91,7 +91,7 @@ int main(int argc, char ** argv){
 	  file << x << " " << myTGAE->GetErrorXlow(j) << " " << myTGAE->GetErrorXhigh(j) << " "
 	       << y << " " << myTGAE->GetErrorYlow(j) << " " << myTGAE->GetErrorYhigh(j) << " ";
 	}
-	else file <<"N N N N N N ";
+	else if(j>=N) file <<"N N N N N N ";
       }
       
     }
