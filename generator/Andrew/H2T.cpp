@@ -47,7 +47,7 @@ int main(int argc, char ** argv){
 	string a = List->At(i)->GetName();
 	int N = WHist->GetXaxis()->GetNbins();
 	if(j<0){
-	  file <<"TH1D "<<a<<" ["<<k<<" xAxis] ["<<(k+1)<<" yAxis] ["<<(k+2)<<" ySTD]"<<endl;
+	  file <<"# TH1D "<<a<<" ["<<k<<" xAxis] ["<<(k+1)<<" yAxis] ["<<(k+2)<<" ySTD]"<<endl;
 	  k=k+3;
 	}
 	else if((j>=0)&&(j<N)){
@@ -63,7 +63,7 @@ int main(int argc, char ** argv){
 	string a = List->At(i)->GetName();
 	int N = SHist->GetXaxis()->GetNbins();
 	if(j<0){
-	  file <<"TH2D "<<a<<" ["<<k<<" xAxis] ["<<(k+1)<<" yAxis] ["<<(k+2)<<" ySTD] ["<<(k+3)<<" yError]"<<endl;
+	  file <<"# TH2D "<<a<<" ["<<k<<" xAxis] ["<<(k+1)<<" yAxis] ["<<(k+2)<<" ySTD] ["<<(k+3)<<" yError]"<<endl;
 	  k=k+4;      
 	}
 	else if((j>=0)&&(j<N)){
@@ -81,7 +81,7 @@ int main(int argc, char ** argv){
 	string a = List->At(i)->GetName();
 	int N =myTGAE->GetN();
 	if(j<0){
-	  file <<"TGAE "<<a<<" ["<<k<<" xAxis] ["<<(k+1)<<" xErrorLow] ["<<(k+2)<<" xErrorHigh] "
+	  file <<"# TGAE "<<a<<" ["<<k<<" xAxis] ["<<(k+1)<<" xErrorLow] ["<<(k+2)<<" xErrorHigh] "
 	       <<"["<<(k+3)<<" yAxis] ["<<(k+4)<<" yErrorLow] ["<<(k+5)<<" yErrorHigh]" <<endl;
 	  k=k+6;      
 	}
