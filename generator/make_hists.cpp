@@ -345,9 +345,6 @@ int main(int argc, char ** argv)
 		  continue;
 		if (!accept_proton(vp))
 		  continue;
-
-		if (Xb>1.4)
-		  continue;
 		
                 // A few more vectors                                                            
                 TVector3 vq(q[0],q[1],q[2]);
@@ -496,9 +493,6 @@ int main(int argc, char ** argv)
 		if (!accept_electron(ve))
 		  continue;
 		if (!accept_proton(vlead))
-		  continue;
-
-		if (Xb>1.4)
 		  continue;
 
                 // A few more vectors                                                             
