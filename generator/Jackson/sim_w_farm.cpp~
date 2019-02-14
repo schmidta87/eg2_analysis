@@ -27,18 +27,16 @@ double sig_Tpp = 0.04;
 
 int main(int argc, char ** argv)
 {
-  if (argc < 6)
+  if (argc < 5)
     {
       cerr << "Wrong number of arguments. Instead use:\n"
-	   << "\tsimulator /path/to/gen/file /path/to/farm/file /path/to/map/file /path/to/1p/file /path/to/2p/file\n\n";
+	   << "\tsimulator /path/to/gen/file /path/to/farm/file /path/to/1p/file /path/to/2p/file\n\n";
       return -1;
     }
 
   // Read arguments, create files
   TFile * infile = new TFile(argv[1]);
   TFile * farmfile = new TFile(argv[2]);
-  AccMap pMap(argv[3]);
-  AccMap eMap(argv[3],"e");
 
   bool verbose = false;
   bool rand_flag = false;
@@ -99,7 +97,7 @@ int main(int argc, char ** argv)
 	}
     }
 
-  TFile * outfile1p = new TFile(argv[4],"RECREATE");
+  TFile * outfile1p = new TFile(argv[3],"RECREATE");
 
   // Output Tree (1p)
   TTree * T1p = new TTree("T","Simulated Data Tree");
@@ -133,6 +131,7 @@ int main(int argc, char ** argv)
   if (verbose)
     cerr << "Looping over 1p events...\n";
   const int nEvents = farmTree->GetEntries(); // this is a key number for the weight
+  cout << nEvents << "\n";
   for (int event=0 ; event < nEvents ; event++)
     {
       if (event %1000000==0 and verbose) 
@@ -189,7 +188,7 @@ int main(int argc, char ** argv)
 
       // Apply weight for detecting e, p      
       //weight = gen_weight * eMap.accept(ve) * pMap.accept(vlead) * 1.E33; // put it in nb to make it macroscopic
-      weight = gen_weight * Tp; // put it in nb to make it macroscopic
+      weight = gen_weight * Tp * 1.E33; // put it in nb to make it macroscopic
 
       if (weight <= 0.)
 	continue;
@@ -245,7 +244,7 @@ int main(int argc, char ** argv)
   T1p->Write();
   outfile1p->Close();
 
-  TFile * outfile2p = new TFile(argv[5],"RECREATE");
+  TFile * outfile2p = new TFile(argv[4],"RECREATE");
 
   // Output Tree (2p)
   TTree * T2p = new TTree("T","Simulated Data Tree");

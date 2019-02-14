@@ -141,22 +141,6 @@ int main(int argc, char ** argv)
       inTree->GetEvent(event);
       farmTree->GetEvent(event);
 
-      if (gPart < 2)
-	continue;
-      bool founde = false;
-      bool foundp = false;
-      for (int i=0; i < gPart; i++)
-	{
-	  int particle = particles[i];
-	  if (particle == 11)
-	    founde = true;
-	  if (particle == pCode)
-	    foundp = true;
-	}
-
-      if (not (founde and foundp))
-	continue;
-
       // Create vectors for the particles
       TVector3 ve(gen_pe[0],gen_pe[1],gen_pe[2]);
       TVector3 vlead(gen_pLead[0],gen_pLead[1],gen_pLead[2]);
@@ -189,7 +173,7 @@ int main(int argc, char ** argv)
 
       // Apply weight for detecting e, p      
       //weight = gen_weight * eMap.accept(ve) * pMap.accept(vlead) * 1.E33; // put it in nb to make it macroscopic
-      weight = gen_weight * Tp; // put it in nb to make it macroscopic
+      weight = gen_weight * pMap.accept(vlead) * Tp; // put it in nb to make it macroscopic
 
       if (weight <= 0.)
 	continue;

@@ -24,4 +24,8 @@ target_link_libraries(gapHists ${ROOT_LIBRARIES} Fid)
 
 # sim_w_farm
 add_executable(sim_w_farm sim_w_farm.cpp )
-target_link_libraries(sim_w_farm ${ROOT_LIBRARIES} Fid)
+target_link_libraries(sim_w_farm ${ROOT_LIBRARIES} AccMap Fid)
+
+# sim_wo_farm
+add_executable(sim_wo_farm sim_wo_farm.cpp )
+target_link_libraries(sim_wo_farm ${ROOT_LIBRARIES} AccMap Fid)
