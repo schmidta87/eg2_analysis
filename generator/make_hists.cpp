@@ -141,6 +141,8 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_pmiss_E1);
 	TH2D * h1p_Emiss_by_sector = new TH2D("ep_Emiss_sec","ep;Electron Sector;Emiss [GeV];Counts",6,-0.5,5.5,40,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss_by_sector);
+	TH2D * h1p_pmiss_epsilon = new TH2D("ep_pmiss_epsilon","pmiss_epsilon;pmiss;epsilon;Counts",24,0.4,1.0,25,0.5,1.0);
+	h2p_list.push_back(h1p_pmiss_epsilon);
 	TH1D * h2p_QSq = new TH1D("epp_QSq","epp;QSq [GeV^2];Counts",40,1.,5.);
 	h2p_list.push_back(h2p_QSq);
 	TH1D * h2p_xB =  new TH1D("epp_xB" ,"epp;xB;Counts",26,1.2,2.5);
@@ -243,6 +245,8 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_pmiss_E1);
 	TH2D * h2p_pmiss_appEstar = new TH2D("epp_pmiss_appEstar","epp;pmiss [GeV];Apparent Estar [GeV];Counts",24,0.4,1.0,20,-0.2,0.8);
 	h2p_list.push_back(h2p_pmiss_appEstar);
+	TH2D * h2p_pmiss_epsilon = new TH2D("epp_pmiss_epsilon","pmiss_epsilon;pmiss;epsilon;Counts",24,0.4,1.0,25,0.5,1.0);
+	h2p_list.push_back(h2p_pmiss_epsilon);
 	TH2D * h2p_pRec_epsilon = new TH2D("pRec_epsilon","pRec_epsilon;pRec;epsilon;Counts",20,0.3,1.2,20,0.2,1.2);
 	h2p_list.push_back(h2p_pRec_epsilon);
 	TH2D * h2p_pRec_eMiss = new TH2D("pRec_eMiss","pRec_eMiss;pRec;eMiss;Counts",10,0.35,0.9,10,0,0.5);
@@ -454,6 +458,7 @@ int main(int argc, char ** argv)
 		int pmiss_bin = (Pmiss_size[0]-0.4)/0.05;
 		h1p_Emiss_byBin[pmiss_bin]->Fill(Emiss,weight);
 
+		h1p_pmiss_epsilon->Fill(Pmiss_size[0],epsilon,weight);
 	}
 
 	// Loop over 2p tree
@@ -600,6 +605,8 @@ int main(int argc, char ** argv)
 		int pmiss_bin = (Pmiss_size[0]-0.4)/0.05;
 		h1p_Emiss_byBin[pmiss_bin]->Fill(Emiss,weight);
 
+		h1p_pmiss_epsilon->Fill(Pmiss_size[0],epsilon,weight);
+
 		// Make a check on the recoils
 		if (fabs(Rp[1][2]+22.25)>2.25)
 		  continue;
@@ -641,6 +648,7 @@ int main(int argc, char ** argv)
 		h2p_Emiss_fine->Fill(Emiss,weight);
 		h2p_pmiss_E1->Fill(Pmiss_size[0],epsilon,weight);
 
+		h2p_pmiss_epsilon->Fill(Pmiss_size[0],epsilon,weight);
 		h2p_pRec_epsilon->Fill(Pp_size[1],epsilon,weight);
 	        h2p_pRec_eMiss->Fill(Pp_size[1],Emiss,weight);
 
@@ -736,8 +744,8 @@ int main(int argc, char ** argv)
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
 	
-	const double data_ep = 3460.;//6077.;//9175.;
-	const double data_epp = 291.;//411.;//437.;
+	const double data_ep = 6077.;//9175.;
+	const double data_epp = 411.;//437.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
 	const double ppnorm = pnorm;
 
