@@ -48,7 +48,8 @@ void help_mess()
        << "-p: List output file parameter order\n"
        << "-R: Define contacts only by ratio\n"
        << "-I: Define contacts only by inverted ratio\n"
-       << "-O: Turn off radiative corrections\n";
+       << "-O: Turn off radiative corrections\n"
+       << "-o: Turn off single charge exchange\n";
 }
 
 void param_mess()
@@ -129,9 +130,10 @@ int main(int argc, char ** argv)
   bool byInv = false;
   bool print_zeros=false;
   bool doRad = true;
+  bool doSCX = true;
   
   int c;  
-  while ((c=getopt (argc-2, &argv[2], "hvzA:s:C:E:k:u:f:c:rpRIO")) != -1) // First two arguments are not optional flags.
+  while ((c=getopt (argc-2, &argv[2], "hvzA:s:C:E:k:u:f:c:rpRIOo")) != -1) // First two arguments are not optional flags.
     switch(c)
       {
       case 'h':
@@ -204,6 +206,9 @@ int main(int argc, char ** argv)
 	break;
       case 'O':
 	doRad = false;
+	break;
+      case 'o':
+	doSCX = false;
 	break;
       case '?':
 	return -1;
@@ -513,9 +518,11 @@ int main(int argc, char ** argv)
 	}
 	}
       
-      // HERE IS WHERE WE SHOULD DO SINGLE CHARGE EXCHANGE!!!!
-      myInfo.do_SXC(lead_type, rec_type,gRandom->Rndm());
-      
+      // Here is where we do single charge exhange
+       if(doSCX){
+       myInfo.do_SXC(lead_type, rec_type,gRandom->Rndm());
+       }
+       
       // Fill the tree
       if ((weight > 0.) || print_zeros)
 	outtree->Fill();      

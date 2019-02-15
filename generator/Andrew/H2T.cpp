@@ -2,12 +2,19 @@
 #include <fstream>
 #include <cstdlib>
 #include <cmath>
+
+#include <boost/tuple/tuple.hpp>
+
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TF1.h"
 #include "TGraphAsymmErrors.h"
+
+// Warn about use of deprecated functions.
+//#define GNUPLOT_DEPRECATE_WARN
+//#include "gnuplot-iostream.h"
 
 using namespace std;
 
