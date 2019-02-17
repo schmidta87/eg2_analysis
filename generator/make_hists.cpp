@@ -19,6 +19,7 @@ using namespace std;
 
 const double pmiss_cut=0.4;
 
+
 const double pmiss_lo=0.5;
 const double pmiss_md=0.6;
 const double pmiss_hi=0.7;
@@ -113,16 +114,6 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_PmTq_hi1);
 	TH1D * h1p_PmTq_hi2 = new TH1D("ep_PmTq_hi2","ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
 	h1p_list.push_back(h1p_PmTq_hi2);
-	TH1D * h1p_Tmiss_lo = new TH1D("ep_Tmiss_lo","ep;Tmiss [GeV];Counts",40,-0.2,0.6);
-	h1p_list.push_back(h1p_Tmiss_lo);
-	TH1D * h1p_Tmiss_md = new TH1D("ep_Tmiss_md","ep;Tmiss [GeV];Counts",40,-0.2,0.6);
-	h1p_list.push_back(h1p_Tmiss_md);
-	TH1D * h1p_Tmiss_hi = new TH1D("ep_Tmiss_hi","ep;Tmiss [GeV];Counts",40,-0.2,0.6);
-	h1p_list.push_back(h1p_Tmiss_hi);
-	TH1D * h1p_Tmiss_hi1 = new TH1D("ep_Tmiss_hi1","ep;Tmiss [GeV];Counts",40,-0.2,0.6);
-	h1p_list.push_back(h1p_Tmiss_hi1);
-	TH1D * h1p_Tmiss_hi2 = new TH1D("ep_Tmiss_hi2","ep;Tmiss [GeV];Counts",40,-0.2,0.6);
-	h1p_list.push_back(h1p_Tmiss_hi2);
 	TH1D * h1p_Emiss_fine = new TH1D("ep_Emiss_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss_fine);
 	TH1D * h1p_Emiss_lo_fine = new TH1D("ep_Emiss_lo_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
@@ -366,7 +357,6 @@ int main(int argc, char ** argv)
 		double omega = Q2/(2.*mN*Xb);
 		double Ep = sqrt(Pp_size[0]*Pp_size[0] + mN*mN);
 		double Emiss = -m_12C + mN + sqrt( sq(omega + m_12C - Ep) - (Pmiss_size[0]*Pmiss_size[0]));
-		double Tmiss = sqrt(Pmiss_size[0]*Pmiss_size[0]+mN*mN)+m_10B-sqrt(Pmiss_size[0]*Pmiss_size[0]+m_11B*m_11B);
 		double epsilon = Ep - omega;
 
 		//Let's calculate light cone variables                                           
@@ -419,7 +409,6 @@ int main(int argc, char ** argv)
 		else if (Pmiss_size[0] < pmiss_md)
 		  {
 		    h1p_Emiss_md->Fill(Emiss,weight);
-		    h1p_Tmiss_md->Fill(Tmiss,weight);
 		    h1p_Emiss_md_fine->Fill(Emiss,weight);
 		    h1p_Pmq_md->Fill(Pmiss_q_angle[0],weight);
 		    h1p_Pmzq_md->Fill(vm.Dot(vqUnit),weight);
@@ -428,7 +417,6 @@ int main(int argc, char ** argv)
 		else if (Pmiss_size[0] < 1.)
 		  {
 		    h1p_Emiss_hi->Fill(Emiss,weight);
-		    h1p_Tmiss_hi->Fill(Tmiss,weight);
 		    h1p_Emiss_hi_fine->Fill(Emiss,weight);
 		    h1p_Pmq_hi->Fill(Pmiss_q_angle[0],weight);
 		    h1p_Pmzq_hi->Fill(vm.Dot(vqUnit),weight);
@@ -436,7 +424,6 @@ int main(int argc, char ** argv)
 		    if (Pmiss_size[0] < pmiss_hi)
 		      {
 			h1p_Emiss_hi1->Fill(Emiss,weight);
-			h1p_Tmiss_hi1->Fill(Tmiss,weight);
 			h1p_Emiss_hi1_fine->Fill(Emiss,weight);
 			h1p_Pmq_hi1->Fill(Pmiss_q_angle[0],weight);
 			h1p_Pmzq_hi1->Fill(vm.Dot(vqUnit),weight);
@@ -445,7 +432,6 @@ int main(int argc, char ** argv)
 		    else
 		      {
 			h1p_Emiss_hi2->Fill(Emiss,weight);
-			h1p_Tmiss_hi2->Fill(Tmiss,weight);
 			h1p_Emiss_hi2_fine->Fill(Emiss,weight);
 			h1p_Pmq_hi2->Fill(Pmiss_q_angle[0],weight);
 			h1p_Pmzq_hi2->Fill(vm.Dot(vqUnit),weight);
@@ -516,7 +502,6 @@ int main(int argc, char ** argv)
 		double omega = Q2/(2.*mN*Xb);
 		double Elead = sqrt(Pp_size[0]*Pp_size[0] + mN*mN);
 		double Emiss = -m_12C + mN + sqrt( sq(omega + m_12C - Elead) - (Pmiss_size[0]*Pmiss_size[0]));
-		double Tmiss = sqrt(Pmiss_size[0]*Pmiss_size[0]+mN*mN)+m_10B-sqrt(Pmiss_size[0]*Pmiss_size[0]+m_11B*m_11B);
 		double epsilon = Elead - omega;
 
                 //Let's calculate light cone variables                                                      
@@ -559,7 +544,6 @@ int main(int argc, char ** argv)
 		if (Pmiss_size[0] < pmiss_lo)
 		  {
 		    h1p_Emiss_lo->Fill(Emiss,weight);
-		    h1p_Tmiss_lo->Fill(Tmiss,weight);
 		    h1p_Emiss_lo_fine->Fill(Emiss,weight);
 		    h1p_Pmq_lo->Fill(Pmiss_q_angle[0],weight);
 		    h1p_Pmzq_lo->Fill(vmiss.Dot(vqUnit),weight);
@@ -568,7 +552,6 @@ int main(int argc, char ** argv)
 		else if (Pmiss_size[0] < pmiss_md)
 		  {
 		    h1p_Emiss_md->Fill(Emiss,weight);
-		    h1p_Tmiss_md->Fill(Tmiss,weight);
 		    h1p_Emiss_md_fine->Fill(Emiss,weight);
 		    h1p_Pmq_md->Fill(Pmiss_q_angle[0],weight);
 		    h1p_Pmzq_md->Fill(vmiss.Dot(vqUnit),weight);
@@ -577,7 +560,6 @@ int main(int argc, char ** argv)
 		else if (Pmiss_size[0] < 1.)
 		  {
 		    h1p_Emiss_hi->Fill(Emiss,weight);
-		    h1p_Tmiss_hi->Fill(Tmiss,weight);
 		    h1p_Emiss_hi_fine->Fill(Emiss,weight);
 		    h1p_Pmq_hi->Fill(Pmiss_q_angle[0],weight);
 		    h1p_Pmzq_hi->Fill(vmiss.Dot(vqUnit),weight);
@@ -585,7 +567,6 @@ int main(int argc, char ** argv)
 		    if (Pmiss_size[0] < pmiss_hi)
 		      {
 			h1p_Emiss_hi1->Fill(Emiss,weight);
-			h1p_Tmiss_hi1->Fill(Tmiss,weight);
 			h1p_Emiss_hi1_fine->Fill(Emiss,weight);
 			h1p_Pmq_hi1->Fill(Pmiss_q_angle[0],weight);
 			h1p_Pmzq_hi1->Fill(vmiss.Dot(vqUnit),weight);
@@ -594,7 +575,6 @@ int main(int argc, char ** argv)
 		    else
 		      {
 			h1p_Emiss_hi2->Fill(Emiss,weight);
-			h1p_Tmiss_hi2->Fill(Tmiss,weight);
 			h1p_Emiss_hi2_fine->Fill(Emiss,weight);
 			h1p_Pmq_hi2->Fill(Pmiss_q_angle[0],weight);
 			h1p_Pmzq_hi2->Fill(vmiss.Dot(vqUnit),weight);
@@ -744,8 +724,9 @@ int main(int argc, char ** argv)
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
 	
-	const double data_ep = 6077.;//9175.;
-	const double data_epp = 411.;//437.;
+	const double data_ep = 5854.;
+	const double data_ep_cor = 6077.;
+	const double data_epp = 411.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
 	const double ppnorm = pnorm;
 
