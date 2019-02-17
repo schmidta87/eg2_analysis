@@ -130,7 +130,7 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_xB );
 	TH1D * h2p_Pm =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",30,0.4,1.0);
 	h2p_list.push_back(h2p_Pm );
-	TH1D * h2p_Pm_clas =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",18,0.4,1.0);
+	TH1D * h2p_Pm_clas =  new TH1D("epp_Pm_clas" ,"epp;pMiss [GeV];Counts",18,0.4,1.0);
 	h2p_list.push_back(h2p_Pm );
 	TH1D * h2p_Pm_coarse =  new TH1D("epp_Pm_coarse" ,"epp;pMiss [GeV];Counts",9,coarse_bin_edges_new);
 	h2p_list.push_back(h2p_Pm_coarse);
