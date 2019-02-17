@@ -128,7 +128,9 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_QSq);
 	TH1D * h2p_xB =  new TH1D("epp_xB" ,"epp;xB;Counts",26,1.2,2.5);
 	h2p_list.push_back(h2p_xB );
-	TH1D * h2p_Pm =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",18,0.4,1.0);
+	TH1D * h2p_Pm =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",30,0.4,1.0);
+	h2p_list.push_back(h2p_Pm );
+	TH1D * h2p_Pm_clas =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",18,0.4,1.0);
 	h2p_list.push_back(h2p_Pm );
 	TH1D * h2p_Pm_coarse =  new TH1D("epp_Pm_coarse" ,"epp;pMiss [GeV];Counts",9,coarse_bin_edges_new);
 	h2p_list.push_back(h2p_Pm_coarse);
@@ -577,6 +579,7 @@ int main(int argc, char ** argv)
 		h2p_QSq->Fill(Q2,weight);
 		h2p_xB ->Fill(Xb,weight);
 		h2p_Pm ->Fill(Pmiss_size[0],weight);
+		h2p_Pm_clas ->Fill(Pmiss_size[0],weight);
 		h2p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h2p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h2p_Pmr->Fill(vmiss.Angle(vrec)*180./M_PI,weight);
@@ -672,7 +675,7 @@ int main(int argc, char ** argv)
 	// pp-to-p
 	pp_to_p->BayesDivide(h2p_Pm,h1p_Pm);
 	pp_to_p_coarse->BayesDivide(h2p_Pm_coarse,h1p_Pm_coarse);
-	for (int binX=1 ; binX<=pp_to_p_2d->GetNbinsX() ; binX++)
+  	for (int binX=1 ; binX<=pp_to_p_2d->GetNbinsX() ; binX++)
 	  for (int binY=1 ; binY<=pp_to_p_2d->GetNbinsY() ; binY++)
 	    {
 	      
