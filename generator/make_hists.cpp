@@ -78,8 +78,6 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_Emiss_lo);
 	TH1D * h1p_Emiss_md = new TH1D("ep_Emiss_md","ep;Emiss [GeV];Counts",40,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss_md);
-	TH1D * h1p_Emiss_hi = new TH1D("ep_Emiss_hi","ep;Emiss [GeV];Counts",40,-0.2,0.6);
-	h1p_list.push_back(h1p_Emiss_hi);
 	TH1D * h1p_Emiss_hi1 = new TH1D("ep_Emiss_hi1","ep;Emiss [GeV];Counts",40,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss_hi1);
 	TH1D * h1p_Emiss_hi2 = new TH1D("ep_Emiss_hi2","ep;Emiss [GeV];Counts",40,-0.2,0.6);
@@ -88,8 +86,6 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_Pmq_lo);
 	TH1D * h1p_Pmq_md = new TH1D("ep_Pmq_md","ep;Theta_Pmq [deg];Counts",20,100.,180.);
 	h1p_list.push_back(h1p_Pmq_md);
-	TH1D * h1p_Pmq_hi = new TH1D("ep_Pmq_hi","ep;Theta_Pmq [deg];Counts",20,100.,180.);
-	h1p_list.push_back(h1p_Pmq_hi);
 	TH1D * h1p_Pmq_hi1 = new TH1D("ep_Pmq_hi1","ep;Theta_Pmq [deg];Counts",20,100.,180.);
 	h1p_list.push_back(h1p_Pmq_hi1);
 	TH1D * h1p_Pmq_hi2 = new TH1D("ep_Pmq_hi2","ep;Theta_Pmq [deg];Counts",20,100.,180.);
@@ -98,8 +94,6 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_Pmzq_lo);
 	TH1D * h1p_Pmzq_md = new TH1D("ep_Pmzq_md","ep;pMiss_||q [GeV];Counts",30,-1.0,0.0);
 	h1p_list.push_back(h1p_Pmzq_md);
-	TH1D * h1p_Pmzq_hi = new TH1D("ep_Pmzq_hi","ep;pMiss_||q [GeV];Counts",30,-1.0,0.0);
-	h1p_list.push_back(h1p_Pmzq_hi);
 	TH1D * h1p_Pmzq_hi1 = new TH1D("ep_Pmzq_hi1","ep;pMiss_||q [GeV];Counts",30,-1.0,0.0);
 	h1p_list.push_back(h1p_Pmzq_hi1);
 	TH1D * h1p_Pmzq_hi2 = new TH1D("ep_Pmzq_hi2","ep;pMiss_||q [GeV];Counts",30,-1.0,0.0);
@@ -108,8 +102,6 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_PmTq_lo);
 	TH1D * h1p_PmTq_md = new TH1D("ep_PmTq_md","ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
 	h1p_list.push_back(h1p_PmTq_md);
-	TH1D * h1p_PmTq_hi = new TH1D("ep_PmTq_hi","ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
-	h1p_list.push_back(h1p_PmTq_hi);
 	TH1D * h1p_PmTq_hi1 = new TH1D("ep_PmTq_hi1","ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
 	h1p_list.push_back(h1p_PmTq_hi1);
 	TH1D * h1p_PmTq_hi2 = new TH1D("ep_PmTq_hi2","ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
@@ -120,8 +112,6 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_Emiss_lo_fine);
 	TH1D * h1p_Emiss_md_fine = new TH1D("ep_Emiss_md_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss_md_fine);
-	TH1D * h1p_Emiss_hi_fine = new TH1D("ep_Emiss_hi_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
-	h1p_list.push_back(h1p_Emiss_hi_fine);
 	TH1D * h1p_Emiss_hi1_fine = new TH1D("ep_Emiss_hi1_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss_hi1_fine);
 	TH1D * h1p_Emiss_hi2_fine = new TH1D("ep_Emiss_hi2_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
@@ -184,8 +174,6 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_Emiss_lo);
 	TH1D * h2p_Emiss_md = new TH1D("epp_Emiss_md","epp;Emiss [GeV];Counts",20,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss_md);
-	TH1D * h2p_Emiss_hi = new TH1D("epp_Emiss_hi","epp;Emiss [GeV];Counts",20,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss_hi);
 	TH1D * h2p_Emiss_hi1 = new TH1D("epp_Emiss_hi1","epp;Emiss [GeV];Counts",20,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss_hi1);
 	TH1D * h2p_Emiss_hi2 = new TH1D("epp_Emiss_hi2","epp;Emiss [GeV];Counts",20,-0.2,0.6);
@@ -196,8 +184,6 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_Emiss_lo_fine);
 	TH1D * h2p_Emiss_md_fine = new TH1D("epp_Emiss_md_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss_md_fine);
-	TH1D * h2p_Emiss_hi_fine = new TH1D("epp_Emiss_hi_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss_hi_fine);
 	TH1D * h2p_Emiss_hi1_fine = new TH1D("epp_Emiss_hi1_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss_hi1_fine);
 	TH1D * h2p_Emiss_hi2_fine = new TH1D("epp_Emiss_hi2_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
@@ -206,8 +192,6 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_Pmq_lo);
 	TH1D * h2p_Pmq_md = new TH1D("epp_Pmq_md","epp;Theta_Pmq [deg];Counts",20,100.,180.);
 	h2p_list.push_back(h2p_Pmq_md);
-	TH1D * h2p_Pmq_hi = new TH1D("epp_Pmq_hi","epp;Theta_Pmq [deg];Counts",20,100.,180.);
-	h2p_list.push_back(h2p_Pmq_hi);
 	TH1D * h2p_Pmq_hi1 = new TH1D("epp_Pmq_hi1","epp;Theta_Pmq [deg];Counts",20,100.,180.);
 	h2p_list.push_back(h2p_Pmq_hi1);
 	TH1D * h2p_Pmq_hi2 = new TH1D("epp_Pmq_hi2","epp;Theta_Pmq [deg];Counts",20,100.,180.);
@@ -216,8 +200,6 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_Pmzq_lo);
 	TH1D * h2p_Pmzq_md = new TH1D("epp_Pmzq_md","epp;pMiss_||q [GeV];Counts",30,-1.0,0.0);
 	h2p_list.push_back(h2p_Pmzq_md);
-	TH1D * h2p_Pmzq_hi = new TH1D("epp_Pmzq_hi","epp;pMiss_||q [GeV];Counts",30,-1.0,0.0);
-	h2p_list.push_back(h2p_Pmzq_hi);
 	TH1D * h2p_Pmzq_hi1 = new TH1D("epp_Pmzq_hi1","epp;pMiss_||q [GeV];Counts",30,-1.0,0.0);
 	h2p_list.push_back(h2p_Pmzq_hi1);
 	TH1D * h2p_Pmzq_hi2 = new TH1D("epp_Pmzq_hi2","epp;pMiss_||q [GeV];Counts",30,-1.0,0.0);
@@ -226,8 +208,6 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_PmTq_lo);
 	TH1D * h2p_PmTq_md = new TH1D("epp_PmTq_md","epp;pMiss_Tq [GeV];Counts",30,0.0,1.0);
 	h2p_list.push_back(h2p_PmTq_md);
-	TH1D * h2p_PmTq_hi = new TH1D("epp_PmTq_hi","epp;pMiss_Tq [GeV];Counts",30,0.0,1.0);
-	h2p_list.push_back(h2p_PmTq_hi);
 	TH1D * h2p_PmTq_hi1 = new TH1D("epp_PmTq_hi1","epp;pMiss_Tq [GeV];Counts",30,0.0,1.0);
 	h2p_list.push_back(h2p_PmTq_hi1);
 	TH1D * h2p_PmTq_hi2 = new TH1D("epp_PmTq_hi2","epp;pMiss_Tq [GeV];Counts",30,0.0,1.0);
@@ -259,6 +239,8 @@ int main(int argc, char ** argv)
 	    h2p_Emiss_byBin[i] = new TH1D(temp,"epp;Emiss [GeV];Counts",120,-0.2,0.6);
 	    h2p_list.push_back(h2p_Emiss_byBin[i]);
 	  }
+
+
 
 	TH1D * h1p_thetae_bySec[6];
 	TH1D * h1p_theta1_bySec[6];
@@ -415,11 +397,6 @@ int main(int argc, char ** argv)
 		  }
 		else if (Pmiss_size[0] < 1.)
 		  {
-		    h1p_Emiss_hi->Fill(Emiss,weight);
-		    h1p_Emiss_hi_fine->Fill(Emiss,weight);
-		    h1p_Pmq_hi->Fill(Pmiss_q_angle[0],weight);
-		    h1p_Pmzq_hi->Fill(vm.Dot(vqUnit),weight);
-		    h1p_PmTq_hi->Fill(vm.Perp(vqUnit),weight);
 		    if (Pmiss_size[0] < pmiss_hi)
 		      {
 			h1p_Emiss_hi1->Fill(Emiss,weight);
@@ -558,11 +535,6 @@ int main(int argc, char ** argv)
 		  }
 		else if (Pmiss_size[0] < 1.)
 		  {
-		    h1p_Emiss_hi->Fill(Emiss,weight);
-		    h1p_Emiss_hi_fine->Fill(Emiss,weight);
-		    h1p_Pmq_hi->Fill(Pmiss_q_angle[0],weight);
-		    h1p_Pmzq_hi->Fill(vmiss.Dot(vqUnit),weight);
-		    h1p_PmTq_hi->Fill(vmiss.Perp(vqUnit),weight);
 		    if (Pmiss_size[0] < pmiss_hi)
 		      {
 			h1p_Emiss_hi1->Fill(Emiss,weight);
@@ -649,11 +621,6 @@ int main(int argc, char ** argv)
 		  }
 		else if (Pmiss_size[0] < 1.)
 		  {
-		    h2p_Emiss_hi->Fill(Emiss,weight);
-		    h2p_Emiss_hi_fine->Fill(Emiss,weight);
-		    h2p_Pmq_hi->Fill(Pmiss_q_angle[0],weight);
-		    h2p_Pmzq_hi->Fill(vmiss.Dot(vqUnit),weight);
-		    h2p_PmTq_hi->Fill(vmiss.Perp(vqUnit),weight);
 		    if (Pmiss_size[0] < pmiss_hi)
 		      {
 			h2p_Emiss_hi1->Fill(Emiss,weight);
