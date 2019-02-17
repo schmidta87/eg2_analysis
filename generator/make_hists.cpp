@@ -42,11 +42,11 @@ int main(int argc, char ** argv)
 	vector<TH1*> h2p_list;
 
 	// Create histograms
-	TH1D * h1p_QSq = new TH1D("ep_QSq","ep;QSq [GeV^2];Counts",40,1.,5.);
+	TH1D * h1p_QSq = new TH1D("ep_QSq","ep;QSq [GeV^2];Counts",36,1.,5.);
 	h1p_list.push_back(h1p_QSq);
-	TH1D * h1p_xB =  new TH1D("ep_xB" ,"ep;xB;Counts",26,1.2,2.5);
+	TH1D * h1p_xB =  new TH1D("ep_xB" ,"ep;xB;Counts",40,1.2,2.);
 	h1p_list.push_back(h1p_xB );
-	TH1D * h1p_Pm =  new TH1D("ep_Pm" ,"ep;pMiss [GeV];Counts",24,0.4,1.0);
+	TH1D * h1p_Pm =  new TH1D("ep_Pm" ,"ep;pMiss [GeV];Counts",30,0.4,1.0);
 	h1p_list.push_back(h1p_Pm );
 	TH1D * h1p_Pm_coarse =  new TH1D("ep_Pm_coarse" ,"ep;pMiss [GeV];Counts",9,coarse_bin_edges_new);
 	h1p_list.push_back(h1p_Pm_coarse);
@@ -134,11 +134,11 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_Emiss_by_sector);
 	TH2D * h1p_pmiss_epsilon = new TH2D("ep_pmiss_epsilon","pmiss_epsilon;pmiss;epsilon;Counts",24,0.4,1.0,25,0.5,1.0);
 	h2p_list.push_back(h1p_pmiss_epsilon);
-	TH1D * h2p_QSq = new TH1D("epp_QSq","epp;QSq [GeV^2];Counts",40,1.,5.);
+	TH1D * h2p_QSq = new TH1D("epp_QSq","epp;QSq [GeV^2];Counts",30,1.,4.);
 	h2p_list.push_back(h2p_QSq);
 	TH1D * h2p_xB =  new TH1D("epp_xB" ,"epp;xB;Counts",26,1.2,2.5);
 	h2p_list.push_back(h2p_xB );
-	TH1D * h2p_Pm =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",24,0.4,1.0);
+	TH1D * h2p_Pm =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",18,0.4,1.0);
 	h2p_list.push_back(h2p_Pm );
 	TH1D * h2p_Pm_coarse =  new TH1D("epp_Pm_coarse" ,"epp;pMiss [GeV];Counts",9,coarse_bin_edges_new);
 	h2p_list.push_back(h2p_Pm_coarse);
@@ -400,7 +400,6 @@ int main(int argc, char ** argv)
 		if (Pmiss_size[0] < pmiss_lo)
 		  {
 		    h1p_Emiss_lo->Fill(Emiss,weight);
-		    h1p_Tmiss_lo->Fill(Tmiss,weight);
 		    h1p_Emiss_lo_fine->Fill(Emiss,weight);
 		    h1p_Pmq_lo->Fill(Pmiss_q_angle[0],weight);
 		    h1p_Pmzq_lo->Fill(vm.Dot(vqUnit),weight);
