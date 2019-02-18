@@ -697,7 +697,7 @@ int main(int argc, char ** argv)
 	const double data_ep_cor = 6077.;
 	const double data_epp = 411.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
-	const double ppnorm = pnorm;
+	const double ppnorm =  pnorm;
 
 	// Including a factor if we watn to rescale data to match epp luminosity
 	const double renorm = data_epp/h2p_Pm->Integral()/(data_ep/h1p_Pm->Integral());
