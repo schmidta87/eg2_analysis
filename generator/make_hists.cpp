@@ -316,17 +316,17 @@ int main(int argc, char ** argv)
 		if (!accept_proton(vp))
 		  continue;
 
-		//Do spectral function weight
-		if (doSWeight){
-		  weight = weight /( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
-				     * myCS.sigma_eN(Ebeam,ve,vp,true));
-		}
-		
                 // A few more vectors                                                            
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
 		TVector3 vm = vp - vq;
 
+		//Do spectral function weight
+		if (doSWeight){
+		  weight = weight /( (Pmiss_size[0]) * sqrt(sq(Pmiss_size[0])+sq(mN))
+				     * myCS.sigma_eN(Ebeam,ve,vm,true));
+		}
+		
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
@@ -444,17 +444,17 @@ int main(int argc, char ** argv)
 		if (!accept_proton(vlead))
 		  continue;
 
-		//Do spectral function weight
-		if (doSWeight){
-		  weight = weight /( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
-				     * myCS.sigma_eN(Ebeam,ve,vlead,true));
-		}
-		
                 // A few more vectors                                                       
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
                 TVector3 vmiss = vlead - vq;
-
+		
+		//Do spectral function weight
+		if (doSWeight){
+		  weight = weight /( (Pmiss_size[0]) * sqrt(sq(Pmiss_size[0])+sq(mN))
+				     * myCS.sigma_eN(Ebeam,ve,vmiss,true));
+		}
+		
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
