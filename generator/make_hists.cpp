@@ -72,50 +72,6 @@ int main(int argc, char ** argv)
         h1p_list.push_back(h1p_alphaLead);
         TH1D * h1p_alphaM = new TH1D("ep_alphaM","ep;alphaM;Counts",30,1.1,1.7);
 	h1p_list.push_back(h1p_alphaM);
-	TH1D * h1p_Emiss = new TH1D("ep_Emiss","ep;Emiss [GeV];Counts",40,-0.2,0.6);
-	h1p_list.push_back(h1p_Emiss);
-	TH1D * h1p_Emiss_lo = new TH1D("ep_Emiss_lo","ep;Emiss [GeV];Counts",40,-0.2,0.6);
-	h1p_list.push_back(h1p_Emiss_lo);
-	TH1D * h1p_Emiss_md = new TH1D("ep_Emiss_md","ep;Emiss [GeV];Counts",40,-0.2,0.6);
-	h1p_list.push_back(h1p_Emiss_md);
-	TH1D * h1p_Emiss_hi1 = new TH1D("ep_Emiss_hi1","ep;Emiss [GeV];Counts",40,-0.2,0.6);
-	h1p_list.push_back(h1p_Emiss_hi1);
-	TH1D * h1p_Emiss_hi2 = new TH1D("ep_Emiss_hi2","ep;Emiss [GeV];Counts",40,-0.2,0.6);
-	h1p_list.push_back(h1p_Emiss_hi2);
-	TH1D * h1p_Pmq_lo = new TH1D("ep_Pmq_lo","ep;Theta_Pmq [deg];Counts",20,100.,180.);
-	h1p_list.push_back(h1p_Pmq_lo);
-	TH1D * h1p_Pmq_md = new TH1D("ep_Pmq_md","ep;Theta_Pmq [deg];Counts",20,100.,180.);
-	h1p_list.push_back(h1p_Pmq_md);
-	TH1D * h1p_Pmq_hi1 = new TH1D("ep_Pmq_hi1","ep;Theta_Pmq [deg];Counts",20,100.,180.);
-	h1p_list.push_back(h1p_Pmq_hi1);
-	TH1D * h1p_Pmq_hi2 = new TH1D("ep_Pmq_hi2","ep;Theta_Pmq [deg];Counts",20,100.,180.);
-	h1p_list.push_back(h1p_Pmq_hi2);
-	TH1D * h1p_Pmzq_lo = new TH1D("ep_Pmzq_lo","ep;pMiss_||q [GeV];Counts",30,-1.0,0.0);
-	h1p_list.push_back(h1p_Pmzq_lo);
-	TH1D * h1p_Pmzq_md = new TH1D("ep_Pmzq_md","ep;pMiss_||q [GeV];Counts",30,-1.0,0.0);
-	h1p_list.push_back(h1p_Pmzq_md);
-	TH1D * h1p_Pmzq_hi1 = new TH1D("ep_Pmzq_hi1","ep;pMiss_||q [GeV];Counts",30,-1.0,0.0);
-	h1p_list.push_back(h1p_Pmzq_hi1);
-	TH1D * h1p_Pmzq_hi2 = new TH1D("ep_Pmzq_hi2","ep;pMiss_||q [GeV];Counts",30,-1.0,0.0);
-	h1p_list.push_back(h1p_Pmzq_hi2);
-	TH1D * h1p_PmTq_lo = new TH1D("ep_PmTq_lo","ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
-	h1p_list.push_back(h1p_PmTq_lo);
-	TH1D * h1p_PmTq_md = new TH1D("ep_PmTq_md","ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
-	h1p_list.push_back(h1p_PmTq_md);
-	TH1D * h1p_PmTq_hi1 = new TH1D("ep_PmTq_hi1","ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
-	h1p_list.push_back(h1p_PmTq_hi1);
-	TH1D * h1p_PmTq_hi2 = new TH1D("ep_PmTq_hi2","ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
-	h1p_list.push_back(h1p_PmTq_hi2);
-	TH1D * h1p_Emiss_fine = new TH1D("ep_Emiss_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
-	h1p_list.push_back(h1p_Emiss_fine);
-	TH1D * h1p_Emiss_lo_fine = new TH1D("ep_Emiss_lo_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
-	h1p_list.push_back(h1p_Emiss_lo_fine);
-	TH1D * h1p_Emiss_md_fine = new TH1D("ep_Emiss_md_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
-	h1p_list.push_back(h1p_Emiss_md_fine);
-	TH1D * h1p_Emiss_hi1_fine = new TH1D("ep_Emiss_hi1_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
-	h1p_list.push_back(h1p_Emiss_hi1_fine);
-	TH1D * h1p_Emiss_hi2_fine = new TH1D("ep_Emiss_hi2_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
-	h1p_list.push_back(h1p_Emiss_hi2_fine);
 	TH2D * h1p_pmiss_Emiss = new TH2D("ep_pmiss_Emiss","ep;pmiss [GeV];Emiss [GeV];Counts",24,0.4,1.0,20,-0.2,0.6);
 	h1p_list.push_back(h1p_pmiss_Emiss);
 	TH2D * h1p_pmiss_E1 = new TH2D("ep_pmiss_E1","ep;pmiss [GeV];E1 [GeV];Counts",24,0.4,1.0,25,0.5,1.0);
@@ -170,50 +126,6 @@ int main(int argc, char ** argv)
         h2p_list.push_back(h2p_alphaRec);
         TH1D * h2p_alphaD = new TH1D("epp_alphaD","ep;alphaD;Counts",30,1.6,2.6);
         h2p_list.push_back(h2p_alphaD);
-	TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",40,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss);
-	TH1D * h2p_Emiss_lo = new TH1D("epp_Emiss_lo","epp;Emiss [GeV];Counts",20,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss_lo);
-	TH1D * h2p_Emiss_md = new TH1D("epp_Emiss_md","epp;Emiss [GeV];Counts",20,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss_md);
-	TH1D * h2p_Emiss_hi1 = new TH1D("epp_Emiss_hi1","epp;Emiss [GeV];Counts",20,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss_hi1);
-	TH1D * h2p_Emiss_hi2 = new TH1D("epp_Emiss_hi2","epp;Emiss [GeV];Counts",20,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss_hi2);
-	TH1D * h2p_Emiss_fine = new TH1D("epp_Emiss_fine","epp;Emiss [GeV];Counts",160,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss_fine);
-	TH1D * h2p_Emiss_lo_fine = new TH1D("epp_Emiss_lo_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss_lo_fine);
-	TH1D * h2p_Emiss_md_fine = new TH1D("epp_Emiss_md_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss_md_fine);
-	TH1D * h2p_Emiss_hi1_fine = new TH1D("epp_Emiss_hi1_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss_hi1_fine);
-	TH1D * h2p_Emiss_hi2_fine = new TH1D("epp_Emiss_hi2_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss_hi2_fine);
-	TH1D * h2p_Pmq_lo = new TH1D("epp_Pmq_lo","epp;Theta_Pmq [deg];Counts",20,100.,180.);
-	h2p_list.push_back(h2p_Pmq_lo);
-	TH1D * h2p_Pmq_md = new TH1D("epp_Pmq_md","epp;Theta_Pmq [deg];Counts",20,100.,180.);
-	h2p_list.push_back(h2p_Pmq_md);
-	TH1D * h2p_Pmq_hi1 = new TH1D("epp_Pmq_hi1","epp;Theta_Pmq [deg];Counts",20,100.,180.);
-	h2p_list.push_back(h2p_Pmq_hi1);
-	TH1D * h2p_Pmq_hi2 = new TH1D("epp_Pmq_hi2","epp;Theta_Pmq [deg];Counts",20,100.,180.);
-	h2p_list.push_back(h2p_Pmq_hi2);
-	TH1D * h2p_Pmzq_lo = new TH1D("epp_Pmzq_lo","epp;pMiss_||q [GeV];Counts",30,-1.0,0.0);
-	h2p_list.push_back(h2p_Pmzq_lo);
-	TH1D * h2p_Pmzq_md = new TH1D("epp_Pmzq_md","epp;pMiss_||q [GeV];Counts",30,-1.0,0.0);
-	h2p_list.push_back(h2p_Pmzq_md);
-	TH1D * h2p_Pmzq_hi1 = new TH1D("epp_Pmzq_hi1","epp;pMiss_||q [GeV];Counts",30,-1.0,0.0);
-	h2p_list.push_back(h2p_Pmzq_hi1);
-	TH1D * h2p_Pmzq_hi2 = new TH1D("epp_Pmzq_hi2","epp;pMiss_||q [GeV];Counts",30,-1.0,0.0);
-	h2p_list.push_back(h2p_Pmzq_hi2);
-	TH1D * h2p_PmTq_lo = new TH1D("epp_PmTq_lo","epp;pMiss_Tq [GeV];Counts",30,0.0,1.0);
-	h2p_list.push_back(h2p_PmTq_lo);
-	TH1D * h2p_PmTq_md = new TH1D("epp_PmTq_md","epp;pMiss_Tq [GeV];Counts",30,0.0,1.0);
-	h2p_list.push_back(h2p_PmTq_md);
-	TH1D * h2p_PmTq_hi1 = new TH1D("epp_PmTq_hi1","epp;pMiss_Tq [GeV];Counts",30,0.0,1.0);
-	h2p_list.push_back(h2p_PmTq_hi1);
-	TH1D * h2p_PmTq_hi2 = new TH1D("epp_PmTq_hi2","epp;pMiss_Tq [GeV];Counts",30,0.0,1.0);
-	h2p_list.push_back(h2p_PmTq_hi2);
 	TH2D * h2p_pmiss_E1 = new TH2D("epp_pmiss_E1","epp;pmiss [GeV];E1 [GeV];Counts",24,0.4,1.0,25,0.5,1.0);
 	h2p_list.push_back(h2p_pmiss_E1);
 	TH2D * h2p_pmiss_appEstar = new TH2D("epp_pmiss_appEstar","epp;pmiss [GeV];Apparent Estar [GeV];Counts",24,0.4,1.0,20,-0.2,0.8);
@@ -227,21 +139,182 @@ int main(int argc, char ** argv)
 
 	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.35,1.0,20,0.5,0.9);
 
-	TH1D * h1p_Emiss_byBin[12];
-	TH1D * h2p_Emiss_byBin[12];
-	for (int i=0 ; i<12 ; i++)
+
+
+
+	TH1D * h1p_Emiss = new TH1D("ep_Emiss","ep;Emiss [GeV];Counts",40,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss);
+	TH1D * h1p_Emiss_fine = new TH1D("ep_Emiss_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_fine);
+	TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",40,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss);
+	TH1D * h2p_Emiss_fine = new TH1D("epp_Emiss_fine","epp;Emiss [GeV];Counts",160,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_fine);
+	
+
+	TH1D * h1p_Emiss_split[4]; 
+	TH1D * h1p_Emiss_fine_split[4];
+	TH1D * h1p_Pmq_split[4];
+	TH1D * h1p_Pmzq_split[4];
+	TH1D * h1p_PmTq_split[4];
+	
+	TH1D * h2p_Emiss_split[4]; 
+	TH1D * h2p_Emiss_fine_split[4];
+	TH1D * h2p_Pmq_split[4]; 
+	TH1D * h2p_Pmzq_split[4]; 
+	TH1D * h2p_PmTq_split[4]; 
+	
+	
+	for (int i=0 ; i<6 ; i++)
 	  {
 	    char temp[100];
-
+	    
 	    sprintf(temp,"ep_Emiss_%d",i);
-	    h1p_Emiss_byBin[i] = new TH1D(temp,"ep;Emiss [GeV];Counts",160,-0.2,0.6);
-	    h1p_list.push_back(h1p_Emiss_byBin[i]);
+	    h1p_Emiss_split[i] = new TH1D(temp,"ep;Emiss [GeV];Counts",40,-0.2,0.6);
+	    h1p_list.push_back(h1p_Emiss_split[i]);
+	    
+	    sprintf(temp,"ep_Emiss_fine_%d",i);
+	    h1p_Emiss_fine_split[i] = new TH1D(temp,"ep;Emiss [GeV];Counts",160,-0.2,0.6);
+	    h1p_list.push_back(h1p_Emiss_fine_split[i]);
 
+	    sprintf(temp,"ep_Pmq_%d",i);
+	    h1p_Pmq_split[i] = new TH1D(temp,"ep;Pmq [GeV];Counts",20,100.,180.);
+	    h1p_list.push_back(h1p_Pmq_split[i]);
+
+	    sprintf(temp,"ep_Pmzq_%d",i);
+	    h1p_Pmzq_split[i] = new TH1D(temp,"ep;Pmzq [GeV];Counts",30,-1.0,0.0);
+	    h1p_list.push_back(h1p_Pmzq_split[i]);
+
+	    sprintf(temp,"ep_PmTq_%d",i);
+	    h1p_PmTq_split[i] = new TH1D(temp,"ep;PmTq [GeV];Counts",30,0.0,1.0);
+	    h1p_list.push_back(h1p_PmTq_split[i]);
+
+	    
 	    sprintf(temp,"epp_Emiss_%d",i);
-	    h2p_Emiss_byBin[i] = new TH1D(temp,"epp;Emiss [GeV];Counts",120,-0.2,0.6);
-	    h2p_list.push_back(h2p_Emiss_byBin[i]);
-	  }
+	    h2p_Emiss_split[i] = new TH1D(temp,"epp;Emiss [GeV];Counts",20,-0.2,0.6);
+	    h2p_list.push_back(h2p_Emiss_split[i]);
 
+	    sprintf(temp,"epp_Emiss_fine_%d",i);
+	    h2p_Emiss_fine_split[i] = new TH1D(temp,"epp;Emiss [GeV];Counts",80,-0.2,0.6);
+	    h2p_list.push_back(h2p_Emiss_fine_split[i]);
+
+	    sprintf(temp,"epp_Pmq_%d",i);
+	    h2p_Pmq_split[i] = new TH1D(temp,"epp;Pmq [GeV];Counts",20,100.,180.);
+	    h2p_list.push_back(h2p_Pmq_split[i]);
+
+	    sprintf(temp,"epp_Pmzq_%d",i);
+	    h2p_Pmzq_split[i] = new TH1D(temp,"epp;Pmzq [GeV];Counts",30,-1.0,0.0);
+	    h2p_list.push_back(h2p_Pmzq_split[i]);
+
+	    sprintf(temp,"epp_PmTq_%d",i);
+	    h2p_PmTq_split[i] = new TH1D(temp,"epp;PmTq [GeV];Counts",30,0.0,1.0);
+	    h2p_list.push_back(h2p_PmTq_split[i]);
+
+	  }
+	/*
+	TH1D * h1p_Pmq_lo = new TH1D("ep_Pmq_lo","ep;Theta_Pmq [deg];Counts",20,100.,180.);
+	h1p_list.push_back(h1p_Pmq_lo);
+	TH1D * h1p_Pmq_md = new TH1D("ep_Pmq_md","ep;Theta_Pmq [deg];Counts",20,100.,180.);
+	h1p_list.push_back(h1p_Pmq_md);
+	TH1D * h1p_Pmq_hi1 = new TH1D("ep_Pmq_hi1","ep;Theta_Pmq [deg];Counts",20,100.,180.);
+	h1p_list.push_back(h1p_Pmq_hi1);
+	TH1D * h1p_Pmq_hi2 = new TH1D("ep_Pmq_hi2","ep;Theta_Pmq [deg];Counts",20,100.,180.);
+	h1p_list.push_back(h1p_Pmq_hi2);
+
+	TH1D * h1p_Pmzq_lo = new TH1D("ep_Pmzq_lo","ep;pMiss_||q [GeV];Counts",30,-1.0,0.0);
+	h1p_list.push_back(h1p_Pmzq_lo);
+	TH1D * h1p_Pmzq_md = new TH1D("ep_Pmzq_md","ep;pMiss_||q [GeV];Counts",30,-1.0,0.0);
+	h1p_list.push_back(h1p_Pmzq_md);
+	TH1D * h1p_Pmzq_hi1 = new TH1D("ep_Pmzq_hi1","ep;pMiss_||q [GeV];Counts",30,-1.0,0.0);
+	h1p_list.push_back(h1p_Pmzq_hi1);
+	TH1D * h1p_Pmzq_hi2 = new TH1D("ep_Pmzq_hi2","ep;pMiss_||q [GeV];Counts",30,-1.0,0.0);
+	h1p_list.push_back(h1p_Pmzq_hi2);
+
+	TH1D * h1p_Pmq_split[4];
+	TH1D * h1p_Pmzq_split[4];
+	TH1D * h1p_PmTq_split[4];
+	TH1D * h2p_Pmq_split[4]; 
+	TH1D * h2p_Pmzq_split[4]; 
+	TH1D * h2p_PmTq_split[4]; 
+	
+	
+	TH1D * h1p_PmTq_lo = new TH1D("ep_PmTq_lo","ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
+	h1p_list.push_back(h1p_PmTq_lo);
+	TH1D * h1p_PmTq_md = new TH1D("ep_PmTq_md","ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
+	h1p_list.push_back(h1p_PmTq_md);
+	TH1D * h1p_PmTq_hi1 = new TH1D("ep_PmTq_hi1","ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
+	h1p_list.push_back(h1p_PmTq_hi1);
+	TH1D * h1p_PmTq_hi2 = new TH1D("ep_PmTq_hi2","ep;pMiss_Tq [GeV];Counts",30,0.0,1.0);
+	h1p_list.push_back(h1p_PmTq_hi2);
+
+
+	TH1D * h2p_Pmq_lo = new TH1D("epp_Pmq_lo","epp;Theta_Pmq [deg];Counts",20,100.,180.);
+	h2p_list.push_back(h2p_Pmq_lo);
+	TH1D * h2p_Pmq_md = new TH1D("epp_Pmq_md","epp;Theta_Pmq [deg];Counts",20,100.,180.);
+	h2p_list.push_back(h2p_Pmq_md);
+	TH1D * h2p_Pmq_hi1 = new TH1D("epp_Pmq_hi1","epp;Theta_Pmq [deg];Counts",20,100.,180.);
+	h2p_list.push_back(h2p_Pmq_hi1);
+	TH1D * h2p_Pmq_hi2 = new TH1D("epp_Pmq_hi2","epp;Theta_Pmq [deg];Counts",20,100.,180.);
+	h2p_list.push_back(h2p_Pmq_hi2);
+
+	TH1D * h2p_Pmzq_lo = new TH1D("epp_Pmzq_lo","epp;pMiss_||q [GeV];Counts",30,-1.0,0.0);
+	h2p_list.push_back(h2p_Pmzq_lo);
+	TH1D * h2p_Pmzq_md = new TH1D("epp_Pmzq_md","epp;pMiss_||q [GeV];Counts",30,-1.0,0.0);
+	h2p_list.push_back(h2p_Pmzq_md);
+	TH1D * h2p_Pmzq_hi1 = new TH1D("epp_Pmzq_hi1","epp;pMiss_||q [GeV];Counts",30,-1.0,0.0);
+	h2p_list.push_back(h2p_Pmzq_hi1);
+	TH1D * h2p_Pmzq_hi2 = new TH1D("epp_Pmzq_hi2","epp;pMiss_||q [GeV];Counts",30,-1.0,0.0);
+	h2p_list.push_back(h2p_Pmzq_hi2);
+
+
+	TH1D * h2p_PmTq_lo = new TH1D("epp_PmTq_lo","epp;pMiss_Tq [GeV];Counts",30,0.0,1.0);
+	h2p_list.push_back(h2p_PmTq_lo);
+	TH1D * h2p_PmTq_md = new TH1D("epp_PmTq_md","epp;pMiss_Tq [GeV];Counts",30,0.0,1.0);
+	h2p_list.push_back(h2p_PmTq_md);
+	TH1D * h2p_PmTq_hi1 = new TH1D("epp_PmTq_hi1","epp;pMiss_Tq [GeV];Counts",30,0.0,1.0);
+	h2p_list.push_back(h2p_PmTq_hi1);
+	TH1D * h2p_PmTq_hi2 = new TH1D("epp_PmTq_hi2","epp;pMiss_Tq [GeV];Counts",30,0.0,1.0);
+	h2p_list.push_back(h2p_PmTq_hi2);
+
+	
+	TH1D * h1p_Emiss_lo = new TH1D("ep_Emiss_lo","ep;Emiss [GeV];Counts",40,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_lo);
+	TH1D * h1p_Emiss_md = new TH1D("ep_Emiss_md","ep;Emiss [GeV];Counts",40,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_md);
+	TH1D * h1p_Emiss_hi1 = new TH1D("ep_Emiss_hi1","ep;Emiss [GeV];Counts",40,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_hi1);
+	TH1D * h1p_Emiss_hi2 = new TH1D("ep_Emiss_hi2","ep;Emiss [GeV];Counts",40,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_hi2);
+
+	TH1D * h1p_Emiss_lo_fine = new TH1D("ep_Emiss_lo_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_lo_fine);
+	TH1D * h1p_Emiss_md_fine = new TH1D("ep_Emiss_md_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_md_fine);
+	TH1D * h1p_Emiss_hi1_fine = new TH1D("ep_Emiss_hi1_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_hi1_fine);
+	TH1D * h1p_Emiss_hi2_fine = new TH1D("ep_Emiss_hi2_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
+	h1p_list.push_back(h1p_Emiss_hi2_fine);
+
+	TH1D * h2p_Emiss_lo = new TH1D("epp_Emiss_lo","epp;Emiss [GeV];Counts",20,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_lo);
+	TH1D * h2p_Emiss_md = new TH1D("epp_Emiss_md","epp;Emiss [GeV];Counts",20,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_md);
+	TH1D * h2p_Emiss_hi1 = new TH1D("epp_Emiss_hi1","epp;Emiss [GeV];Counts",20,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_hi1);
+	TH1D * h2p_Emiss_hi2 = new TH1D("epp_Emiss_hi2","epp;Emiss [GeV];Counts",20,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_hi2);
+
+
+	TH1D * h2p_Emiss_lo_fine = new TH1D("epp_Emiss_lo_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_lo_fine);
+	TH1D * h2p_Emiss_md_fine = new TH1D("epp_Emiss_md_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_md_fine);
+	TH1D * h2p_Emiss_hi1_fine = new TH1D("epp_Emiss_hi1_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_hi1_fine);
+	TH1D * h2p_Emiss_hi2_fine = new TH1D("epp_Emiss_hi2_fine","epp;Emiss [GeV];Counts",80,-0.2,0.6);
+	h2p_list.push_back(h2p_Emiss_hi2_fine);
+
+*/
 
 
 	TH1D * h1p_thetae_bySec[6];
@@ -381,47 +454,19 @@ int main(int argc, char ** argv)
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 		h1p_Emiss_by_sector->Fill(sec_e,Emiss);
 
-		if (Pmiss_size[0] < pmiss_lo)
-		  {
-		    h1p_Emiss_lo->Fill(Emiss,weight);
-		    h1p_Emiss_lo_fine->Fill(Emiss,weight);
-		    h1p_Pmq_lo->Fill(Pmiss_q_angle[0],weight);
-		    h1p_Pmzq_lo->Fill(vm.Dot(vqUnit),weight);
-		    h1p_PmTq_lo->Fill(vm.Perp(vqUnit),weight);
-		  }
-		else if (Pmiss_size[0] < pmiss_md)
-		  {
-		    h1p_Emiss_md->Fill(Emiss,weight);
-		    h1p_Emiss_md_fine->Fill(Emiss,weight);
-		    h1p_Pmq_md->Fill(Pmiss_q_angle[0],weight);
-		    h1p_Pmzq_md->Fill(vm.Dot(vqUnit),weight);
-		    h1p_PmTq_md->Fill(vm.Perp(vqUnit),weight);
-		  }
-		else if (Pmiss_size[0] < 1.)
-		  {
-		    if (Pmiss_size[0] < pmiss_hi)
-		      {
-			h1p_Emiss_hi1->Fill(Emiss,weight);
-			h1p_Emiss_hi1_fine->Fill(Emiss,weight);
-			h1p_Pmq_hi1->Fill(Pmiss_q_angle[0],weight);
-			h1p_Pmzq_hi1->Fill(vm.Dot(vqUnit),weight);
-			h1p_PmTq_hi1->Fill(vm.Perp(vqUnit),weight);
-		      }
-		    else
-		      {
-			h1p_Emiss_hi2->Fill(Emiss,weight);
-			h1p_Emiss_hi2_fine->Fill(Emiss,weight);
-			h1p_Pmq_hi2->Fill(Pmiss_q_angle[0],weight);
-			h1p_Pmzq_hi2->Fill(vm.Dot(vqUnit),weight);
-			h1p_PmTq_hi2->Fill(vm.Perp(vqUnit),weight);
-		      }
-		  }
+		//Pmiss splits
+		int Pmiss_region_p;
+	       	if (Pmiss_size[0] < pmiss_lo) Pmiss_region_p = 0;
+		else if (Pmiss_size[0] < pmiss_md) Pmiss_region_p = 1;
+		else if (Pmiss_size[0] < pmiss_hi) Pmiss_region_p = 2;
+		else Pmiss_region_p = 3;
+		h1p_Emiss_split[Pmiss_region_p]->Fill(Emiss,weight);
+		h1p_Emiss_fine_split[Pmiss_region_p]->Fill(Emiss,weight);
+		h1p_Pmq_split[Pmiss_region_p]->Fill(Pmiss_q_angle[0],weight);
+		h1p_Pmzq_split[Pmiss_region_p]->Fill(vm.Dot(vqUnit),weight);
+		h1p_PmTq_split[Pmiss_region_p]->Fill(vm.Perp(vqUnit),weight);
 
 		h1p_pmiss_E1->Fill(Pmiss_size[0],epsilon,weight);
-
-		int pmiss_bin = (Pmiss_size[0]-0.4)/0.05;
-		h1p_Emiss_byBin[pmiss_bin]->Fill(Emiss,weight);
-
 		h1p_pmiss_epsilon->Fill(Pmiss_size[0],epsilon,weight);
 	}
 
@@ -519,45 +564,20 @@ int main(int argc, char ** argv)
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 		h1p_pmiss_E1->Fill(Pmiss_size[0],epsilon,weight);
 		h1p_Emiss_by_sector->Fill(sec_e,Emiss);
-		if (Pmiss_size[0] < pmiss_lo)
-		  {
-		    h1p_Emiss_lo->Fill(Emiss,weight);
-		    h1p_Emiss_lo_fine->Fill(Emiss,weight);
-		    h1p_Pmq_lo->Fill(Pmiss_q_angle[0],weight);
-		    h1p_Pmzq_lo->Fill(vmiss.Dot(vqUnit),weight);
-		    h1p_PmTq_lo->Fill(vmiss.Perp(vqUnit),weight);
-		  }
-		else if (Pmiss_size[0] < pmiss_md)
-		  {
-		    h1p_Emiss_md->Fill(Emiss,weight);
-		    h1p_Emiss_md_fine->Fill(Emiss,weight);
-		    h1p_Pmq_md->Fill(Pmiss_q_angle[0],weight);
-		    h1p_Pmzq_md->Fill(vmiss.Dot(vqUnit),weight);
-		    h1p_PmTq_md->Fill(vmiss.Perp(vqUnit),weight);
-		  }
-		else if (Pmiss_size[0] < 1.)
-		  {
-		    if (Pmiss_size[0] < pmiss_hi)
-		      {
-			h1p_Emiss_hi1->Fill(Emiss,weight);
-			h1p_Emiss_hi1_fine->Fill(Emiss,weight);
-			h1p_Pmq_hi1->Fill(Pmiss_q_angle[0],weight);
-			h1p_Pmzq_hi1->Fill(vmiss.Dot(vqUnit),weight);
-			h1p_PmTq_hi1->Fill(vmiss.Perp(vqUnit),weight);
-		      }
-		    else
-		      {
-			h1p_Emiss_hi2->Fill(Emiss,weight);
-			h1p_Emiss_hi2_fine->Fill(Emiss,weight);
-			h1p_Pmq_hi2->Fill(Pmiss_q_angle[0],weight);
-			h1p_Pmzq_hi2->Fill(vmiss.Dot(vqUnit),weight);
-			h1p_PmTq_hi2->Fill(vmiss.Perp(vqUnit),weight);
-		      }
-		  }
 
-		int pmiss_bin = (Pmiss_size[0]-0.4)/0.05;
-		h1p_Emiss_byBin[pmiss_bin]->Fill(Emiss,weight);
 
+		//Pmiss splits
+		int Pmiss_region_pp;
+	       	if (Pmiss_size[0] < pmiss_lo) Pmiss_region_pp = 0;
+		else if (Pmiss_size[0] < pmiss_md) Pmiss_region_pp = 1;
+		else if (Pmiss_size[0] < pmiss_hi) Pmiss_region_pp = 2;
+		else Pmiss_region_pp = 3;
+
+		h1p_Emiss_split[Pmiss_region_pp]->Fill(Emiss,weight);
+		h1p_Emiss_fine_split[Pmiss_region_pp]->Fill(Emiss,weight);
+		h1p_Pmq_split[Pmiss_region_pp]->Fill(Pmiss_q_angle[0],weight);
+		h1p_Pmzq_split[Pmiss_region_pp]->Fill(vmiss.Dot(vqUnit),weight);
+		h1p_PmTq_split[Pmiss_region_pp]->Fill(vmiss.Perp(vqUnit),weight);
 		h1p_pmiss_epsilon->Fill(Pmiss_size[0],epsilon,weight);
 
 		// Make a check on the recoils
@@ -606,41 +626,12 @@ int main(int argc, char ** argv)
 		h2p_pRec_epsilon->Fill(Pp_size[1],epsilon,weight);
 	        h2p_pRec_eMiss->Fill(Pp_size[1],Emiss,weight);
 
-		if (Pmiss_size[0] < pmiss_lo)
-		  {
-		    h2p_Emiss_lo->Fill(Emiss,weight);
-		    h2p_Emiss_lo_fine->Fill(Emiss,weight);
-		    h2p_Pmq_lo->Fill(Pmiss_q_angle[0],weight);
-		    h2p_Pmzq_lo->Fill(vmiss.Dot(vqUnit),weight);
-		    h2p_PmTq_lo->Fill(vmiss.Perp(vqUnit),weight);
-		  }
-		else if (Pmiss_size[0] < pmiss_md)
-		  {
-		    h2p_Emiss_md->Fill(Emiss,weight);
-		    h2p_Emiss_md_fine->Fill(Emiss,weight);
-		    h2p_Pmq_md->Fill(Pmiss_q_angle[0],weight);
-		    h2p_Pmzq_md->Fill(vmiss.Dot(vqUnit),weight);
-		    h2p_PmTq_md->Fill(vmiss.Perp(vqUnit),weight);
-		  }
-		else if (Pmiss_size[0] < 1.)
-		  {
-		    if (Pmiss_size[0] < pmiss_hi)
-		      {
-			h2p_Emiss_hi1->Fill(Emiss,weight);
-			h2p_Emiss_hi1_fine->Fill(Emiss,weight);
-			h2p_Pmq_hi1->Fill(Pmiss_q_angle[0],weight);
-			h2p_Pmzq_hi1->Fill(vmiss.Dot(vqUnit),weight);
-			h2p_PmTq_hi1->Fill(vmiss.Perp(vqUnit),weight);
-		      }
-		    else
-		      {
-			h2p_Emiss_hi2->Fill(Emiss,weight);
-			h2p_Emiss_hi2_fine->Fill(Emiss,weight);
-			h2p_Pmq_hi2->Fill(Pmiss_q_angle[0],weight);
-			h2p_Pmzq_hi2->Fill(vmiss.Dot(vqUnit),weight);
-			h2p_PmTq_hi2->Fill(vmiss.Perp(vqUnit),weight);
-		      }
-		  }
+		//Do Pmiss splits
+		h2p_Emiss_split[Pmiss_region_pp]->Fill(Emiss,weight);
+		h2p_Emiss_fine_split[Pmiss_region_pp]->Fill(Emiss,weight);
+		h2p_Pmq_split[Pmiss_region_pp]->Fill(Pmiss_q_angle[0],weight);
+		h2p_Pmzq_split[Pmiss_region_pp]->Fill(vmiss.Dot(vqUnit),weight);
+		h2p_PmTq_split[Pmiss_region_pp]->Fill(vmiss.Perp(vqUnit),weight);
 
 		// Let's make a sanitized phi and sector
 		double phi2_deg = vrec.Phi() * 180./M_PI;
@@ -657,8 +648,6 @@ int main(int argc, char ** argv)
 		// Histogram for the "apparent E*"
 		double apparent_Estar = sqrt(sq(sqrt(sq(m_10B) + vcm.Mag2()) + Erec) -vlead.Mag2()) - m_11B;
 		h2p_pmiss_appEstar->Fill(Pmiss_size[0],apparent_Estar,weight);
-
-		h2p_Emiss_byBin[pmiss_bin]->Fill(Emiss,weight);
 	}
 	f1p->Close();
 	f2p->Close();
