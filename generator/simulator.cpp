@@ -42,7 +42,7 @@ int main(int argc, char ** argv)
   bool verbose = false;
   bool rand_flag = false;
   bool doSmearing=true;
-
+ 
   int c;
   while ((c=getopt (argc-4, &argv[4], "vre:p:O")) != -1)
     switch(c)
@@ -87,7 +87,7 @@ int main(int argc, char ** argv)
   inTree->SetBranchAddress("pe",gen_pe);
   inTree->SetBranchAddress("pLead",gen_pLead);
   inTree->SetBranchAddress("pRec",gen_pRec);
-
+  
   // Other set up
   TRandom3 myRand(0);
 
@@ -110,7 +110,7 @@ int main(int argc, char ** argv)
 
   // Output Tree (1p)
   TTree * T1p = new TTree("T","Simulated Data Tree");
-  Float_t Q2, Xb, Pe[3], Pe_size, theta_e, phi_e, Pp[2][3], Pp_size[2], pq_angle[2], Ep[2], theta_p[2], phi_p[2], nu, q[3];
+  Float_t Q2, Xb, Pe[3], Pe_size, theta_e, phi_e, Pp[2][3], Pp_size[2], pq_angle[2], Ep[2], theta_p[2], phi_p[2], Nu, q[3];
   Float_t Pmiss_q_angle[2], Pmiss_size[2], Pmiss[2][3];
   Float_t z = 0.;
   Float_t Rp[2][3]={{0.,0.,-22.25},{0.,0.,-22.25}};
@@ -118,7 +118,7 @@ int main(int argc, char ** argv)
 
   T1p->Branch("Q2",&Q2,"Q2/F");
   T1p->Branch("Xb",&Xb,"Xb/F");
-  T1p->Branch("nu",&nu,"nu/F");
+  T1p->Branch("Nu",&Nu,"Nu/F");
   T1p->Branch("q",q,"q[3]/F");
   T1p->Branch("Pe",Pe,"Pe[3]/F");
   T1p->Branch("Pe_size",&Pe_size,"Pe_size/F");
@@ -184,8 +184,8 @@ int main(int argc, char ** argv)
       double gen_pMiss_Mag = vmiss.Mag();
       double gen_pe_Mag = ve.Mag();
       double gen_QSq = 2. * eg2beam * gen_pe_Mag * (1. - ve.CosTheta());
-      double gen_nu = eg2beam - ve.Mag();
-      double gen_xB = gen_QSq/(2.*mN*gen_nu);
+      double gen_Nu = eg2beam - ve.Mag();
+      double gen_xB = gen_QSq/(2.*mN*gen_Nu);
       double gen_q_Mag = vq.Mag();
       double gen_pLead_Mag = vlead.Mag();
       double gen_pRec_Mag = vrec.Mag();
@@ -210,7 +210,7 @@ int main(int argc, char ** argv)
 	continue;
       if (gen_pLead_Mag/gen_q_Mag > 0.96)
 	continue;
-      if (sqrt(-gen_QSq + 4.*mN*gen_nu - 2.*sqrt(mN*mN + gen_pLead_Mag*gen_pLead_Mag)*(gen_nu + 2.*mN) + 5.*mN*mN + 2.*vq.Dot(vlead)) > 1.1)
+      if (sqrt(-gen_QSq + 4.*mN*gen_Nu - 2.*sqrt(mN*mN + gen_pLead_Mag*gen_pLead_Mag)*(gen_Nu + 2.*mN) + 5.*mN*mN + 2.*vq.Dot(vlead)) > 1.1)
 	continue;
       if (!accept_electron(ve)) // Fiducial cut on electron
 	continue;
@@ -232,7 +232,7 @@ int main(int argc, char ** argv)
       // Load up tree
       Q2 = gen_QSq;
       Xb = gen_xB;
-      nu = gen_nu;
+      Nu = gen_Nu;
       Pe_size = gen_pe_Mag;
       theta_e = ve.Theta() * 180./M_PI;
       phi_e = ve.Phi()*180./M_PI;
@@ -285,7 +285,7 @@ int main(int argc, char ** argv)
   TTree * T2p = new TTree("T","Simulated Data Tree");
   T2p->Branch("Q2",&Q2,"Q2/F");
   T2p->Branch("Xb",&Xb,"Xb/F");
-  T2p->Branch("nu",&nu,"nu/F");
+  T2p->Branch("Nu",&Nu,"Nu/F");
   T2p->Branch("q",q,"q[3]/F"); 
   T2p->Branch("Pe",Pe,"Pe[3]/F");
   T2p->Branch("Pe_size",&Pe_size,"Pe_size/F");
@@ -350,8 +350,8 @@ int main(int argc, char ** argv)
       double gen_pMiss_Mag = vmiss.Mag();
       double gen_pe_Mag = ve.Mag();
       double gen_QSq = 2. * eg2beam * gen_pe_Mag * (1. - ve.CosTheta());
-      double gen_nu = eg2beam - ve.Mag();
-      double gen_xB = gen_QSq/(2.*mN*gen_nu);
+      double gen_Nu = eg2beam - ve.Mag();
+      double gen_xB = gen_QSq/(2.*mN*gen_Nu);
       double gen_q_Mag = vq.Mag();
       double gen_pLead_Mag = vlead.Mag();
       double gen_pRec_Mag = vrec.Mag();
@@ -376,7 +376,7 @@ int main(int argc, char ** argv)
 	continue;
       if (gen_pLead_Mag/gen_q_Mag > 0.96)
 	continue;
-      if (sqrt(-gen_QSq + 4.*mN*gen_nu - 2.*sqrt(mN*mN + gen_pLead_Mag*gen_pLead_Mag)*(gen_nu + 2.*mN) + 5.*mN*mN + 2.*vq.Dot(vlead)) > 1.1)
+      if (sqrt(-gen_QSq + 4.*mN*gen_Nu - 2.*sqrt(mN*mN + gen_pLead_Mag*gen_pLead_Mag)*(gen_Nu + 2.*mN) + 5.*mN*mN + 2.*vq.Dot(vlead)) > 1.1)
 	continue;
       if (!accept_electron(ve)) // Fiducial cut on electron
 	continue;
@@ -390,7 +390,7 @@ int main(int argc, char ** argv)
       // Load up tree
       Q2 = gen_QSq;
       Xb = gen_xB;
-      nu = gen_nu;
+      Nu = gen_Nu;
       Pe_size = gen_pe_Mag;
       theta_e = ve.Theta() * 180./M_PI;
       phi_e = ve.Phi()*180./M_PI;
