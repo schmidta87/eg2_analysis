@@ -198,8 +198,8 @@ void Nuclear_Info::set_byRatio()
 	}
       else if (u==2)
 	{
-	  Cpn1 = 19.*C0;
-	  d_Cpn1 = 4.*C0;
+	  Cpn1 = 10.*C0;
+	  d_Cpn1 = 2.*C0;
 	}
       else if (u==3)
 	{
