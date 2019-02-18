@@ -16,7 +16,7 @@ target_link_libraries(ep_cut ${ROOT_LIBRARIES})
 
 # Make histograms
 add_executable(make_hists make_hists.cpp )
-target_link_libraries(make_hists ${ROOT_LIBRARIES} Fid)
+target_link_libraries(make_hists ${ROOT_LIBRARIES} Fid Cross_Sections)
 
 # Make ratios (when combining more than one histogram file)
 add_executable(make_ratios make_ratios.cpp)

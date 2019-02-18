@@ -12,6 +12,7 @@
 #include "TVectorT.h"
 
 #include "Nuclear_Info.h"
+#include "Cross_Sections.h"
 #include "fiducials.h"
 #include "helpers.h"
 
@@ -23,19 +24,35 @@ const double pmiss_cut=0.4;
 const double pmiss_lo=0.5;
 const double pmiss_md=0.6;
 const double pmiss_hi=0.7;
+const double Ebeam=eg2beam;
 
 int main(int argc, char ** argv)
 {
-	if (argc != 4)
+	if (argc < 4)
 	{
 		cerr << "Wrong number of arguments. Instead try:\n"
 			<< "   make_hists /path/to/1p/file /path/to/2p/file /path/to/output/file\n\n";
 		exit(-1);
 	}
-
+	
 	TFile * f1p = new TFile(argv[1]);
 	TFile * f2p = new TFile(argv[2]);
 	TFile * fo = new TFile(argv[3],"RECREATE");
+	Cross_Sections myCS(cc1,kelly);
+	bool doSWeight = false;
+
+	int c;
+	while((c=getopt (argc-3, &argv[3], "S")) != -1)
+	  switch(c)
+	    {
+	    case 'S':
+	      doSWeight = true;
+	      break;
+	    case '?':
+	      return -1;
+	    default:
+	      abort();
+	    }
 
 	// Let's create a vector of all the histogram pointers so we can loop over them, save hassles
 	vector<TH1*> h1p_list;
@@ -278,7 +295,7 @@ int main(int argc, char ** argv)
 	{
 		t1p->SetBranchAddress("weight",&weight);
 	}
-
+	
 	for (int event =0 ; event < t1p->GetEntries() ; event++)
 	{
 		t1p->GetEvent(event);
@@ -298,6 +315,12 @@ int main(int argc, char ** argv)
 		  continue;
 		if (!accept_proton(vp))
 		  continue;
+
+		//Do spectral function weight
+		if (doSWeight){
+		  weight = weight /( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
+				     * myCS.sigma_eN(Ebeam,ve,vp,true));
+		}
 		
                 // A few more vectors                                                            
                 TVector3 vq(q[0],q[1],q[2]);
@@ -421,7 +444,13 @@ int main(int argc, char ** argv)
 		if (!accept_proton(vlead))
 		  continue;
 
-                // A few more vectors                                                             
+		//Do spectral function weight
+		if (doSWeight){
+		  weight = weight /( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
+				     * myCS.sigma_eN(Ebeam,ve,vlead,true));
+		}
+		
+                // A few more vectors                                                       
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
                 TVector3 vmiss = vlead - vq;
