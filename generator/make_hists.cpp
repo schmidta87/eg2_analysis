@@ -323,8 +323,8 @@ int main(int argc, char ** argv)
 
 		//Do spectral function weight
 		if (doSWeight){
-		  weight = weight /( (Pmiss_size[0]) * sqrt(sq(Pmiss_size[0])+sq(mN))
-				     * myCS.sigma_eN(Ebeam,ve,vm,true));
+		  weight = weight /( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
+				     * myCS.sigma_eN(Ebeam,ve,vp,true));
 		}
 		
 		h1p_QSq->Fill(Q2,weight);
@@ -451,8 +451,8 @@ int main(int argc, char ** argv)
 		
 		//Do spectral function weight
 		if (doSWeight){
-		  weight = weight /( (Pmiss_size[0]) * sqrt(sq(Pmiss_size[0])+sq(mN))
-				     * myCS.sigma_eN(Ebeam,ve,vmiss,true));
+		  weight = weight /( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
+				     * myCS.sigma_eN(Ebeam,ve,vlead,true));
 		}
 		
 		h1p_QSq->Fill(Q2,weight);
