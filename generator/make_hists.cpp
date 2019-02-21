@@ -25,7 +25,7 @@ const double pmiss_lo=0.5;
 const double pmiss_md=0.6;
 const double pmiss_hi=0.7;
 const double Ebeam=eg2beam;
-
+const double sCutOff=0;
 int main(int argc, char ** argv)
 {
 	if (argc < 4)
@@ -156,9 +156,10 @@ int main(int argc, char ** argv)
 
 	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.35,1.0,20,0.5,0.9);
 
+	TH1D * h1p_spec_val = new TH1D("aspec_val_p","spectral_function_value_p;S;Counts",200,0,100);
+	h1p_list.push_back(h1p_spec_val);
 
-
-
+	
 	TH1D * h1p_Emiss = new TH1D("ep_Emiss","ep;Emiss [GeV];Counts",40,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss);
 	TH1D * h1p_Emiss_fine = new TH1D("ep_Emiss_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
@@ -320,12 +321,18 @@ int main(int argc, char ** argv)
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
 		TVector3 vm = vp - vq;
-
+		
+ double factorS = (1e34)*( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
+					    * myCS.sigma_eN(Ebeam,ve,vp,true));
 		//Do spectral function weight
 		if (doSWeight){
-		  weight = weight /( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
-				     * myCS.sigma_eN(Ebeam,ve,vp,true));
+		 
+		  if (factorS>sCutOff){
+		    weight = weight / factorS;  
+		  }
+		  else weight=0;
 		}
+		h1p_spec_val->Fill((weight/factorS),1);
 		
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
@@ -451,8 +458,12 @@ int main(int argc, char ** argv)
 		
 		//Do spectral function weight
 		if (doSWeight){
-		  weight = weight /( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
-				     * myCS.sigma_eN(Ebeam,ve,vlead,true));
+		  double factorS =(1e34)*( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
+					   * myCS.sigma_eN(Ebeam,ve,vlead,true));
+		  if (factorS>sCutOff){
+		    weight = weight / factorS;
+		  }
+		  else weight=0;
 		}
 		
 		h1p_QSq->Fill(Q2,weight);
