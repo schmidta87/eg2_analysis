@@ -155,10 +155,6 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_pRec_eMiss);
 
 	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.35,1.0,20,0.5,0.9);
-
-	TH1D * h1p_spec_val = new TH1D("aspec_val_p","spectral_function_value_p;S;Counts",200,0,100);
-	h1p_list.push_back(h1p_spec_val);
-
 	
 	TH1D * h1p_Emiss = new TH1D("ep_Emiss","ep;Emiss [GeV];Counts",40,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss);
@@ -280,6 +276,7 @@ int main(int argc, char ** argv)
 	TTree * t1p = (TTree*)f1p->Get("T");
 	Float_t Xb, Q2, Pmiss_size[2], Pp[2][3], Rp[2][3], Pp_size[2], Pmiss_q_angle[2], Pe[3], q[3];
 	Double_t weight = 1.;
+	bool resetto1 = false;
 	t1p->SetBranchAddress("Pmiss_q_angle",Pmiss_q_angle);
 	t1p->SetBranchAddress("Xb",&Xb);
 	t1p->SetBranchAddress("Q2",&Q2);
@@ -296,11 +293,14 @@ int main(int argc, char ** argv)
 	{
 		t1p->SetBranchAddress("weight",&weight);
 	}
+	else resetto1 = true;
 	
 	for (int event =0 ; event < t1p->GetEntries() ; event++)
 	{
 		t1p->GetEvent(event);
 
+		if(resetto1) weight = 1;
+		  
 		// Do necessary cuts
 		if (fabs(Rp[0][2]+22.25)>2.25)
 		  continue;
@@ -322,18 +322,16 @@ int main(int argc, char ** argv)
                 TVector3 vqUnit = vq.Unit();
 		TVector3 vm = vp - vq;
 		
- double factorS = (1e34)*( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
-					    * myCS.sigma_eN(Ebeam,ve,vp,true));
-		//Do spectral function weight
+ 		//Do spectral function weight
 		if (doSWeight){
-		 
+		  double factorS = (1e34)*( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
+					    * myCS.sigma_eN(Ebeam,ve,vp,true));
 		  if (factorS>sCutOff){
 		    weight = weight / factorS;  
 		  }
 		  else weight=0;
 		}
-		h1p_spec_val->Fill((weight/factorS),1);
-		
+				
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
@@ -426,15 +424,19 @@ int main(int argc, char ** argv)
 	t2p->SetBranchAddress("q",q);
 	// See if there is a weight branch
 	weight=1.;
+	resetto1 = false;
 	weight_branch = t2p->GetBranch("weight");
 	if (weight_branch)
 	{
 		t2p->SetBranchAddress("weight",&weight);
 	}
+	else resetto1 = true;
 	for (int event =0 ; event < t2p->GetEntries() ; event++)
 	{
 		t2p->GetEvent(event);
 
+		if(resetto1) weight = 1;
+		
 		// Do necessary cuts
 		if (fabs(Rp[0][2]+22.25)>2.25)
 			continue;
