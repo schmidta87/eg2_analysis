@@ -40,7 +40,7 @@ void help_mess()
        << "-s <Sigma_CM [GeV]>\n"
        << "-C <Nuclear Contact [%]> (Use for Cpp0, Cpn0, Cpn1)\n"
        << "-E <E* [GeV]>\n"
-       << "-k <kRel cutoff [GeV]==0.25>\n"
+       << "-k <kRel cutoff [GeV]==0.3>\n"
        << "-u <Nuclear potential>==<1> (1=AV18, 2=N2LO, 3=N3LO)\n"
        << "-c <Cross section method>==<cc1>\n"
        << "-f <Form Factor model>==<kelly>\n"
