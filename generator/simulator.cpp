@@ -43,9 +43,10 @@ int main(int argc, char ** argv)
   bool rand_flag = false;
   bool doSmearing = true;
   bool doTrans = true;
-    
+  bool doMaps = true;
+  bool doFCuts = true;
   int c;
-  while ((c=getopt (argc-4, &argv[4], "vre:p:Oo")) != -1)
+  while ((c=getopt (argc-4, &argv[4], "vre:p:OoMC")) != -1)
     switch(c)
       {
       case 'v':
@@ -65,6 +66,12 @@ int main(int argc, char ** argv)
 	break;
       case 'o':
 	doTrans = false;
+	break;
+      case 'M':
+	doMaps = false;
+	break;
+      case 'C':
+	doFCuts = false;
 	break;
       case '?':
 	return -1;
@@ -203,8 +210,9 @@ int main(int argc, char ** argv)
 
       // Apply weight for detecting e, p      
       //weight = gen_weight * eMap.accept(ve) * pMap.accept(vlead) * 1.E33; // put it in nb to make it macroscopic
-      weight = gen_weight * pMap.accept(vlead) * Tp * 1.E33; // put it in nb to make it macroscopic
-
+      double lead_accept = doMaps ? pMap.accept(vlead) : 1;
+      weight = gen_weight * lead_accept * Tp * 1.E33; // put it in nb to make it macroscopic
+      
       if (weight <= 0.)
 	continue;
 
@@ -223,17 +231,17 @@ int main(int argc, char ** argv)
 	continue;
       if (sqrt(-gen_QSq + 4.*mN*gen_Nu - 2.*sqrt(mN*mN + gen_pLead_Mag*gen_pLead_Mag)*(gen_Nu + 2.*mN) + 5.*mN*mN + 2.*vq.Dot(vlead)) > 1.1)
 	continue;
-      if (!accept_electron(ve)) // Fiducial cut on electron
+      if ((!accept_electron(ve))&&doFCuts) // Fiducial cut on electron
 	continue;
 
       // Fill the acceptance histograms
-      const double recoil_accept = pMap.accept(vrec);
+      const double recoil_accept = doMaps ? pMap.accept(vrec) : 1;
       if (rec_type == pCode)
 	{
 	  h_rec_p_all->Fill(gen_pMiss_Mag,weight);
 	  
 	  // Test if the recoil was in the fiducial region and above threshold
-	  if (accept_proton(vrec) && (vrec.Mag() > 0.35))
+	  if (!(!accept_proton(vrec) && doFCuts) && (vrec.Mag() > 0.35))
 	    h_rec_p_acc->Fill(gen_pMiss_Mag,weight*recoil_accept);
 	}
 
@@ -369,7 +377,8 @@ int main(int argc, char ** argv)
 
       // Apply weight for detecting e, p      
       //weight = gen_weight * eMap.accept(ve) * pMap.accept(vlead) * 1.E33; // put it in nb to make it macroscopic
-      weight = gen_weight * pMap.accept(vlead) * Tp * 1.E33; // put it in nb to make it macroscopic
+      double lead_accept = doMaps ? pMap.accept(vlead) : 1;
+      weight = gen_weight * lead_accept * Tp * 1.E33; // put it in nb to make it macroscopic
 
       if (weight <= 0.)
 	continue;
@@ -389,10 +398,10 @@ int main(int argc, char ** argv)
 	continue;
       if (sqrt(-gen_QSq + 4.*mN*gen_Nu - 2.*sqrt(mN*mN + gen_pLead_Mag*gen_pLead_Mag)*(gen_Nu + 2.*mN) + 5.*mN*mN + 2.*vq.Dot(vlead)) > 1.1)
 	continue;
-      if (!accept_electron(ve)) // Fiducial cut on electron
+      if ((!accept_electron(ve))&&doFCuts) // Fiducial cut on electron
 	continue;
 
-      const double recoil_accept = pMap.accept(vrec);
+      const double recoil_accept = doMaps ? pMap.accept(vrec) : 1;
       if (rec_type == pCode)
 	weight *= recoil_accept*Tpp/Tp;
       else
