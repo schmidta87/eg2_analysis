@@ -41,10 +41,11 @@ int main(int argc, char ** argv)
 
   bool verbose = false;
   bool rand_flag = false;
-  bool doSmearing=true;
- 
+  bool doSmearing = true;
+  bool doTrans = true;
+    
   int c;
-  while ((c=getopt (argc-4, &argv[4], "vre:p:O")) != -1)
+  while ((c=getopt (argc-4, &argv[4], "vre:p:Oo")) != -1)
     switch(c)
       {
       case 'v':
@@ -61,6 +62,9 @@ int main(int argc, char ** argv)
 	break;
       case 'O':
 	doSmearing = false;
+	break;
+      case 'o':
+	doTrans = false;
 	break;
       case '?':
 	return -1;
@@ -105,6 +109,13 @@ int main(int argc, char ** argv)
 	  cout << "Two-proton transparency selected as " << Tpp << ".\n";
 	}
     }
+  if (!doTrans){
+    Tp=1;
+    Tpp=1;
+    if (verbose){
+      cout << "Transparency has been turned off.\n";
+    }
+  }
 
   TFile * outfile1p = new TFile(argv[3],"RECREATE");
 
