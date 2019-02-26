@@ -40,13 +40,16 @@ int main(int argc, char ** argv)
 	TFile * fo = new TFile(argv[3],"RECREATE");
 	Cross_Sections myCS(cc1,kelly);
 	bool doSWeight = false;
-
+	bool doCut = true;
 	int c;
-	while((c=getopt (argc-3, &argv[3], "S")) != -1)
+	while((c=getopt (argc-3, &argv[3], "SC")) != -1)
 	  switch(c)
 	    {
 	    case 'S':
 	      doSWeight = true;
+	      break;
+	    case 'C':
+	      doCut = false;
 	      break;
 	    case '?':
 	      return -1;
@@ -300,22 +303,24 @@ int main(int argc, char ** argv)
 		t1p->GetEvent(event);
 
 		if(resetto1) weight = 1;
-		  
-		// Do necessary cuts
-		if (fabs(Rp[0][2]+22.25)>2.25)
-		  continue;
-		if (Pp_size[0]>2.4)
-		  continue;
-		if (Pmiss_size[0]<pmiss_cut)
-		  continue;
 
-		// Apply fiducial cuts
 		TVector3 ve(Pe[0],Pe[1],Pe[2]);
 		TVector3 vp(Pp[0][0],Pp[0][1],Pp[0][2]);
-		if (!accept_electron(ve))
-		  continue;
-		if (!accept_proton(vp))
-		  continue;
+		  
+		if (doCut){
+		  // Do necessary cuts
+		  if (fabs(Rp[0][2]+22.25)>2.25)
+		    continue;
+		  if (Pp_size[0]>2.4)
+		    continue;
+		  if (Pmiss_size[0]<pmiss_cut)
+		    continue;
+		  // Apply fiducial cuts
+		  if (!accept_electron(ve))
+		    continue;
+		  if (!accept_proton(vp))
+		    continue;
+		}
 
                 // A few more vectors                                                            
                 TVector3 vq(q[0],q[1],q[2]);
@@ -436,7 +441,11 @@ int main(int argc, char ** argv)
 		t2p->GetEvent(event);
 
 		if(resetto1) weight = 1;
-		
+
+		TVector3 ve(Pe[0],Pe[1],Pe[2]);
+		TVector3 vlead(Pp[0][0],Pp[0][1],Pp[0][2]);
+	
+		if(doCut){
 		// Do necessary cuts
 		if (fabs(Rp[0][2]+22.25)>2.25)
 			continue;
@@ -444,15 +453,13 @@ int main(int argc, char ** argv)
 			continue;
 		if (Pmiss_size[0]<pmiss_cut)
 		  continue;
-
 		// Apply fiducial cuts
-		TVector3 ve(Pe[0],Pe[1],Pe[2]);
-		TVector3 vlead(Pp[0][0],Pp[0][1],Pp[0][2]);
 		if (!accept_electron(ve))
 		  continue;
 		if (!accept_proton(vlead))
 		  continue;
-
+		}
+		
                 // A few more vectors                                                       
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
@@ -543,16 +550,19 @@ int main(int argc, char ** argv)
 		    h1p_PmTq_split[Pmiss_region_pp][j][k]->Fill(vmiss.Perp(vqUnit),weight);
 		  }
 		}
-		  h1p_pmiss_epsilon->Fill(Pmiss_size[0],epsilon,weight);
-
-		// Make a check on the recoils
-		if (fabs(Rp[1][2]+22.25)>2.25)
-		  continue;
-		if (Pp_size[1] < 0.35)
-		  continue;
+		h1p_pmiss_epsilon->Fill(Pmiss_size[0],epsilon,weight);
+		
 		TVector3 vrec(Pp[1][0],Pp[1][1],Pp[1][2]);      
-		if (!accept_proton(vrec))
-		  continue;
+
+		if(doCut){
+		  // Make a check on the recoils
+		  if (fabs(Rp[1][2]+22.25)>2.25)
+		    continue;
+		  if (Pp_size[1] < 0.35)
+		    continue;
+		  if (!accept_proton(vrec))
+		    continue;
+		}
 
                 double Erec = sqrt(vrec.Mag2() + mN*mN);
                  TVector3 vcm = vmiss + vrec;
