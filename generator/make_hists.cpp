@@ -306,15 +306,16 @@ int main(int argc, char ** argv)
 
 		TVector3 ve(Pe[0],Pe[1],Pe[2]);
 		TVector3 vp(Pp[0][0],Pp[0][1],Pp[0][2]);
-		  
+
+		// Do necessary cuts
+		if (fabs(Rp[0][2]+22.25)>2.25)
+		  continue;
+		if (Pp_size[0]>2.4)
+		  continue;
+		if (Pmiss_size[0]<pmiss_cut)
+		  continue;
+		
 		if (doCut){
-		  // Do necessary cuts
-		  if (fabs(Rp[0][2]+22.25)>2.25)
-		    continue;
-		  if (Pp_size[0]>2.4)
-		    continue;
-		  if (Pmiss_size[0]<pmiss_cut)
-		    continue;
 		  // Apply fiducial cuts
 		  if (!accept_electron(ve))
 		    continue;
@@ -445,19 +446,21 @@ int main(int argc, char ** argv)
 		TVector3 ve(Pe[0],Pe[1],Pe[2]);
 		TVector3 vlead(Pp[0][0],Pp[0][1],Pp[0][2]);
 	
-		if(doCut){
+	
 		// Do necessary cuts
 		if (fabs(Rp[0][2]+22.25)>2.25)
-			continue;
+		  continue;
 		if (Pp_size[0]>2.4)
-			continue;
+		  continue;
 		if (Pmiss_size[0]<pmiss_cut)
 		  continue;
-		// Apply fiducial cuts
-		if (!accept_electron(ve))
-		  continue;
-		if (!accept_proton(vlead))
-		  continue;
+		
+		if(doCut){
+		  // Apply fiducial cuts
+		  if (!accept_electron(ve))
+		    continue;
+		  if (!accept_proton(vlead))
+		    continue;
 		}
 		
                 // A few more vectors                                                       
@@ -554,12 +557,14 @@ int main(int argc, char ** argv)
 		
 		TVector3 vrec(Pp[1][0],Pp[1][1],Pp[1][2]);      
 
-		if(doCut){
+	
 		  // Make a check on the recoils
-		  if (fabs(Rp[1][2]+22.25)>2.25)
-		    continue;
-		  if (Pp_size[1] < 0.35)
-		    continue;
+		if (fabs(Rp[1][2]+22.25)>2.25)
+		  continue;
+		if (Pp_size[1] < 0.35)
+		  continue;
+
+		if(doCut){
 		  if (!accept_proton(vrec))
 		    continue;
 		}
