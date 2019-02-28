@@ -45,8 +45,9 @@ int main(int argc, char ** argv)
   bool doTrans = true;
   bool doMaps = true;
   bool doFCuts = true;
+  bool doSCuts = true;
   int c;
-  while ((c=getopt (argc-4, &argv[4], "vre:p:OoMC")) != -1)
+  while ((c=getopt (argc-4, &argv[4], "vre:p:OoMCS")) != -1)
     switch(c)
       {
       case 'v':
@@ -72,6 +73,9 @@ int main(int argc, char ** argv)
 	break;
       case 'C':
 	doFCuts = false;
+	break;
+      case 'S':
+	doSCuts = false;
 	break;
       case '?':
 	return -1;
@@ -216,21 +220,23 @@ int main(int argc, char ** argv)
       if (weight <= 0.)
 	continue;
 
-      // Do leading proton cuts
-      if (vmiss.Mag() <0.3)
-	continue;
-      if (vmiss.Mag() >1.0)
-	continue;
-      if (gen_xB < 1.2)
-	continue;
-      if (vlead.Angle(vq)  > 25.*M_PI/180.)
-	continue;
-      if (gen_pLead_Mag/gen_q_Mag < 0.62)
-	continue;
-      if (gen_pLead_Mag/gen_q_Mag > 0.96)
-	continue;
-      if (sqrt(-gen_QSq + 4.*mN*gen_Nu - 2.*sqrt(mN*mN + gen_pLead_Mag*gen_pLead_Mag)*(gen_Nu + 2.*mN) + 5.*mN*mN + 2.*vq.Dot(vlead)) > 1.1)
-	continue;
+      if (doSCuts){
+	// Do leading proton cuts
+	if (vmiss.Mag() <0.3)
+	  continue;
+	if (vmiss.Mag() >1.0)
+	  continue;
+	if (gen_xB < 1.2)
+	  continue;
+	if (vlead.Angle(vq)  > 25.*M_PI/180.)
+	  continue;
+	if (gen_pLead_Mag/gen_q_Mag < 0.62)
+	  continue;
+	if (gen_pLead_Mag/gen_q_Mag > 0.96)
+	  continue;
+	if (sqrt(-gen_QSq + 4.*mN*gen_Nu - 2.*sqrt(mN*mN + gen_pLead_Mag*gen_pLead_Mag)*(gen_Nu + 2.*mN) + 5.*mN*mN + 2.*vq.Dot(vlead)) > 1.1)
+	  continue;
+      }
       if ((!accept_electron(ve))&&doFCuts) // Fiducial cut on electron
 	continue;
 
@@ -383,24 +389,25 @@ int main(int argc, char ** argv)
       if (weight <= 0.)
 	continue;
 
-      // Do leading proton cuts
-      if (vmiss.Mag() <0.3)
-	continue;
-      if (vmiss.Mag() >1.0)
-	continue;
-      if (gen_xB < 1.2)
-	continue;
-      if (vlead.Angle(vq)  > 25.*M_PI/180.)
-	continue;
-      if (gen_pLead_Mag/gen_q_Mag < 0.62)
-	continue;
-      if (gen_pLead_Mag/gen_q_Mag > 0.96)
-	continue;
-      if (sqrt(-gen_QSq + 4.*mN*gen_Nu - 2.*sqrt(mN*mN + gen_pLead_Mag*gen_pLead_Mag)*(gen_Nu + 2.*mN) + 5.*mN*mN + 2.*vq.Dot(vlead)) > 1.1)
-	continue;
+      if (doSCuts){
+	// Do leading proton cuts
+	if (vmiss.Mag() <0.3)
+	  continue;
+	if (vmiss.Mag() >1.0)
+	  continue;
+	if (gen_xB < 1.2)
+	  continue;
+	if (vlead.Angle(vq)  > 25.*M_PI/180.)
+	  continue;
+	if (gen_pLead_Mag/gen_q_Mag < 0.62)
+	  continue;
+	if (gen_pLead_Mag/gen_q_Mag > 0.96)
+	  continue;
+	if (sqrt(-gen_QSq + 4.*mN*gen_Nu - 2.*sqrt(mN*mN + gen_pLead_Mag*gen_pLead_Mag)*(gen_Nu + 2.*mN) + 5.*mN*mN + 2.*vq.Dot(vlead)) > 1.1)
+	  continue;
+      }
       if ((!accept_electron(ve))&&doFCuts) // Fiducial cut on electron
 	continue;
-
       const double recoil_accept = doMaps ? pMap.accept(vrec) : 1;
       if (rec_type == pCode)
 	weight *= recoil_accept*Tpp/Tp;
