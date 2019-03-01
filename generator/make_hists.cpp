@@ -26,6 +26,8 @@ const double pmiss_md=0.6;
 const double pmiss_hi=0.7;
 const double Ebeam=eg2beam;
 const double sCutOff=0;
+const double sigmaCM=0.143;
+const double Estar=0.03;
 int main(int argc, char ** argv)
 {
 	if (argc < 4)
@@ -140,6 +142,8 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_mom2);
 	TH1D * h2p_mom1 = new TH1D("epp_mom1","epp;Mom_1 [GeV/c];Counts",40,0.4,2.4);
 	h2p_list.push_back(h2p_mom1);
+	TH1D * h2p_pRecError = new TH1D("epp_pRecError","epp;pRecError;Counts",40,-2,2);
+	h2p_list.push_back(h2p_pRecError);
 	TH1D * h2p_alphaq = new TH1D("epp_alphaq","ep;alphaq;Counts",30,-1.5,-0.5);
         h2p_list.push_back(h2p_alphaq);
         TH1D * h2p_alphaLead = new TH1D("epp_alphaLead","ep;alphaLead;Counts",30,0.1,0.6);
@@ -156,10 +160,19 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_pmiss_appEstar);
 	TH2D * h2p_pmiss_epsilon = new TH2D("epp_pmiss_epsilon","pmiss_epsilon;pmiss;epsilon;Counts",24,0.4,1.0,25,0.5,1.0);
 	h2p_list.push_back(h2p_pmiss_epsilon);
-	TH2D * h2p_pRec_epsilon = new TH2D("pRec_epsilon","pRec_epsilon;pRec;epsilon;Counts",20,0.3,1.2,20,0.2,1.2);
+	TH2D * h2p_pRec_epsilon = new TH2D("epp_pRec_epsilon","pRec_epsilon;pRec;epsilon;Counts",20,0.3,1.2,20,0.2,1.2);
 	h2p_list.push_back(h2p_pRec_epsilon);
-	TH2D * h2p_pRec_eMiss = new TH2D("pRec_eMiss","pRec_eMiss;pRec;eMiss;Counts",10,0.35,0.9,10,0,0.5);
+	TH1D * h2p_pRec_epsilon_mean = new TH1D("epp_pRec_epsilon_mean","pRec_epsilon_mean;pRec;epsilon_mean;Counts",20,0.3,1.2);
+	h2p_pRec_epsilon_mean->Sumw2();
+	TH1D * h2p_pRec_epsilon_std = new TH1D("epp_pRec_epsilon_std","pRec_epsilon_std;pRec;epsilon_std;Counts",20,0.3,1.2);
+	h2p_pRec_epsilon_std->Sumw2();
+	TH2D * h2p_pRec_eMiss = new TH2D("epp_pRec_eMiss","pRec_eMiss;pRec;eMiss;Counts",10,0.35,0.9,10,0,0.5);
 	h2p_list.push_back(h2p_pRec_eMiss);
+	TH1D * h2p_pRec_eMiss_mean = new TH1D("epp_pRec_eMiss_mean","pRec_eMiss_mean;pRec;eMiss_mean;Counts",20,0.3,1.2);
+	h2p_pRec_eMiss_mean->Sumw2();
+	TH1D * h2p_pRec_eMiss_std = new TH1D("epp_pRec_eMiss_std","pRec_eMiss_std;pRec;eMiss_std;Counts",20,0.3,1.2);
+	h2p_pRec_eMiss_std->Sumw2();
+
 
 	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.35,1.0,20,0.5,0.9);
 	
@@ -333,11 +346,12 @@ int main(int argc, char ** argv)
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
 		TVector3 vm = vp - vq;
-		
+
+		double omega = Q2/(2.*mN*Xb);
+
  		//Do spectral function weight
 		if (doSWeight){
-		  double factorS = (1e34)*( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
-					    * myCS.sigma_eN(Ebeam,ve,vp,true));
+		  double factorS = omega * myCS.sigma_eN(Ebeam,ve,vp,true) / (2 * Ebeam * ve.Mag() * Xb);
 		  if (factorS>sCutOff){
 		    weight = weight / factorS;  
 		  }
@@ -352,7 +366,6 @@ int main(int argc, char ** argv)
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
 
 		// Kinematic variables we need
-		double omega = Q2/(2.*mN*Xb);
 		double Ep = sqrt(Pp_size[0]*Pp_size[0] + mN*mN);
 		double Emiss = -m_12C + mN + sqrt( sq(omega + m_12C - Ep) - (Pmiss_size[0]*Pmiss_size[0]));
 		double epsilon = Ep - omega;
@@ -474,11 +487,13 @@ int main(int argc, char ** argv)
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
                 TVector3 vmiss = vlead - vq;
-		
+		TVector3 vrec(Pp[1][0],Pp[1][1],Pp[1][2]);      
+
+		double omega = Q2/(2.*mN*Xb);
+
 		//Do spectral function weight
 		if (doSWeight){
-		  double factorS =(1e34)*( (Pp_size[0]) * sqrt(sq(Pp_size[0])+sq(mN))
-					   * myCS.sigma_eN(Ebeam,ve,vlead,true));
+		  double factorS = omega * myCS.sigma_eN(Ebeam,ve,vlead,true) / (2 * Ebeam * ve.Mag() * Xb);
 		  if (factorS>sCutOff){
 		    weight = weight / factorS;
 		  }
@@ -493,12 +508,18 @@ int main(int argc, char ** argv)
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
 
 		// Kinematic variables we need
-		double omega = Q2/(2.*mN*Xb);
 		double Elead = sqrt(Pp_size[0]*Pp_size[0] + mN*mN);
 		double Emiss = -m_12C + mN + sqrt( sq(omega + m_12C - Elead) - (Pmiss_size[0]*Pmiss_size[0]));
 		double epsilon = Elead - omega;
 
-                //Let's calculate light cone variables                                                      
+		// Calculate the expected recoil momentum
+		double TCM = (3/20) * sq(sigmaCM) / mN;
+		double p2Calc = sqrt( sq( (m_12C-(m_10B+Estar)) - epsilon - TCM ) - sq(mN));
+		double p2CalcError = (p2Calc - vrec.Mag()) / vrec.Mag();
+
+		h2p_pRecError->Fill(p2CalcError,weight);
+		
+                // Let's calculate light cone variables                                                      
                 double alphaq= (omega - vq.Mag()) / mN;
                 double alphaLead = (Elead - vlead.Dot(vqUnit)) / mN;
                 double alphaM = alphaLead - alphaq;
@@ -562,8 +583,7 @@ int main(int argc, char ** argv)
 		}
 		h1p_pmiss_epsilon->Fill(Pmiss_size[0],epsilon,weight);
 		
-		TVector3 vrec(Pp[1][0],Pp[1][1],Pp[1][2]);      
-
+		
 
 		if(doOtherCut){
 		  // Make a check on the recoils
@@ -642,6 +662,22 @@ int main(int argc, char ** argv)
 		double apparent_Estar = sqrt(sq(sqrt(sq(m_10B) + vcm.Mag2()) + Erec) -vlead.Mag2()) - m_11B;
 		h2p_pmiss_appEstar->Fill(Pmiss_size[0],apparent_Estar,weight);
 	}
+
+	for( int i = 0; i < h2p_pRec_epsilon->GetNbinsX(); i++){
+	  TH1D * h2p_pRec_epsilon_Proj = h2p_pRec_epsilon->ProjectionY("pRec_epsilon_Proj",i,i+1);
+	  h2p_pRec_epsilon_mean->Fill(h2p_pRec_epsilon->GetXaxis()->GetBinCenter(i+1),h2p_pRec_epsilon_Proj->GetMean());
+	  h2p_pRec_epsilon_std->Fill(h2p_pRec_epsilon->GetXaxis()->GetBinCenter(i+1),h2p_pRec_epsilon_Proj->GetStdDev());
+	}
+	h2p_pRec_epsilon_mean->Write();
+	h2p_pRec_epsilon_std->Write();
+	for( int i = 0; i < h2p_pRec_eMiss->GetNbinsX(); i++){
+	  TH1D * h2p_pRec_eMiss_Proj = h2p_pRec_eMiss->ProjectionY("pRec_eMiss_Proj",i,i+1);
+	  h2p_pRec_eMiss_mean->Fill(h2p_pRec_eMiss->GetXaxis()->GetBinCenter(i+1),h2p_pRec_eMiss_Proj->GetMean());
+	  h2p_pRec_eMiss_std->Fill(h2p_pRec_eMiss->GetXaxis()->GetBinCenter(i+1),h2p_pRec_eMiss_Proj->GetStdDev());
+	}	
+	h2p_pRec_eMiss_mean->Write();
+	h2p_pRec_eMiss_std->Write();
+
 	f1p->Close();
 	f2p->Close();
 
