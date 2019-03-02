@@ -142,8 +142,6 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_mom2);
 	TH1D * h2p_mom1 = new TH1D("epp_mom1","epp;Mom_1 [GeV/c];Counts",40,0.4,2.4);
 	h2p_list.push_back(h2p_mom1);
-	TH1D * h2p_pRecError = new TH1D("epp_pRecError","epp;pRecError;Counts",40,-2,2);
-	h2p_list.push_back(h2p_pRecError);
 	TH1D * h2p_alphaq = new TH1D("epp_alphaq","ep;alphaq;Counts",30,-1.5,-0.5);
         h2p_list.push_back(h2p_alphaq);
         TH1D * h2p_alphaLead = new TH1D("epp_alphaLead","ep;alphaLead;Counts",30,0.1,0.6);
@@ -172,7 +170,8 @@ int main(int argc, char ** argv)
 	h2p_pRec_eMiss_mean->Sumw2();
 	TH1D * h2p_pRec_eMiss_std = new TH1D("epp_pRec_eMiss_std","pRec_eMiss_std;pRec;eMiss_std;Counts",20,0.3,1.2);
 	h2p_pRec_eMiss_std->Sumw2();
-
+	TH1D * h2p_pRecError = new TH1D("epp_pRecError","epp;pRecError;Counts",40,-1,1);
+	h2p_pRecError->Sumw2();
 
 	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.35,1.0,20,0.5,0.9);
 	
@@ -717,6 +716,9 @@ int main(int argc, char ** argv)
 	const double pnorm = data_ep/h1p_Pm->Integral();
 	const double ppnorm =  pnorm;
 
+	h2p_pRecError->Scale(data_epp/h2p_Pm->Integral());
+	h2p_pRecError->Write();
+	
 	// Including a factor if we watn to rescale data to match epp luminosity
 	const double renorm = data_epp/h2p_Pm->Integral()/(data_ep/h1p_Pm->Integral());
 	TVectorT<double> renorm_factor(1);
