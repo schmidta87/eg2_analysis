@@ -19,6 +19,7 @@ using namespace std;
 const bool doSmearing=true;
 double eSmearing=0.003;
 double pSmearing=0.01;
+double tofSmeraing=0;
 double Tp = 0.53;
 double sig_Tp = 0.05;
 double Tpp = 0.44;
@@ -191,10 +192,28 @@ int main(int argc, char ** argv)
 	  gen_pLead[1] = vlead.Y();
 	  gen_pLead[2] = vlead.Z();
 
-	  vrec *= (1. + pSmearing * myRand.Gaus() * vrec.Mag());
-	  gen_pRec[0] = vrec.X();
-	  gen_pRec[1] = vrec.Y();
-	  gen_pRec[2] = vrec.Z();
+	  double gen_prec = vrec.Mag();
+	  double thetaRec = vrec.Theta()*180./M_PI;
+	  double a0, a1, a2;
+	  if (thetaRec < 45)
+	    {
+	      a0 = 573.745;
+	      a1 = -4.13062;
+	      a2 = 0.0829648;
+	    }
+	  else
+	    {
+	      a0 = 681.107;
+	      a1 = -3.40268;
+	      a2 = 0.0829648;
+	    }
+	  double dist = a2*thetaRec*thetaRec + a1*thetaRec + a0;
+	  double vel = 1/sqrt(1+(mN/gen_prec)*(mN/gen_prec));
+	  double tof = dist/(vel*29.98);
+	  tof += myRand.Gaus()*1.5;
+	  vel = dist/(tof*29.98);
+	  double prec = mN*vel/sqrt(1-vel*vel);
+	  vrec *= prec/gen_prec;
 	}
 
       // Fiducial cuts

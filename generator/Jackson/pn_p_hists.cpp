@@ -16,6 +16,10 @@ using namespace std;
 
 const double bin_edges[5] = {0.3,0.45,0.6,0.75,1.0};
 
+const double pmiss_lo=0.45;
+const double pmiss_md=0.6;
+const double pmiss_hi=0.75;
+
 int main(int argc, char ** argv)
 {
 	if (argc != 3)
@@ -28,23 +32,63 @@ int main(int argc, char ** argv)
 	TFile * fi = new TFile(argv[1]);
 	TFile * fo = new TFile(argv[2],"RECREATE");
 
+	vector<TH1*> h_list;
+
 	// Create histograms        
 	TH1D * hpn_pMiss = new TH1D("epn_Pmiss","epn;pMiss [GeV];Counts",35,0.3,1.0);
-	hpn_pMiss->Sumw2();
+	h_list.push_back(hpn_pMiss);
 	TH1D * hp_pMiss = new TH1D("ep_Pmiss","ep;pMiss [GeV];Counts",35,0.3,1.0);
-	hp_pMiss->Sumw2();
+	h_list.push_back(hp_pMiss);
 	TH1D * hpn_pMiss_coarse = new TH1D("epn_Pmiss_coarse","epn;pMiss [GeV];Counts",4,bin_edges);
-	hpn_pMiss_coarse->Sumw2();
+	h_list.push_back(hpn_pMiss_coarse);
 	TH1D * hp_pMiss_coarse = new TH1D("ep_Pmiss_coarse","ep;pMiss [GeV];Counts",4,bin_edges);
-	hp_pMiss_coarse->Sumw2();
+	h_list.push_back(hp_pMiss_coarse);
 	TH1D * hpn_Pmr = new TH1D("epn_Pmr","epn;Theta_Pmr [deg];Counts",20,100.,180.);
-	hpn_Pmr->Sumw2();
+	h_list.push_back(hpn_Pmr);
 	TH1D * hpn_cPmr = new TH1D("epn_cPmr","epn;cos(Theta_Pmr);Counts",20,-1.,0.);
-	hpn_cPmr->Sumw2();
+	h_list.push_back(hpn_cPmr);
 	TH1D * hp_Emiss_fine = new TH1D("ep_Emiss_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
-	hp_Emiss_fine->Sumw2();
+	h_list.push_back(hp_Emiss_fine);
 	TH1D * hpn_Emiss_fine = new TH1D("epn_Emiss_fine","epn;Emiss [GeV];Counts",160,-0.2,0.6);
-	hpn_Emiss_fine->Sumw2();
+	h_list.push_back(hpn_Emiss_fine);
+	TH1D * hpn_Emiss = new TH1D("epn_Emiss","epn;Emiss [GeV];Counts",20,-0.1,0.5);
+	h_list.push_back(hpn_Emiss);
+	TH1D * hpn_mom2 = new TH1D("epn_mom2","epp;Recoil Mom [GeV/c];Counts",17,0.35,1.2);
+	h_list.push_back(hpn_mom2);
+
+	TH1D * hpn_QSq_split[4];
+	TH1D * hpn_mMiss_split[4];
+	TH1D * hpn_xB_split[4];
+	TH1D * hpn_q_split[4];
+	TH1D * hpn_Emiss_split[4];
+
+	for (int i=0; i<4; i++)
+	  {
+	    char temp[100];
+	    
+	    sprintf(temp,"epn_QSq_%d",i);
+	    hpn_QSq_split[i] = new TH1D(temp,"ep;QSq [GeV^2];Counts",20,1.,3.5);
+	    h_list.push_back(hpn_QSq_split[i]);
+	    
+	    sprintf(temp,"epn_mMiss_%d",i);
+	    hpn_mMiss_split[i] = new TH1D(temp,"ep;mMiss [GeV];Counts",20,0.6,1.2);
+	    h_list.push_back(hpn_mMiss_split[i]);
+	    
+	    sprintf(temp,"epn_xB_%d",i);
+	    hpn_xB_split[i] = new TH1D(temp,"ep;xB;Counts",20,1.,2.5);
+	    h_list.push_back(hpn_xB_split[i]);
+	    
+	    sprintf(temp,"epn_q_%d",i);
+	    hpn_q_split[i] = new TH1D(temp,"ep;q [GeV];Counts",20,1.,2.5);
+	    h_list.push_back(hpn_q_split[i]);
+	    
+	    sprintf(temp,"epn_Emiss_%d",i);
+	    hpn_Emiss_split[i] = new TH1D(temp,"ep;Emiss [GeV];Counts",20,-0.1,0.5);
+	    h_list.push_back(hpn_Emiss_split[i]);
+	  }
+
+	for (int i=0; i<h_list.size(); i++)
+	  h_list[i]->Sumw2();
 
 	// pn2p graph
 	TGraphAsymmErrors * pn_to_p = new TGraphAsymmErrors();
@@ -85,8 +129,11 @@ int main(int argc, char ** argv)
 		TVector3 vmiss = vlead - vq;
 		TVector3 vcm = vmiss + vrec; 
 
-		double Emiss = Q2/(2.*mN*Xb) + m_12C - sqrt(Pp_size[0]*Pp_size[0] + mN*mN) - sqrt(Pmiss_size[0]*Pmiss_size[0] + m_11B*m_11B);
 		pMiss = vmiss.Mag();
+		double omega = Q2/(2.*mN*Xb);
+		double ELead = sqrt(mN*mN+vlead.Mag2());
+		double m_miss = sqrt((omega+2*mN-ELead)*(omega+2*mN-ELead)-vmiss.Mag2());
+		double Emiss = -m_12C + mN + sqrt((omega + m_12C - ELead)*(omega + m_12C - ELead) - (Pmiss_size[0]*Pmiss_size[0]));
 
 		hp_pMiss->Fill(pMiss,weightp);
 		hpn_pMiss->Fill(pMiss,weightpn);
@@ -96,6 +143,23 @@ int main(int argc, char ** argv)
 		hpn_cPmr->Fill(cos(vmiss.Angle(vrec)),weightpn);
 		hp_Emiss_fine->Fill(Emiss,weightp);
 		hpn_Emiss_fine->Fill(Emiss,weightpn);
+		hpn_Emiss->Fill(Emiss,weightpn);
+
+
+		int Pmiss_region;
+		if (Pmiss_size[0] < pmiss_lo) Pmiss_region = 0;
+		else if (Pmiss_size[0] < pmiss_md) Pmiss_region = 1;
+		else if (Pmiss_size[0] < pmiss_hi) Pmiss_region = 2;
+		else Pmiss_region = 3;
+		
+		hpn_QSq_split[Pmiss_region]->Fill(Q2,weightpn);
+		hpn_xB_split[Pmiss_region]->Fill(Xb,weightpn);
+		hpn_q_split[Pmiss_region]->Fill(vq.Mag(),weightpn);
+		hpn_mMiss_split[Pmiss_region]->Fill(m_miss,weightpn);
+		hpn_Emiss_split[Pmiss_region]->Fill(Emiss,weightpn);
+
+		hpn_mom2->Fill(vrec.Mag(),weightpn);
+		
 	  }
 	
 	fi->Close();
@@ -105,17 +169,15 @@ int main(int argc, char ** argv)
 	
 	// Write out
 	fo->cd();
-	pn_to_p->Write();
-	hpn_pMiss->Write();
-	hp_pMiss->Write();
-	pn_to_p_coarse->Write();
-	hpn_pMiss_coarse->Write();
-	hp_pMiss_coarse->Write();
-	hpn_Pmr->Write();
-	hpn_cPmr->Write();
-	hp_Emiss_fine->Write();
-	hpn_Emiss_fine->Write();
 
+	const double data_epn = 138.;
+	const double norm = data_epn/hpn_pMiss->Integral();
+
+	for (int i=0; i<h_list.size(); i++)
+	  {
+	    h_list[i]->Scale(norm);
+	    h_list[i]->Write();
+	  }
 
 	fo->Close();
 

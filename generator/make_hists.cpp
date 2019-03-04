@@ -20,7 +20,6 @@ using namespace std;
 
 const double pmiss_cut=0.4;
 
-
 const double pmiss_lo=0.5;
 const double pmiss_md=0.6;
 const double pmiss_hi=0.7;
@@ -182,9 +181,7 @@ int main(int argc, char ** argv)
 	TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",40,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss);
 	TH1D * h2p_Emiss_fine = new TH1D("epp_Emiss_fine","epp;Emiss [GeV];Counts",160,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss_fine);
-	
-
+	h2p_list.push_back(h2p_Emiss_fine);	
 
 	//The first element is pmiss bin, second is xB bin, third is QSq bin
 	TH1D * h1p_Emiss_split[4][3][3]; 
@@ -341,6 +338,12 @@ int main(int argc, char ** argv)
 		    continue;
 		}
 
+		// Sector-specific theta1 cuts
+		double phi1_deg = vp.Phi() * 180./M_PI;
+		if (phi1_deg < -30.)
+			phi1_deg += 360.;
+		int sector = clas_sector(phi1_deg);
+
                 // A few more vectors                                                            
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
@@ -390,10 +393,6 @@ int main(int argc, char ** argv)
 		h1p_thetae_bySec[sec_e]->Fill(thetae_deg,weight);
 		h1p_mome->Fill(ve.Mag(),weight);
 
-		double phi1_deg = vp.Phi() * 180./M_PI;
-		if (phi1_deg < -30.)
-			phi1_deg += 360.;
-		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vp.Theta() * 180./M_PI;
 
 		h1p_phi1->Fill(phi1_deg,weight);
@@ -481,6 +480,12 @@ int main(int argc, char ** argv)
 		  if (!accept_proton(vlead))
 		    continue;
 		}
+
+		// Sector-specific theta1 cuts
+		double phi1_deg = vlead.Phi() * 180./M_PI;
+		if (phi1_deg < -30.)
+			phi1_deg += 360.;
+		int sector = clas_sector(phi1_deg);
 		
                 // A few more vectors                                                       
                 TVector3 vq(q[0],q[1],q[2]);
@@ -539,10 +544,6 @@ int main(int argc, char ** argv)
 		h1p_thetae_bySec[sec_e]->Fill(thetae_deg,weight);
 		h1p_mome->Fill(ve.Mag(),weight);
 
-		double phi1_deg = vlead.Phi() * 180./M_PI;
-		if (phi1_deg < -30.)
-			phi1_deg += 360.;
-		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vlead.Theta() * 180./M_PI;
 
 		h1p_phi1->Fill(phi1_deg,weight);
