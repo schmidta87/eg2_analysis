@@ -223,8 +223,7 @@ int main(int argc, char ** argv)
 		sprintf(temp,"ep_PmTq_%d_%d_%d",i,j,k);
 		h1p_PmTq_split[i][j][k] = new TH1D(temp,"ep;PmTq [GeV];Counts",30,0.0,1.0);
 		h1p_list.push_back(h1p_PmTq_split[i][j][k]);
-		
-		
+				
 		sprintf(temp,"epp_Emiss_%d_%d_%d",i,j,k);
 		h2p_Emiss_split[i][j][k] = new TH1D(temp,"epp;Emiss [GeV];Counts",20,-0.2,0.6);
 		h2p_list.push_back(h2p_Emiss_split[i][j][k]);
@@ -343,6 +342,14 @@ int main(int argc, char ** argv)
 		if (phi1_deg < -30.)
 			phi1_deg += 360.;
 		int sector = clas_sector(phi1_deg);
+		double theta1_deg = vp.Theta() * 180./M_PI;
+
+		if ((sector==0) and (theta1_deg < 53))
+		  continue;
+		if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
+		  continue;
+		if ((sector==3) and (theta1_deg < 50))
+		  continue;
 
                 // A few more vectors                                                            
                 TVector3 vq(q[0],q[1],q[2]);
@@ -392,8 +399,6 @@ int main(int argc, char ** argv)
 		h1p_thetae->Fill(thetae_deg,weight);
 		h1p_thetae_bySec[sec_e]->Fill(thetae_deg,weight);
 		h1p_mome->Fill(ve.Mag(),weight);
-
-		double theta1_deg = vp.Theta() * 180./M_PI;
 
 		h1p_phi1->Fill(phi1_deg,weight);
 		h1p_theta1->Fill(theta1_deg,weight);
@@ -486,7 +491,15 @@ int main(int argc, char ** argv)
 		if (phi1_deg < -30.)
 			phi1_deg += 360.;
 		int sector = clas_sector(phi1_deg);
-		
+		double theta1_deg = vlead.Theta() * 180./M_PI;
+
+		if ((sector==0) and (theta1_deg < 53))
+		  continue;
+		if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
+		  continue;
+		if ((sector==3) and (theta1_deg < 50))
+		  continue;
+
                 // A few more vectors                                                       
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
@@ -543,8 +556,6 @@ int main(int argc, char ** argv)
 		h1p_thetae->Fill(thetae_deg,weight);
 		h1p_thetae_bySec[sec_e]->Fill(thetae_deg,weight);
 		h1p_mome->Fill(ve.Mag(),weight);
-
-		double theta1_deg = vlead.Theta() * 180./M_PI;
 
 		h1p_phi1->Fill(phi1_deg,weight);
 		h1p_theta1->Fill(theta1_deg,weight);
