@@ -344,7 +344,7 @@ int main(int argc, char ** argv)
 		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vp.Theta() * 180./M_PI;
 
-		if ((sector==0) and (theta1_deg < 53))
+		if ((sector==0) and (theta1_deg < 52))
 		  continue;
 		if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
 		  continue;
@@ -493,7 +493,7 @@ int main(int argc, char ** argv)
 		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vlead.Theta() * 180./M_PI;
 
-		if ((sector==0) and (theta1_deg < 53))
+		if ((sector==0) and (theta1_deg < 52))
 		  continue;
 		if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
 		  continue;
@@ -722,11 +722,11 @@ int main(int argc, char ** argv)
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
 	
-	const double data_ep = 5854.;
+	const double data_ep = 4945.;
 	const double data_ep_cor = 6077.;
-	const double data_epp = 411.;
+	const double data_epp = 359.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
-	const double ppnorm =  pnorm;
+	const double ppnorm = pnorm;
 
 	h2p_pRecError->Scale(data_epp/h2p_Pm->Integral());
 	h2p_pRecError->Write();

@@ -21,7 +21,7 @@ const double pmiss_lo=0.5;
 const double pmiss_md=0.6;
 const double pmiss_hi=0.7;
 
-const double pmiss_cut=0.3;
+const double pmiss_cut=0.4;
 
 int main(int argc, char ** argv)
 {
@@ -363,7 +363,7 @@ int main(int argc, char ** argv)
 		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vp.Theta() * 180./M_PI;
 
-		if ((sector==0) and (theta1_deg < 53))
+		if ((sector==0) and (theta1_deg < 52))
 		  continue;
 		if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
 		  continue;
@@ -526,11 +526,11 @@ int main(int argc, char ** argv)
 		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vp.Theta() * 180./M_PI;
 
-		if ((sector==0) and ((theta1_deg > 0) and (theta1_deg < 53)))
+		if ((sector==0) and (theta1_deg < 52))
 		  continue;
-		if ((sector==2) and (((theta1_deg > 0) and (theta1_deg < 45)) or (theta1_deg > 72)))
+		if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
 		  continue;
-		if ((sector==3) and ((theta1_deg > 0) and (theta1_deg < 50)))
+		if ((sector==3) and (theta1_deg < 50))
 		  continue;
 
 		h1p_phi1->Fill(phi1_deg,weight);
@@ -724,8 +724,8 @@ int main(int argc, char ** argv)
 	// Write out
 	fo -> cd();
 
-	const double data_ep = 9175.;
-	const double data_epp = 437.;
+	const double data_ep = 4945.;
+	const double data_epp = 359.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
 
 	// scale all the histograms, and write them out
