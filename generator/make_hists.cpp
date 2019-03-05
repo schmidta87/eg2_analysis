@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
+#include <unistd.h>
 
 #include "TFile.h"
 #include "TTree.h"
@@ -15,6 +16,7 @@
 #include "Cross_Sections.h"
 #include "fiducials.h"
 #include "helpers.h"
+#include "AccMap.h"
 
 using namespace std;
 
@@ -27,12 +29,15 @@ const double Ebeam=eg2beam;
 const double sCutOff=0;
 const double sigmaCM=0.143;
 const double Estar=0.03;
+
+const double acc_thresh=0.8;
+
 int main(int argc, char ** argv)
 {
-	if (argc < 4)
+	if (argc < 5)
 	{
 		cerr << "Wrong number of arguments. Instead try:\n"
-			<< "   make_hists /path/to/1p/file /path/to/2p/file /path/to/output/file\n\n";
+			<< "   make_hists /path/to/1p/file /path/to/2p/file /path/to/map/file /path/to/output/file\n\n";
 		exit(-1);
 	}
 	
@@ -44,7 +49,7 @@ int main(int argc, char ** argv)
 	bool doCut = true;
 	bool doOtherCut = true;
 	int c;
-	while((c=getopt (argc-3, &argv[3], "SCO")) != -1)
+	while((c=getopt (argc-4, &argv[4], "SCO")) != -1)
 	  switch(c)
 	    {
 	    case 'S':
@@ -61,6 +66,9 @@ int main(int argc, char ** argv)
 	    default:
 	      abort();
 	    }
+
+	// We'll need to get acceptance maps in order to do a fiducial cut on minimum acceptance
+	AccMap proton_map(argv[4], "p");
 
 	// Let's create a vector of all the histogram pointers so we can loop over them, save hassles
 	vector<TH1*> h1p_list;
@@ -335,6 +343,10 @@ int main(int argc, char ** argv)
 		    continue;
 		  if (!accept_proton(vp))
 		    continue;
+
+		  // Apply an additional fiducial cut that the map acc must be > acc_thresh
+		  if ( proton_map.accept(vp) < acc_thresh)
+		    continue;
 		}
 
 		// Sector-specific theta1 cuts
@@ -484,6 +496,10 @@ int main(int argc, char ** argv)
 		    continue;
 		  if (!accept_proton(vlead))
 		    continue;
+
+		  // Apply an additional fiducial cut that the map acc must be > acc_thresh
+		  if ( proton_map.accept(vlead) < acc_thresh)
+		    continue;
 		}
 
 		// Sector-specific theta1 cuts
@@ -606,6 +622,10 @@ int main(int argc, char ** argv)
 		
 		if(doCut){
 		  if (!accept_proton(vrec))
+		    continue;
+
+		  // Apply an additional fiducial cut that the map acc must be > acc_thresh
+		  if ( proton_map.accept(vrec) < acc_thresh)
 		    continue;
 		}
 
