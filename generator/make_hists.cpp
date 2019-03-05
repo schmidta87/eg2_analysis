@@ -43,7 +43,7 @@ int main(int argc, char ** argv)
 	
 	TFile * f1p = new TFile(argv[1]);
 	TFile * f2p = new TFile(argv[2]);
-	TFile * fo = new TFile(argv[3],"RECREATE");
+	TFile * fo = new TFile(argv[4],"RECREATE");
 	Cross_Sections myCS(cc1,kelly);
 	bool doSWeight = false;
 	bool doCut = true;
@@ -68,7 +68,7 @@ int main(int argc, char ** argv)
 	    }
 
 	// We'll need to get acceptance maps in order to do a fiducial cut on minimum acceptance
-	AccMap proton_map(argv[4], "p");
+	AccMap proton_map(argv[3], "p");
 
 	// Let's create a vector of all the histogram pointers so we can loop over them, save hassles
 	vector<TH1*> h1p_list;
@@ -699,15 +699,11 @@ int main(int argc, char ** argv)
 	  h2p_pRec_epsilon_mean->Fill(h2p_pRec_epsilon->GetXaxis()->GetBinCenter(i+1),h2p_pRec_epsilon_Proj->GetMean());
 	  h2p_pRec_epsilon_std->Fill(h2p_pRec_epsilon->GetXaxis()->GetBinCenter(i+1),h2p_pRec_epsilon_Proj->GetStdDev());
 	}
-	h2p_pRec_epsilon_mean->Write();
-	h2p_pRec_epsilon_std->Write();
 	for( int i = 0; i < h2p_pRec_eMiss->GetNbinsX(); i++){
 	  TH1D * h2p_pRec_eMiss_Proj = h2p_pRec_eMiss->ProjectionY("pRec_eMiss_Proj",i,i+1);
 	  h2p_pRec_eMiss_mean->Fill(h2p_pRec_eMiss->GetXaxis()->GetBinCenter(i+1),h2p_pRec_eMiss_Proj->GetMean());
 	  h2p_pRec_eMiss_std->Fill(h2p_pRec_eMiss->GetXaxis()->GetBinCenter(i+1),h2p_pRec_eMiss_Proj->GetStdDev());
 	}	
-	h2p_pRec_eMiss_mean->Write();
-	h2p_pRec_eMiss_std->Write();
 
 	f1p->Close();
 	f2p->Close();
@@ -738,13 +734,19 @@ int main(int argc, char ** argv)
 
 	// Write out
 	fo -> cd();
+
+	h2p_pRec_epsilon_mean->Write();
+	h2p_pRec_epsilon_std->Write();
+	h2p_pRec_eMiss_mean->Write();
+	h2p_pRec_eMiss_std->Write();
+
 	pp_to_p->Write();
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
 	
-	const double data_ep = 4945.;
+	const double data_ep = 4021.;
 	const double data_ep_cor = 6077.;
-	const double data_epp = 359.;
+	const double data_epp = 237.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
 	const double ppnorm = pnorm;
 
