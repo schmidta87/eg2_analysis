@@ -39,6 +39,10 @@ int main(int argc, char ** argv)
 	h_list.push_back(hpn_pMiss);
 	TH1D * hp_pMiss = new TH1D("ep_Pmiss","ep;pMiss [GeV];Counts",35,0.3,1.0);
 	h_list.push_back(hp_pMiss);
+	TH1D * hpn_pMiss_tot = new TH1D("epn_Pmiss_tot","epn;pMiss [GeV];Counts",1,0.3,1.0);
+	h_list.push_back(hpn_pMiss_tot);
+	TH1D * hp_pMiss_tot = new TH1D("ep_Pmiss_tot","ep;pMiss [GeV];Counts",1,0.3,1.0);
+	h_list.push_back(hp_pMiss_tot);
 	TH1D * hpn_pMiss_coarse = new TH1D("epn_Pmiss_coarse","epn;pMiss [GeV];Counts",4,bin_edges);
 	h_list.push_back(hpn_pMiss_coarse);
 	TH1D * hp_pMiss_coarse = new TH1D("ep_Pmiss_coarse","ep;pMiss [GeV];Counts",4,bin_edges);
@@ -97,6 +101,9 @@ int main(int argc, char ** argv)
 	TGraphAsymmErrors * pn_to_p_coarse = new TGraphAsymmErrors();
 	pn_to_p_coarse->SetName("pn_to_p_coarse");
 	pn_to_p_coarse->SetTitle("pn_to_p;p_miss [GeV]; pn_to_p ratio");
+	TGraphAsymmErrors * pn_to_p_tot = new TGraphAsymmErrors();
+	pn_to_p_tot->SetName("pn_to_p_tot");
+	pn_to_p_tot->SetTitle("pn_to_p;p_miss [GeV]; pn_to_p ratio");
 	
 	// Loop over tree
 	cerr << " Looping over tree...\n";
@@ -139,6 +146,8 @@ int main(int argc, char ** argv)
 		hpn_pMiss->Fill(pMiss,weightpn);
 		hp_pMiss_coarse->Fill(pMiss,weightp);
 		hpn_pMiss_coarse->Fill(pMiss,weightpn);
+		hp_pMiss_tot->Fill(pMiss,weightp);
+		hpn_pMiss_tot->Fill(pMiss,weightpn);
 		hpn_Pmr->Fill(vmiss.Angle(vrec)*180./M_PI,weightpn);
 		hpn_cPmr->Fill(cos(vmiss.Angle(vrec)),weightpn);
 		hp_Emiss_fine->Fill(Emiss,weightp);
@@ -166,9 +175,14 @@ int main(int argc, char ** argv)
 
 	pn_to_p->Divide(hpn_pMiss,hp_pMiss,"cl=0.683 b(1,1) mode");
 	pn_to_p_coarse->Divide(hpn_pMiss_coarse,hp_pMiss_coarse,"cl=0.683 b(1,1) mode");
+	pn_to_p_tot->Divide(hpn_pMiss_tot,hp_pMiss_tot,"cl=0.683 b(1,1) mode");
 	
 	// Write out
 	fo->cd();
+
+	pn_to_p->Write();
+	pn_to_p_coarse->Write();
+	pn_to_p_tot->Write();
 
 	const double data_epn = 138.;
 	const double norm = data_epn/hpn_pMiss->Integral();

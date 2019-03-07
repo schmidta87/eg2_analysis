@@ -363,11 +363,11 @@ int main(int argc, char ** argv)
 		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vp.Theta() * 180./M_PI;
 
-		if ((sector==0) and (theta1_deg < 52))
+		if ((sector==90) and (theta1_deg < 52))
 		  continue;
-		if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
+		if ((sector==92) and ((theta1_deg < 45) or (theta1_deg > 72)))
 		  continue;
-		if ((sector==3) and (theta1_deg < 50))
+		if ((sector==93) and (theta1_deg < 50))
 		  continue;
 
 		h1p_phi1->Fill(phi1_deg,weight);
@@ -526,11 +526,11 @@ int main(int argc, char ** argv)
 		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vp.Theta() * 180./M_PI;
 
-		if ((sector==0) and (theta1_deg < 52))
+		if ((sector==90) and (theta1_deg < 52))
 		  continue;
-		if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
+		if ((sector==92) and ((theta1_deg < 45) or (theta1_deg > 72)))
 		  continue;
-		if ((sector==3) and (theta1_deg < 50))
+		if ((sector==93) and (theta1_deg < 50))
 		  continue;
 
 		h1p_phi1->Fill(phi1_deg,weight);

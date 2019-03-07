@@ -17,9 +17,10 @@
 using namespace std;
 
 const bool doSmearing=true;
+const bool nSmearing=true;
 double eSmearing=0.003;
 double pSmearing=0.01;
-double tofSmeraing=0;
+double tofSmearing=1.5;
 double Tp = 0.53;
 double sig_Tp = 0.05;
 double Tpp = 0.44;
@@ -210,10 +211,11 @@ int main(int argc, char ** argv)
 	  double dist = a2*thetaRec*thetaRec + a1*thetaRec + a0;
 	  double vel = 1/sqrt(1+(mN/gen_prec)*(mN/gen_prec));
 	  double tof = dist/(vel*29.98);
-	  tof += myRand.Gaus()*1.5;
+	  tof += myRand.Gaus()*tofSmearing;
 	  vel = dist/(tof*29.98);
 	  double prec = mN*vel/sqrt(1-vel*vel);
-	  vrec *= prec/gen_prec;
+	  if (nSmearing)
+	    vrec *= prec/gen_prec;
 	}
 
       // Fiducial cuts

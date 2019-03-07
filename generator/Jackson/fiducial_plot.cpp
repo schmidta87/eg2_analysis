@@ -15,31 +15,40 @@
 #include "Nuclear_Info.h"
 #include "fiducials.h"
 #include "helpers.h"
+#include "AccMap.h"
 
 using namespace std;
 
 const double pmiss_cut=0.4;
 
+const double acc_thresh=0.8;
 
 int main(int argc, char ** argv)
 {
-	if (argc != 4)
+	if (argc != 5)
 	{
 		cerr << "Wrong number of arguments. Instead try:\n"
-			<< "   make_hists /path/to/1p/file /path/to/2p/file /path/to/output/file\n\n";
+			<< "   make_hists /path/to/1p/file /path/to/2p/file /path/to/map/file /path/to/output/file\n\n";
 		exit(-1);
 	}
 
 	TFile * f1p = new TFile(argv[1]);
 	TFile * f2p = new TFile(argv[2]);
-	TFile * fo = new TFile(argv[3],"RECREATE");
+	TFile * fo = new TFile(argv[4],"RECREATE");
+
+	// We'll need to get acceptance maps in order to do a fiducial cut on minimum acceptance
+	AccMap proton_map(argv[3], "p");
 
 	TGraph * lead_fail = new TGraph();
 	lead_fail->SetNameTitle("lead_fail","lead_fail");
+	TGraph * lead_low = new TGraph();
+	lead_low->SetNameTitle("lead_low","lead_low");
 	TGraph * lead_pass = new TGraph();
 	lead_pass->SetNameTitle("lead_pass","lead_pass");
 	TGraph * rec_fail = new TGraph();
 	rec_fail->SetNameTitle("rec_fail","rec_fail");
+	TGraph * rec_low = new TGraph();
+	rec_low->SetNameTitle("rec_low","rec_low");
 	TGraph * rec_pass = new TGraph();
 	rec_pass->SetNameTitle("rec_pass","rec_pass");
 
@@ -92,6 +101,11 @@ int main(int argc, char ** argv)
 		    lead_fail->SetPoint(lead_fail->GetN(),theta1_deg,phi1_deg);
 		    continue;
 		  }
+		if ( proton_map.accept(vp) < acc_thresh)
+		  {
+		    lead_low->SetPoint(lead_low->GetN(),theta1_deg,phi1_deg);
+		    continue;
+		  }
 		lead_pass->SetPoint(lead_pass->GetN(),theta1_deg,phi1_deg);
 
 	}
@@ -142,6 +156,11 @@ int main(int argc, char ** argv)
 		    lead_fail->SetPoint(lead_fail->GetN(),theta1_deg,phi1_deg);
 		    continue;
 		  }
+		if ( proton_map.accept(vlead) < acc_thresh)
+		  {
+		    lead_low->SetPoint(lead_low->GetN(),theta1_deg,phi1_deg);
+		    continue;
+		  }
 		lead_pass->SetPoint(lead_pass->GetN(),theta1_deg,phi1_deg);
 
 		// Make a check on the recoils
@@ -162,6 +181,11 @@ int main(int argc, char ** argv)
 		    rec_fail->SetPoint(rec_fail->GetN(),theta2_deg,phi2_deg);
 		    continue;
 		  }
+		if ( proton_map.accept(vrec) < acc_thresh)
+		  {
+		    rec_low->SetPoint(rec_low->GetN(),theta1_deg,phi1_deg);
+		    continue;
+		  }
 		rec_pass->SetPoint(rec_pass->GetN(),theta2_deg,phi2_deg);
 		
 	}
@@ -173,8 +197,10 @@ int main(int argc, char ** argv)
 	fo -> cd();
 	
 	lead_fail->Write();
+	lead_low->Write();
 	lead_pass->Write();
 	rec_fail->Write();
+	rec_low->Write();
 	rec_pass->Write();
 
 	fo->Close();

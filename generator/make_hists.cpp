@@ -32,6 +32,8 @@ const double Estar=0.03;
 
 const double acc_thresh=0.8;
 
+const bool thetaCut=true;
+
 int main(int argc, char ** argv)
 {
 	if (argc < 5)
@@ -356,13 +358,16 @@ int main(int argc, char ** argv)
 		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vp.Theta() * 180./M_PI;
 
-		if ((sector==0) and (theta1_deg < 52))
-		  continue;
-		if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
-		  continue;
-		if ((sector==3) and (theta1_deg < 50))
-		  continue;
-
+		if (thetaCut)
+		  {
+		    if ((sector==0) and (theta1_deg < 45))
+		      continue;
+		    if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
+		      continue;
+		    if ((sector==3) and (theta1_deg > 40 and theta1_deg < 55))
+		      continue;
+		  }
+		
                 // A few more vectors                                                            
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
@@ -509,12 +514,15 @@ int main(int argc, char ** argv)
 		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vlead.Theta() * 180./M_PI;
 
-		if ((sector==0) and (theta1_deg < 52))
-		  continue;
-		if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
-		  continue;
-		if ((sector==3) and (theta1_deg < 50))
-		  continue;
+		if (thetaCut)
+		  {
+		    if ((sector==0) and (theta1_deg < 45))
+		      continue;
+		    if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
+		      continue;
+		    if ((sector==3) and (theta1_deg > 40 and theta1_deg < 55))
+		      continue;
+		  }
 
                 // A few more vectors                                                       
                 TVector3 vq(q[0],q[1],q[2]);
@@ -710,11 +718,11 @@ int main(int argc, char ** argv)
 
 	cerr << "The ep and epp integrals are: " << h1p_Pm->Integral() << " "  << h2p_Pm->Integral() << "\n";
 	cerr << "Broken down by pmiss range...\n\n";
-	for (int j=4 ; j<=24 ; j+=4)
+	for (int j=5 ; j<=30 ; j+=5)
 	  {
-	    double min=0.4 + 0.1*(j-4)/4.;
-	    double max=0.4 + 0.1*j/4.;
-	    cerr << min << " < pmiss < " << max << " : " << h1p_Pm->Integral(j-3,j) << " " << h2p_Pm->Integral(j-3,j) << "\n";
+	    double min=0.4 + 0.1*(j-5)/5.;
+	    double max=0.4 + 0.1*j/5.;
+	    cerr << min << " < pmiss < " << max << " : " << h1p_Pm->Integral(j-4,j) << " " << h2p_Pm->Integral(j-4,j) << "\n";
 	  }
 
 	// pp-to-p
@@ -744,9 +752,9 @@ int main(int argc, char ** argv)
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
 	
-	const double data_ep = 4021.;
+	const double data_ep = 5100.;
 	const double data_ep_cor = 6077.;
-	const double data_epp = 237.;
+	const double data_epp = 368.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
 	const double ppnorm = pnorm;
 

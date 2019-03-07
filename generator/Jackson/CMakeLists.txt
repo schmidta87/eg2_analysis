@@ -24,7 +24,7 @@ target_link_libraries(gapHists ${ROOT_LIBRARIES} Fid)
 
 # fiducial_plot
 add_executable(fiducial_plot fiducial_plot.cpp )
-target_link_libraries(fiducial_plot ${ROOT_LIBRARIES} Fid)
+target_link_libraries(fiducial_plot ${ROOT_LIBRARIES} AccMap Fid)
 
 # sim_w_farm
 add_executable(sim_w_farm sim_w_farm.cpp )
