@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
+#include <unistd.h>
 
 #include "TFile.h"
 #include "TTree.h"
@@ -15,11 +16,11 @@
 #include "Cross_Sections.h"
 #include "fiducials.h"
 #include "helpers.h"
+#include "AccMap.h"
 
 using namespace std;
 
 const double pmiss_cut=0.4;
-
 
 const double pmiss_lo=0.5;
 const double pmiss_md=0.6;
@@ -28,24 +29,29 @@ const double Ebeam=eg2beam;
 const double sCutOff=0;
 const double sigmaCM=0.143;
 const double Estar=0.03;
+
+const double acc_thresh=0.8;
+
+const bool thetaCut=true;
+
 int main(int argc, char ** argv)
 {
-	if (argc < 4)
+	if (argc < 5)
 	{
 		cerr << "Wrong number of arguments. Instead try:\n"
-			<< "   make_hists /path/to/1p/file /path/to/2p/file /path/to/output/file\n\n";
+			<< "   make_hists /path/to/1p/file /path/to/2p/file /path/to/map/file /path/to/output/file\n\n";
 		exit(-1);
 	}
 	
 	TFile * f1p = new TFile(argv[1]);
 	TFile * f2p = new TFile(argv[2]);
-	TFile * fo = new TFile(argv[3],"RECREATE");
+	TFile * fo = new TFile(argv[4],"RECREATE");
 	Cross_Sections myCS(cc1,kelly);
 	bool doSWeight = false;
 	bool doCut = true;
 	bool doOtherCut = true;
 	int c;
-	while((c=getopt (argc-3, &argv[3], "SCO")) != -1)
+	while((c=getopt (argc-4, &argv[4], "SCO")) != -1)
 	  switch(c)
 	    {
 	    case 'S':
@@ -62,6 +68,9 @@ int main(int argc, char ** argv)
 	    default:
 	      abort();
 	    }
+
+	// We'll need to get acceptance maps in order to do a fiducial cut on minimum acceptance
+	AccMap proton_map(argv[3], "p");
 
 	// Let's create a vector of all the histogram pointers so we can loop over them, save hassles
 	vector<TH1*> h1p_list;
@@ -182,9 +191,7 @@ int main(int argc, char ** argv)
 	TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",40,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss);
 	TH1D * h2p_Emiss_fine = new TH1D("epp_Emiss_fine","epp;Emiss [GeV];Counts",160,-0.2,0.6);
-	h2p_list.push_back(h2p_Emiss_fine);
-	
-
+	h2p_list.push_back(h2p_Emiss_fine);	
 
 	//The first element is pmiss bin, second is xB bin, third is QSq bin
 	TH1D * h1p_Emiss_split[4][3][3]; 
@@ -226,8 +233,7 @@ int main(int argc, char ** argv)
 		sprintf(temp,"ep_PmTq_%d_%d_%d",i,j,k);
 		h1p_PmTq_split[i][j][k] = new TH1D(temp,"ep;PmTq [GeV];Counts",30,0.0,1.0);
 		h1p_list.push_back(h1p_PmTq_split[i][j][k]);
-		
-		
+				
 		sprintf(temp,"epp_Emiss_%d_%d_%d",i,j,k);
 		h2p_Emiss_split[i][j][k] = new TH1D(temp,"epp;Emiss [GeV];Counts",20,-0.2,0.6);
 		h2p_list.push_back(h2p_Emiss_split[i][j][k]);
@@ -339,8 +345,29 @@ int main(int argc, char ** argv)
 		    continue;
 		  if (!accept_proton(vp))
 		    continue;
+
+		  // Apply an additional fiducial cut that the map acc must be > acc_thresh
+		  if ( proton_map.accept(vp) < acc_thresh)
+		    continue;
 		}
 
+		// Sector-specific theta1 cuts
+		double phi1_deg = vp.Phi() * 180./M_PI;
+		if (phi1_deg < -30.)
+			phi1_deg += 360.;
+		int sector = clas_sector(phi1_deg);
+		double theta1_deg = vp.Theta() * 180./M_PI;
+
+		if (thetaCut)
+		  {
+		    if ((sector==0) and (theta1_deg < 45))
+		      continue;
+		    if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
+		      continue;
+		    if ((sector==3) and (theta1_deg > 40 and theta1_deg < 55))
+		      continue;
+		  }
+		
                 // A few more vectors                                                            
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
@@ -389,12 +416,6 @@ int main(int argc, char ** argv)
 		h1p_thetae->Fill(thetae_deg,weight);
 		h1p_thetae_bySec[sec_e]->Fill(thetae_deg,weight);
 		h1p_mome->Fill(ve.Mag(),weight);
-
-		double phi1_deg = vp.Phi() * 180./M_PI;
-		if (phi1_deg < -30.)
-			phi1_deg += 360.;
-		int sector = clas_sector(phi1_deg);
-		double theta1_deg = vp.Theta() * 180./M_PI;
 
 		h1p_phi1->Fill(phi1_deg,weight);
 		h1p_theta1->Fill(theta1_deg,weight);
@@ -480,8 +501,29 @@ int main(int argc, char ** argv)
 		    continue;
 		  if (!accept_proton(vlead))
 		    continue;
+
+		  // Apply an additional fiducial cut that the map acc must be > acc_thresh
+		  if ( proton_map.accept(vlead) < acc_thresh)
+		    continue;
 		}
-		
+
+		// Sector-specific theta1 cuts
+		double phi1_deg = vlead.Phi() * 180./M_PI;
+		if (phi1_deg < -30.)
+			phi1_deg += 360.;
+		int sector = clas_sector(phi1_deg);
+		double theta1_deg = vlead.Theta() * 180./M_PI;
+
+		if (thetaCut)
+		  {
+		    if ((sector==0) and (theta1_deg < 45))
+		      continue;
+		    if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
+		      continue;
+		    if ((sector==3) and (theta1_deg > 40 and theta1_deg < 55))
+		      continue;
+		  }
+
                 // A few more vectors                                                       
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
@@ -539,12 +581,6 @@ int main(int argc, char ** argv)
 		h1p_thetae_bySec[sec_e]->Fill(thetae_deg,weight);
 		h1p_mome->Fill(ve.Mag(),weight);
 
-		double phi1_deg = vlead.Phi() * 180./M_PI;
-		if (phi1_deg < -30.)
-			phi1_deg += 360.;
-		int sector = clas_sector(phi1_deg);
-		double theta1_deg = vlead.Theta() * 180./M_PI;
-
 		h1p_phi1->Fill(phi1_deg,weight);
 		h1p_theta1->Fill(theta1_deg,weight);
 		h1p_theta1_bySec[sector]->Fill(theta1_deg,weight);
@@ -594,6 +630,10 @@ int main(int argc, char ** argv)
 		
 		if(doCut){
 		  if (!accept_proton(vrec))
+		    continue;
+
+		  // Apply an additional fiducial cut that the map acc must be > acc_thresh
+		  if ( proton_map.accept(vrec) < acc_thresh)
 		    continue;
 		}
 
@@ -667,26 +707,22 @@ int main(int argc, char ** argv)
 	  h2p_pRec_epsilon_mean->Fill(h2p_pRec_epsilon->GetXaxis()->GetBinCenter(i+1),h2p_pRec_epsilon_Proj->GetMean());
 	  h2p_pRec_epsilon_std->Fill(h2p_pRec_epsilon->GetXaxis()->GetBinCenter(i+1),h2p_pRec_epsilon_Proj->GetStdDev());
 	}
-	h2p_pRec_epsilon_mean->Write();
-	h2p_pRec_epsilon_std->Write();
 	for( int i = 0; i < h2p_pRec_eMiss->GetNbinsX(); i++){
 	  TH1D * h2p_pRec_eMiss_Proj = h2p_pRec_eMiss->ProjectionY("pRec_eMiss_Proj",i,i+1);
 	  h2p_pRec_eMiss_mean->Fill(h2p_pRec_eMiss->GetXaxis()->GetBinCenter(i+1),h2p_pRec_eMiss_Proj->GetMean());
 	  h2p_pRec_eMiss_std->Fill(h2p_pRec_eMiss->GetXaxis()->GetBinCenter(i+1),h2p_pRec_eMiss_Proj->GetStdDev());
 	}	
-	h2p_pRec_eMiss_mean->Write();
-	h2p_pRec_eMiss_std->Write();
 
 	f1p->Close();
 	f2p->Close();
 
 	cerr << "The ep and epp integrals are: " << h1p_Pm->Integral() << " "  << h2p_Pm->Integral() << "\n";
 	cerr << "Broken down by pmiss range...\n\n";
-	for (int j=4 ; j<=24 ; j+=4)
+	for (int j=5 ; j<=30 ; j+=5)
 	  {
-	    double min=0.4 + 0.1*(j-4)/4.;
-	    double max=0.4 + 0.1*j/4.;
-	    cerr << min << " < pmiss < " << max << " : " << h1p_Pm->Integral(j-3,j) << " " << h2p_Pm->Integral(j-3,j) << "\n";
+	    double min=0.4 + 0.1*(j-5)/5.;
+	    double max=0.4 + 0.1*j/5.;
+	    cerr << min << " < pmiss < " << max << " : " << h1p_Pm->Integral(j-4,j) << " " << h2p_Pm->Integral(j-4,j) << "\n";
 	  }
 
 	// pp-to-p
@@ -706,15 +742,21 @@ int main(int argc, char ** argv)
 
 	// Write out
 	fo -> cd();
+
+	h2p_pRec_epsilon_mean->Write();
+	h2p_pRec_epsilon_std->Write();
+	h2p_pRec_eMiss_mean->Write();
+	h2p_pRec_eMiss_std->Write();
+
 	pp_to_p->Write();
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
 	
-	const double data_ep = 5854.;
+	const double data_ep = 5100.;
 	const double data_ep_cor = 6077.;
-	const double data_epp = 411.;
+	const double data_epp = 368.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
-	const double ppnorm =  pnorm;
+	const double ppnorm = pnorm;
 
 	h2p_pRecError->Scale(data_epp/h2p_Pm->Integral());
 	h2p_pRecError->Write();

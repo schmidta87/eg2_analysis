@@ -22,6 +22,10 @@ target_link_libraries(pn_p_hists ${ROOT_LIBRARIES} Fid)
 add_executable(gapHists gapHists.cpp )
 target_link_libraries(gapHists ${ROOT_LIBRARIES} Fid)
 
+# fiducial_plot
+add_executable(fiducial_plot fiducial_plot.cpp )
+target_link_libraries(fiducial_plot ${ROOT_LIBRARIES} AccMap Fid)
+
 # sim_w_farm
 add_executable(sim_w_farm sim_w_farm.cpp )
 target_link_libraries(sim_w_farm ${ROOT_LIBRARIES} AccMap Fid)
