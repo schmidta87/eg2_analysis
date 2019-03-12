@@ -20,7 +20,7 @@ target_link_libraries(pn_p_hists ${ROOT_LIBRARIES} Fid)
 
 # finder
 add_executable(gapHists gapHists.cpp )
-target_link_libraries(gapHists ${ROOT_LIBRARIES} Fid)
+target_link_libraries(gapHists ${ROOT_LIBRARIES} AccMap Fid)
 
 # fiducial_plot
 add_executable(fiducial_plot fiducial_plot.cpp )

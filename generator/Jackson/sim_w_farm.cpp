@@ -15,6 +15,7 @@
 #include "AccMap.h"
 #include "fiducials.h"
 #include "Nuclear_Info.h"
+#include "helpers.h"
 
 using namespace std;
 
@@ -77,9 +78,17 @@ int main(int argc, char ** argv)
   inTree->SetBranchAddress("pLead",gen_pLead);
 
   TTree * farmTree = (TTree*)farmfile->Get("data");
-  Int_t gPart, particles[12];
+  Int_t gPart, particles[12], StatCC[12], StatDC[12], StatEC[12], StatSC[12];
+  Float_t Stat[12], charge[12], phi[12];
   farmTree->SetBranchAddress("gPart",&gPart);
   farmTree->SetBranchAddress("particle",particles);
+  farmTree->SetBranchAddress("StatCC",StatCC);
+  farmTree->SetBranchAddress("StatDC",StatDC);
+  farmTree->SetBranchAddress("StatEC",StatEC);
+  farmTree->SetBranchAddress("StatSC",StatSC);
+  farmTree->SetBranchAddress("Stat",Stat);
+  farmTree->SetBranchAddress("Charge",charge);
+  farmTree->SetBranchAddress("Phi",phi);
 
   // Other set up
   TRandom3 myRand(0);
@@ -137,29 +146,51 @@ int main(int argc, char ** argv)
     {
       if (event %1000000==0 and verbose) 
 	cerr << "Working on event " << event << " out of " << nEvents <<"\n";
+
       
       inTree->GetEvent(event);
       farmTree->GetEvent(event);
 
       if (gPart < 2)
 	continue;
-      bool founde = false;
+
+      if (!(                  (StatEC[0] > 0) && // EC status is good for the electron candidate
+			      (StatDC[0] > 0) && // DC status is good for the electron candidate
+			      (StatCC[0] > 0) && // CC status is good for the electron candidate
+			      (StatSC[0] > 0) && // SC status is good for the electron candidate
+			      (charge[0] < 0)    // Electron candidate curvature direction is negative
+			      ))
+	{continue;}
+
+      TVector3 vlead(gen_pLead[0],gen_pLead[1],gen_pLead[2]);
+      double phi1_deg = vlead.Phi() * 180./M_PI;
+      if (phi1_deg < -30.)
+	phi1_deg += 360.;
+      int sector_gen = clas_sector(phi1_deg);
+      
       bool foundp = false;
-      for (int i=0; i < gPart; i++)
+      for (int part=1; part < gPart; part++)
 	{
-	  int particle = particles[i];
-	  if (particle == 11)
-	    founde = true;
-	  if (particle == pCode)
-	    foundp = true;
+	  //Positive particle test
+	  if (!((StatSC[part] > 0) &&                // SC status is good for the positive candidate
+	      (StatDC[part] > 0) &&              // DC status is good for the positive candidate
+	      (Stat  [part] > 0) &&         // Global status is good for the positive candidate
+	      (charge[part] > 0)            // Charge is positive
+		))
+	    {continue;}
+
+	  int sector = clas_sector(phi[part]);
+	  if (sector!=sector_gen)
+	    {continue;}
+	  
+	  foundp = true;
 	}
 
-      if (not (founde and foundp))
+      if (not (foundp))
 	continue;
 
       // Create vectors for the particles
       TVector3 ve(gen_pe[0],gen_pe[1],gen_pe[2]);
-      TVector3 vlead(gen_pLead[0],gen_pLead[1],gen_pLead[2]);
       
       // Smearing
       if (doSmearing)
