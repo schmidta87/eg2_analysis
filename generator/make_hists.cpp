@@ -32,8 +32,6 @@ const double Estar=0.03;
 
 const double acc_thresh=0.8;
 
-const bool thetaCut=true;
-
 int main(int argc, char ** argv)
 {
 	if (argc < 5)
@@ -192,20 +190,26 @@ int main(int argc, char ** argv)
 	h1p_list.push_back(h1p_Emiss);
 	TH1D * h1p_Emiss_fine = new TH1D("ep_Emiss_fine","ep;Emiss [GeV];Counts",160,-0.2,0.6);
 	h1p_list.push_back(h1p_Emiss_fine);
+	TH1D * h1p_e1 = new TH1D("ep_e1","ep;e1 [GeV];Counts",40,0.5,1.0);
+	h1p_list.push_back(h1p_e1);
 	TH1D * h2p_Emiss = new TH1D("epp_Emiss","epp;Emiss [GeV];Counts",40,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss);
 	TH1D * h2p_Emiss_fine = new TH1D("epp_Emiss_fine","epp;Emiss [GeV];Counts",160,-0.2,0.6);
 	h2p_list.push_back(h2p_Emiss_fine);	
+	TH1D * h2p_e1 = new TH1D("epp_e1","epp;e1 [GeV];Counts",160,0.5,1.0);
+	h2p_list.push_back(h2p_e1);
 
 	//The first element is pmiss bin, second is xB bin, third is QSq bin
 	TH1D * h1p_Emiss_split[4][3][3]; 
 	TH1D * h1p_Emiss_fine_split[4][3][3]; 
+	TH1D * h1p_e1_split[4][3][3]; 
 	TH1D * h1p_Pmq_split[4][3][3]; 
 	TH1D * h1p_Pmzq_split[4][3][3]; 
 	TH1D * h1p_PmTq_split[4][3][3]; 
 	 
 	TH1D * h2p_Emiss_split[4][3][3]; 
 	TH1D * h2p_Emiss_fine_split[4][3][3];
+	TH1D * h2p_e1_split[4][3][3]; 
 	TH1D * h2p_Pmq_split[4][3][3]; 
 	TH1D * h2p_Pmzq_split[4][3][3]; 
 	TH1D * h2p_PmTq_split[4][3][3]; 
@@ -225,6 +229,10 @@ int main(int argc, char ** argv)
 		sprintf(temp,"ep_Emiss_fine_%d_%d_%d",i,j,k);
 		h1p_Emiss_fine_split[i][j][k] = new TH1D(temp,"ep;Emiss [GeV];Counts",160,-0.2,0.6);
 		h1p_list.push_back(h1p_Emiss_fine_split[i][j][k]);
+
+		sprintf(temp,"ep_e1_%d_%d_%d",i,j,k);
+		h1p_e1_split[i][j][k] = new TH1D(temp,"ep;e1 [GeV];Counts",160,0.5,1.0);
+		h1p_list.push_back(h1p_e1_split[i][j][k]);
 		
 		sprintf(temp,"ep_Pmq_%d_%d_%d",i,j,k);
 		h1p_Pmq_split[i][j][k] = new TH1D(temp,"ep;Pmq [GeV];Counts",20,100.,180.);
@@ -245,7 +253,11 @@ int main(int argc, char ** argv)
 		sprintf(temp,"epp_Emiss_fine_%d_%d_%d",i,j,k);
 		h2p_Emiss_fine_split[i][j][k] = new TH1D(temp,"epp;Emiss [GeV];Counts",80,-0.2,0.6);
 		h2p_list.push_back(h2p_Emiss_fine_split[i][j][k]);
-		
+
+		sprintf(temp,"epp_e1_%d_%d_%d",i,j,k);
+		h2p_e1_split[i][j][k] = new TH1D(temp,"epp;e1 [GeV];Counts",80,0.5,1.0);
+		h2p_list.push_back(h2p_e1_split[i][j][k]);
+
 		sprintf(temp,"epp_Pmq_%d_%d_%d",i,j,k);
 		h2p_Pmq_split[i][j][k] = new TH1D(temp,"epp;Pmq [GeV];Counts",20,100.,180.);
 		h2p_list.push_back(h2p_Pmq_split[i][j][k]);
@@ -361,16 +373,6 @@ int main(int argc, char ** argv)
 			phi1_deg += 360.;
 		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vp.Theta() * 180./M_PI;
-
-		if (thetaCut)
-		  {
-		    if ((sector==0) and (theta1_deg < 45))
-		      continue;
-		    if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
-		      continue;
-		    if ((sector==3) and (theta1_deg > 40 and theta1_deg < 55))
-		      continue;
-		  }
 		
                 // A few more vectors                                                            
                 TVector3 vq(q[0],q[1],q[2]);
@@ -431,6 +433,7 @@ int main(int argc, char ** argv)
 		// Let's figure out missing energy! 
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_Emiss_fine->Fill(Emiss,weight);
+		h1p_e1->Fill(epsilon,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 		h1p_Emiss_by_sector->Fill(sec_e,Emiss);
 
@@ -451,6 +454,7 @@ int main(int argc, char ** argv)
 		  for(int k=0; k<=QSq_region_p; k=k+QSq_region_p){
 		    h1p_Emiss_split[Pmiss_region_p][j][k]->Fill(Emiss,weight);
 		    h1p_Emiss_fine_split[Pmiss_region_p][j][k]->Fill(Emiss,weight);
+		    h1p_e1_split[Pmiss_region_p][j][k]->Fill(epsilon,weight);
 		    h1p_Pmq_split[Pmiss_region_p][j][k]->Fill(Pmiss_q_angle[0],weight);
 		    h1p_Pmzq_split[Pmiss_region_p][j][k]->Fill(vm.Dot(vqUnit),weight);
 		    h1p_PmTq_split[Pmiss_region_p][j][k]->Fill(vm.Perp(vqUnit),weight);
@@ -520,16 +524,6 @@ int main(int argc, char ** argv)
 		int sector = clas_sector(phi1_deg);
 		double theta1_deg = vlead.Theta() * 180./M_PI;
 
-		if (thetaCut)
-		  {
-		    if ((sector==0) and (theta1_deg < 45))
-		      continue;
-		    if ((sector==2) and ((theta1_deg < 45) or (theta1_deg > 72)))
-		      continue;
-		    if ((sector==3) and (theta1_deg > 40 and theta1_deg < 55))
-		      continue;
-		  }
-
                 // A few more vectors                                                       
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
@@ -596,6 +590,7 @@ int main(int argc, char ** argv)
 		
 		h1p_Emiss->Fill(Emiss,weight);
 		h1p_Emiss_fine->Fill(Emiss,weight);
+		h1p_e1->Fill(epsilon,weight);
 		h1p_pmiss_Emiss->Fill(Pmiss_size[0],Emiss,weight);
 		h1p_pmiss_E1->Fill(Pmiss_size[0],epsilon,weight);
 		h1p_Emiss_by_sector->Fill(sec_e,Emiss);
@@ -619,6 +614,7 @@ int main(int argc, char ** argv)
 		  for(int k=0; k<=QSq_region_pp; k=k+QSq_region_pp){
 		    h1p_Emiss_split[Pmiss_region_pp][j][k]->Fill(Emiss,weight);
 		    h1p_Emiss_fine_split[Pmiss_region_pp][j][k]->Fill(Emiss,weight);
+		    h1p_e1_split[Pmiss_region_pp][j][k]->Fill(epsilon,weight);
 		    h1p_Pmq_split[Pmiss_region_pp][j][k]->Fill(Pmiss_q_angle[0],weight);
 		    h1p_Pmzq_split[Pmiss_region_pp][j][k]->Fill(vmiss.Dot(vqUnit),weight);
 		    h1p_PmTq_split[Pmiss_region_pp][j][k]->Fill(vmiss.Perp(vqUnit),weight);
@@ -676,6 +672,7 @@ int main(int argc, char ** argv)
 
 		h2p_Emiss->Fill(Emiss,weight);
 		h2p_Emiss_fine->Fill(Emiss,weight);
+		h2p_e1->Fill(epsilon,weight);
 		h2p_pmiss_E1->Fill(Pmiss_size[0],epsilon,weight);
 
 		h2p_pmiss_epsilon->Fill(Pmiss_size[0],epsilon,weight);
@@ -688,6 +685,7 @@ int main(int argc, char ** argv)
 		  for(int k=0; k<=QSq_region_pp; k=k+QSq_region_pp){
 		    h2p_Emiss_split[Pmiss_region_pp][j][k]->Fill(Emiss,weight);
 		    h2p_Emiss_fine_split[Pmiss_region_pp][j][k]->Fill(Emiss,weight);
+		    h2p_e1_split[Pmiss_region_pp][j][k]->Fill(epsilon,weight);
 		    h2p_Pmq_split[Pmiss_region_pp][j][k]->Fill(Pmiss_q_angle[0],weight);
 		    h2p_Pmzq_split[Pmiss_region_pp][j][k]->Fill(vmiss.Dot(vqUnit),weight);
 		    h2p_PmTq_split[Pmiss_region_pp][j][k]->Fill(vmiss.Perp(vqUnit),weight);
@@ -760,11 +758,11 @@ int main(int argc, char ** argv)
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
 	
-	const double data_ep = 5100.;
+	const double data_ep = 5832.;
 	const double data_ep_cor = 6077.;
-	const double data_epp = 368.;
+	const double data_epp = 392.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
-	const double ppnorm = pnorm;
+	const double ppnorm = data_epp/h2p_Pm->Integral();
 
 	h2p_pRecError->Scale(data_epp/h2p_Pm->Integral());
 	h2p_pRecError->Write();
