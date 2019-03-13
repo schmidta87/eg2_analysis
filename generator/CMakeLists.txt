@@ -22,6 +22,7 @@ target_link_libraries(make_hists ${ROOT_LIBRARIES} Fid Cross_Sections AccMap)
 add_executable(make_ratios make_ratios.cpp)
 target_link_libraries(make_ratios ${ROOT_LIBRARIES})
 
-add_subdirectory(Jackson)
 
 add_subdirectory(Andrew)
+add_subdirectory(Jackson)
+add_subdirectory(Axel)
