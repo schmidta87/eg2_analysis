@@ -105,7 +105,7 @@ int main(int argc, char ** argv)
         h1p_list.push_back(h1p_alphaLead);
         TH1D * h1p_alphaM = new TH1D("ep_alphaM","ep;alphaM;Counts",30,1.1,1.7);
 	h1p_list.push_back(h1p_alphaM);
-        TH1D * h1p_dE1 = new TH1D("ep_dE1","ep;dE1;Counts",40,-0.2,1);
+	TH1D * h1p_dE1 = new TH1D("ep_dE1","ep;dE1;Counts",40,-0.2,1);
 	h1p_list.push_back(h1p_dE1);
 	TH1D * h1p_rE1 = new TH1D("ep_rE1","ep;rE1;Counts",40,0,1);
 	h1p_list.push_back(h1p_rE1);		
@@ -209,7 +209,9 @@ int main(int argc, char ** argv)
 	TH1D * h1p_e1_split[4][3][3]; 
 	TH1D * h1p_Pmq_split[4][3][3]; 
 	TH1D * h1p_Pmzq_split[4][3][3]; 
-	TH1D * h1p_PmTq_split[4][3][3]; 
+	TH1D * h1p_PmTq_split[4][3][3];
+	TH1D * h1p_dE1_split[4][3][3];
+	TH1D * h1p_rE1_split[4][3][3];
 	 
 	TH1D * h2p_Emiss_split[4][3][3]; 
 	TH1D * h2p_Emiss_fine_split[4][3][3];
@@ -217,6 +219,8 @@ int main(int argc, char ** argv)
 	TH1D * h2p_Pmq_split[4][3][3]; 
 	TH1D * h2p_Pmzq_split[4][3][3]; 
 	TH1D * h2p_PmTq_split[4][3][3]; 
+	TH1D * h2p_dE1_split[4][3][3];
+	TH1D * h2p_rE1_split[4][3][3];
 	
 	
 	for (int i=0 ; i<4 ; i++)
@@ -249,7 +253,16 @@ int main(int argc, char ** argv)
 		sprintf(temp,"ep_PmTq_%d_%d_%d",i,j,k);
 		h1p_PmTq_split[i][j][k] = new TH1D(temp,"ep;PmTq [GeV];Counts",30,0.0,1.0);
 		h1p_list.push_back(h1p_PmTq_split[i][j][k]);
-				
+
+		sprintf(temp,"ep_dE1_%d_%d_%d",i,j,k);
+		h1p_dE1_split[i][j][k] = new TH1D(temp,"ep;dE1 [GeV];Counts",40,-0.2,1);
+		h1p_list.push_back(h1p_dE1_split[i][j][k]);
+
+		sprintf(temp,"ep_rE1_%d_%d_%d",i,j,k);
+		h1p_rE1_split[i][j][k] = new TH1D(temp,"ep;rE1;Counts",40,0,1);
+		h1p_list.push_back(h1p_rE1_split[i][j][k]);
+		
+		
 		sprintf(temp,"epp_Emiss_%d_%d_%d",i,j,k);
 		h2p_Emiss_split[i][j][k] = new TH1D(temp,"epp;Emiss [GeV];Counts",20,-0.2,0.6);
 		h2p_list.push_back(h2p_Emiss_split[i][j][k]);
@@ -273,6 +286,15 @@ int main(int argc, char ** argv)
 		sprintf(temp,"epp_PmTq_%d_%d_%d",i,j,k);
 		h2p_PmTq_split[i][j][k] = new TH1D(temp,"epp;PmTq [GeV];Counts",30,0.0,1.0);
 		h2p_list.push_back(h2p_PmTq_split[i][j][k]);
+
+		sprintf(temp,"epp_dE1_%d_%d_%d",i,j,k);
+		h2p_dE1_split[i][j][k] = new TH1D(temp,"epp;dE1 [GeV];Counts",40,-0.2,1);
+		h2p_list.push_back(h2p_dE1_split[i][j][k]);
+
+		sprintf(temp,"epp_rE1_%d_%d_%d",i,j,k);
+		h2p_rE1_split[i][j][k] = new TH1D(temp,"epp;rE1;Counts",40,0,1);
+		h2p_list.push_back(h2p_rE1_split[i][j][k]); 
+
 	      }
 	    }
 	  }
@@ -464,6 +486,8 @@ int main(int argc, char ** argv)
 		    h1p_Pmq_split[Pmiss_region_p][j][k]->Fill(Pmiss_q_angle[0],weight);
 		    h1p_Pmzq_split[Pmiss_region_p][j][k]->Fill(vm.Dot(vqUnit),weight);
 		    h1p_PmTq_split[Pmiss_region_p][j][k]->Fill(vm.Perp(vqUnit),weight);
+		    h1p_dE1_split[Pmiss_region_p][j][k]->Fill(dE1,weight);
+		    h1p_rE1_split[Pmiss_region_p][j][k]->Fill(rE1,weight);
 		  }
 		}
 		
@@ -626,6 +650,8 @@ int main(int argc, char ** argv)
 		    h1p_Pmq_split[Pmiss_region_pp][j][k]->Fill(Pmiss_q_angle[0],weight);
 		    h1p_Pmzq_split[Pmiss_region_pp][j][k]->Fill(vmiss.Dot(vqUnit),weight);
 		    h1p_PmTq_split[Pmiss_region_pp][j][k]->Fill(vmiss.Perp(vqUnit),weight);
+		    h1p_dE1_split[Pmiss_region_pp][j][k]->Fill(dE1,weight);
+		    h1p_rE1_split[Pmiss_region_pp][j][k]->Fill(rE1,weight);
 		  }
 		}
 		h1p_pmiss_epsilon->Fill(Pmiss_size[0],epsilon,weight);
@@ -697,6 +723,8 @@ int main(int argc, char ** argv)
 		    h2p_Pmq_split[Pmiss_region_pp][j][k]->Fill(Pmiss_q_angle[0],weight);
 		    h2p_Pmzq_split[Pmiss_region_pp][j][k]->Fill(vmiss.Dot(vqUnit),weight);
 		    h2p_PmTq_split[Pmiss_region_pp][j][k]->Fill(vmiss.Perp(vqUnit),weight);
+		    h2p_dE1_split[Pmiss_region_pp][j][k]->Fill(dE1,weight);
+		    h2p_rE1_split[Pmiss_region_pp][j][k]->Fill(rE1,weight);
 		  }
 		}
 		// Let's make a sanitized phi and sector
