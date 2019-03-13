@@ -105,8 +105,10 @@ int main(int argc, char ** argv)
         h1p_list.push_back(h1p_alphaLead);
         TH1D * h1p_alphaM = new TH1D("ep_alphaM","ep;alphaM;Counts",30,1.1,1.7);
 	h1p_list.push_back(h1p_alphaM);
-        TH1D * h1p_dE1 = new TH1D("ep_dE1","ep;dE1;Counts",40,-2,2);
+        TH1D * h1p_dE1 = new TH1D("ep_dE1","ep;dE1;Counts",40,-0.2,1);
 	h1p_list.push_back(h1p_dE1);
+	TH1D * h1p_rE1 = new TH1D("ep_rE1","ep;rE1;Counts",40,0,1);
+	h1p_list.push_back(h1p_rE1);		
 	TH2D * h1p_pmiss_Emiss = new TH2D("ep_pmiss_Emiss","ep;pmiss [GeV];Emiss [GeV];Counts",24,0.4,1.0,20,-0.2,0.6);
 	h1p_list.push_back(h1p_pmiss_Emiss);
 	TH2D * h1p_pmiss_E1 = new TH2D("ep_pmiss_E1","ep;pmiss [GeV];E1 [GeV];Counts",24,0.4,1.0,25,0.5,1.0);
@@ -161,8 +163,10 @@ int main(int argc, char ** argv)
         h2p_list.push_back(h2p_alphaRec);
         TH1D * h2p_alphaD = new TH1D("epp_alphaD","ep;alphaD;Counts",30,1.6,2.6);
         h2p_list.push_back(h2p_alphaD);
-	TH1D * h2p_dE1 = new TH1D("epp_dE1","epp;dE1;Counts",40,-2,2);
+	TH1D * h2p_dE1 = new TH1D("epp_dE1","epp;dE1;Counts",40,-0.2,1);
 	h2p_list.push_back(h2p_dE1);
+	TH1D * h2p_rE1 = new TH1D("epp_rE1","epp;rE1;Counts",40,0,1);
+	h2p_list.push_back(h2p_rE1);		
 	TH2D * h2p_pmiss_E1 = new TH2D("epp_pmiss_E1","epp;pmiss [GeV];E1 [GeV];Counts",24,0.4,1.0,25,0.5,1.0);
 	h2p_list.push_back(h2p_pmiss_E1);
 	TH2D * h2p_pmiss_appEstar = new TH2D("epp_pmiss_appEstar","epp;pmiss [GeV];Apparent Estar [GeV];Counts",24,0.4,1.0,20,-0.2,0.8);
@@ -401,7 +405,8 @@ int main(int argc, char ** argv)
 		double Ep = sqrt(Pp_size[0]*Pp_size[0] + mN*mN);
 		double Emiss = -m_12C + mN + sqrt( sq(omega + m_12C - Ep) - (Pmiss_size[0]*Pmiss_size[0]));
 		double epsilon = Ep - omega;
-		double dE1 = epsilon - sqrt(vm.Mag2()+sq(mN));
+		double dE1 = sqrt(vm.Mag2()+sq(mN)) - epsilon;
+		double rE1 = epsilon/sqrt(vm.Mag2()+sq(mN));
 
 		//Let's calculate light cone variables                                           
                 double alphaq= (omega - vq.Mag()) / mN;
@@ -412,6 +417,7 @@ int main(int argc, char ** argv)
                 h1p_alphaLead->Fill(alphaLead,weight);
                 h1p_alphaM->Fill(alphaM,weight);
 		h1p_dE1->Fill(dE1,weight);
+		h1p_rE1->Fill(rE1,weight);
 		
 		// Let's make a sanitized phi and sector
 		double phie_deg = ve.Phi() * 180./M_PI;
@@ -552,7 +558,8 @@ int main(int argc, char ** argv)
 		double Elead = sqrt(Pp_size[0]*Pp_size[0] + mN*mN);
 		double Emiss = -m_12C + mN + sqrt( sq(omega + m_12C - Elead) - (Pmiss_size[0]*Pmiss_size[0]));
 		double epsilon = Elead - omega;
-		double dE1 = epsilon - sqrt(vmiss.Mag2()+sq(mN));
+		double dE1 = sqrt(vmiss.Mag2()+sq(mN)) - epsilon;
+		double rE1 = epsilon/sqrt(vmiss.Mag2()+sq(mN));
 
 		// Calculate the expected recoil momentum
 		double TCM = (3/20) * sq(sigmaCM) / mN;
@@ -570,6 +577,7 @@ int main(int argc, char ** argv)
                 h2p_alphaLead->Fill(alphaLead,weight);
                 h2p_alphaM->Fill(alphaM,weight);
 		h2p_dE1->Fill(dE1,weight);
+		h2p_rE1->Fill(rE1,weight);
 		
 		// Let's make a sanitized phi and sector
 		double phie_deg = ve.Phi() * 180./M_PI;
