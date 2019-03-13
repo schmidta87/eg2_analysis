@@ -2,6 +2,7 @@
 #include "TVector3.h"
 
 #include <iostream>
+#include <fstream>
 
 #include "helpers.h"
 
@@ -33,6 +34,25 @@ const Double_t kFidPar1High1PiPlus[6] = {  0.442034 ,  0.201149 ,  1.27519 ,  1.
 const Double_t kFidPar1High2PiPlus[6] = { -2.       , -0.179631 , -2.      , -1.89436 , -2.       , -2.      };
 const Double_t kFidPar1High3PiPlus[6] = {  1.02806  ,  1.6      ,  0.5     ,  1.03961 ,  0.815707 ,  1.31013 };
 
+double sec1_gap[2][3] =
+  {
+    {38.4427, -3.50581, 0.505386},
+    {43.8824, -1.41042, 0.126085}
+  };
+double sec3_gap[4][3] =
+  {
+    {36.4177, -3.06341, 0.552392},
+    {45.4893, -2.71384, 0.0613151},
+    {73, 0, 0},
+    {96, 0, 0}
+  };
+double sec4_gap[2][3] =
+  {
+    {47.7689, -0.179604, -5.02245},
+    {53.4664, -3.67225, -1.34694}
+  };
+
+//how to read it in. Goes parameter by parameter and puts it in the proper array
 
 double a(double mom, double p0, double p1, double p2, double p3)
 {
@@ -55,8 +75,28 @@ double deltaPhi(double theta, double a, double b, double thetaMin)
 }
 
 bool accept_proton(TVector3 p)
-{
+{  
   double mom = p.Mag();
+  
+  double badpar1[2];
+  for (int i = 0; i<2; i++)
+    {
+      badpar1[i]=0;
+      badpar1[i]=sec1_gap[i][0] + sec1_gap[i][1]/mom + sec1_gap[i][2]/(mom*mom);
+    }
+  double badpar3[4];
+  for (int i = 0; i<4; i++)
+    {
+      badpar3[i]=0;
+      badpar3[i]=sec3_gap[i][0] + sec3_gap[i][1]/mom + sec3_gap[i][2]/(mom*mom);
+    }
+  double badpar4[2];
+  for (int i = 0; i<2; i++)
+    {
+      badpar4[i]=0;
+      badpar4[i]=sec4_gap[i][0] + sec4_gap[i][1]/mom + sec4_gap[i][2]/(mom*mom);
+    }
+  
   double theta = p.Theta() * 180./M_PI;
   double phi = p.Phi() * 180./M_PI;
   if (phi < -30.) phi+= 360.;
@@ -98,6 +138,32 @@ bool accept_proton(TVector3 p)
 
   double deltaPhiLow = deltaPhi(theta, aLow, bLow, minTheta);
   double deltaPhiHigh = deltaPhi(theta, aHigh, bHigh, minTheta);
+
+  // Sector-specific fiducial cuts
+  if (sector + 1 == 1)
+    {
+      for (int i=0; i<1; i++)
+	{
+	  if (theta>badpar1[2*i] and theta<badpar1[2*i+1])
+	    return false;
+	}
+    }
+  else if (sector + 1 == 3)
+    {
+      for (int i=0; i<2; i++)
+	{
+	  if (theta>badpar3[2*i] and theta<badpar3[2*i+1])
+	    return false;
+	}
+    }
+  else if (sector + 1 == 4)
+    {
+      for (int i=0; i<1; i++)
+	{
+	  if (theta>badpar4[2*i] and theta<badpar4[2*i+1])
+	    return false;
+	}
+    }
 
   //std::cout << mom << " " << theta << " " << phi << " " << sector << " " << aLow << " " << aHigh << "\n";
 

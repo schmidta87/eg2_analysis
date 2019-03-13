@@ -21,7 +21,7 @@ using namespace std;
 
 const double pmiss_cut=0.4;
 
-const double acc_thresh=0.8;
+const double acc_thresh=0.9;
 
 int main(int argc, char ** argv)
 {
