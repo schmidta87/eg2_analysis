@@ -6,6 +6,29 @@
 
 #include "helpers.h"
 
+// ############## Custom proton gap parameters ##################
+double gap_function(double p, const double * params) { return (params[0] - params[1]*exp(-p/params[2])); };
+
+const int nGaps_per_sector[6]={2,2,4,1,3,2};
+
+
+const double gap_params_0[2][2][3] = {{{35.,10.,0.4},{48.,18.,0.6}},   // order is: gap, lower-upper, a-b-c
+				      {{106.,10.,0.4},{111.,6.,0.4}}};
+const double gap_params_1[2][2][3] = {{{88.,15.,0.6},{96.,15.,0.6}},
+				      {{110.,15.,0.6},{180.,0.,1.}}};
+const double gap_params_2[4][2][3] = {{{19.,50.,0.7},{24.,50.,0.7}},
+				      {{35.,10.,0.6},{44.,13.,0.6}},
+				      {{74.,25.,0.4},{108.,20.,0.4}},
+				      {{115.,15.,0.6},{180.,0.,1.}}};
+const double gap_params_3[1][2][3] = {{{100.,18.,0.6},{112,18,0.6}}};
+const double gap_params_4[3][2][3] = {{{34.,60.,0.4},{38.,50.,0.4}},
+				      {{40.,50.,0.4},{44.,40.,0.4}},
+				      {{92.,15.,0.6},{106.,8.,0.6}}};
+const double gap_params_5[2][2][3] = {{{82.,20.,0.4},{91.,20.,0.6}},
+				      {{114.,2.,0.5},{180.,0.,1.}}};
+
+const void * gap_params[6] = {gap_params_0,gap_params_1,gap_params_2,gap_params_3,gap_params_4,gap_params_5};
+
 // ############## PROTON FIDUCIAL CUT PARAMETERS ################
 const Double_t kThetaPar0PiPlus[6] = {  7.00823   ,  5.5        ,  7.06596   ,  6.32763   ,  5.5       ,  5.5      };
 const Double_t kThetaPar1PiPlus[6] = {  0.207249  ,  0.1        ,  0.127764  ,  0.1       ,  0.211012  ,  0.281549 };
@@ -34,24 +57,6 @@ const Double_t kFidPar1High1PiPlus[6] = {  0.442034 ,  0.201149 ,  1.27519 ,  1.
 const Double_t kFidPar1High2PiPlus[6] = { -2.       , -0.179631 , -2.      , -1.89436 , -2.       , -2.      };
 const Double_t kFidPar1High3PiPlus[6] = {  1.02806  ,  1.6      ,  0.5     ,  1.03961 ,  0.815707 ,  1.31013 };
 
-double sec1_gap[2][3] =
-  {
-    {38.4427, -3.50581, 0.505386},
-    {43.8824, -1.41042, 0.126085}
-  };
-double sec3_gap[4][3] =
-  {
-    {36.4177, -3.06341, 0.552392},
-    {45.4893, -2.71384, 0.0613151},
-    {73, 0, 0},
-    {96, 0, 0}
-  };
-double sec4_gap[2][3] =
-  {
-    {47.7689, -0.179604, -5.02245},
-    {53.4664, -3.67225, -1.34694}
-  };
-
 //how to read it in. Goes parameter by parameter and puts it in the proper array
 
 double a(double mom, double p0, double p1, double p2, double p3)
@@ -76,32 +81,33 @@ double deltaPhi(double theta, double a, double b, double thetaMin)
 
 bool accept_proton(TVector3 p)
 {  
-  double mom = p.Mag();
-  
-  double badpar1[2];
-  for (int i = 0; i<2; i++)
-    {
-      badpar1[i]=0;
-      badpar1[i]=sec1_gap[i][0] + sec1_gap[i][1]/mom + sec1_gap[i][2]/(mom*mom);
-    }
-  double badpar3[4];
-  for (int i = 0; i<4; i++)
-    {
-      badpar3[i]=0;
-      badpar3[i]=sec3_gap[i][0] + sec3_gap[i][1]/mom + sec3_gap[i][2]/(mom*mom);
-    }
-  double badpar4[2];
-  for (int i = 0; i<2; i++)
-    {
-      badpar4[i]=0;
-      badpar4[i]=sec4_gap[i][0] + sec4_gap[i][1]/mom + sec4_gap[i][2]/(mom*mom);
-    }
-  
+  double mom = p.Mag();  
   double theta = p.Theta() * 180./M_PI;
   double phi = p.Phi() * 180./M_PI;
   if (phi < -30.) phi+= 360.;
 
   int sector = (phi+30.)/60.;
+
+  // Do a quick test for sector gaps
+  for (int gap=0 ; gap < nGaps_per_sector[sector] ; gap++)
+    {
+      //std::cout << "Testing sector " << sector << " gap " << gap << "\n";
+      
+      const double * min_params = &(((const double*)gap_params[sector])[gap*6 + 0]); // Multi-dim arrays are 'made flat'
+      const double * max_params = &(((const double*)gap_params[sector])[gap*6 + 3]);
+
+      double min_theta = gap_function(mom,min_params);
+      double max_theta = gap_function(mom,max_params);
+
+      //double min_theta = gap_function(mom,(double*)((double**)((double ***)gap_params[sector])[gap])[0]);
+      //double max_theta = gap_function(mom,(double*)((double**)((double ***)gap_params[sector])[gap])[1]);
+      
+      if ((theta > min_theta) && (theta < max_theta))
+	return false;
+    }
+
+  // Now that we have calculated the gaps, figure out if we are in the conventional
+  // fiducial wedges.
 
   double minTheta = theta_min(mom,kThetaPar0PiPlus[sector],
 			      kThetaPar1PiPlus[sector],
@@ -110,7 +116,7 @@ bool accept_proton(TVector3 p)
 			      kThetaPar4PiPlus[sector],
 			      kThetaPar5PiPlus[sector]);
 
-  // Double check theta
+  // We must be on the correct side of the wedge's tip.
   if (theta < minTheta)
     return false;
 
@@ -138,32 +144,6 @@ bool accept_proton(TVector3 p)
 
   double deltaPhiLow = deltaPhi(theta, aLow, bLow, minTheta);
   double deltaPhiHigh = deltaPhi(theta, aHigh, bHigh, minTheta);
-
-  // Sector-specific fiducial cuts
-  if (sector + 1 == 1)
-    {
-      for (int i=0; i<1; i++)
-	{
-	  if (theta>badpar1[2*i] and theta<badpar1[2*i+1])
-	    return false;
-	}
-    }
-  else if (sector + 1 == 3)
-    {
-      for (int i=0; i<2; i++)
-	{
-	  if (theta>badpar3[2*i] and theta<badpar3[2*i+1])
-	    return false;
-	}
-    }
-  else if (sector + 1 == 4)
-    {
-      for (int i=0; i<1; i++)
-	{
-	  if (theta>badpar4[2*i] and theta<badpar4[2*i+1])
-	    return false;
-	}
-    }
 
   //std::cout << mom << " " << theta << " " << phi << " " << sector << " " << aLow << " " << aHigh << "\n";
 

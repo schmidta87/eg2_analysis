@@ -14,18 +14,52 @@
 AccMap::AccMap(const char * filename)
 {
   mapfile = new TFile(filename);
+  
+  if (mapfile->IsZombie())
+    {
+      std::cerr << "The file:\n\n\t" << filename << "\n\nwas not able to be opened.\n"
+		<< "Check the path and try again.\n\n";
+      exit(-1);
+    }
+
+  genHist = accHist = NULL; // Just establish null pointers so we can test if maps loaded.
+
   genHist = (TH3D*) mapfile->Get("solid_p_gen");
   accHist = (TH3D*) mapfile->Get("solid_p_acc");
+
+  if ((genHist==NULL)||(accHist==NULL))
+    {
+      std::cerr << "The map histograms could not be found in file:\n\n\t" << filename
+		<< "\n\nCheck the names of the histograms and try again\n";
+      exit(-2);
+    }
 }
 
 AccMap::AccMap(const char * filename, const char * particle)
 {
   mapfile = new TFile(filename);
+
+  if (mapfile->IsZombie())
+    {
+      std::cerr << "The file:\n\n\t" << filename << "\n\nwas not able to be opened.\n"
+                << "Check the path and try again.\n\n";
+      exit(-1);
+    }
+
+  genHist = accHist = NULL; // Just establish null pointers so we can test if maps loaded.
+
   char temp[100];
   sprintf(temp,"solid_%s_gen",particle);
   genHist = (TH3D*) mapfile->Get(temp);
   sprintf(temp,"solid_%s_acc",particle);
   accHist = (TH3D*) mapfile->Get(temp);
+
+  if ((genHist==NULL)||(accHist==NULL))
+    {
+      std::cerr << "The map histograms could not be found in file:\n\n\t" << filename
+		<< "\n\nCheck the names of the histograms and try again\n";
+      exit(-2);
+    }
 }
 
 AccMap::~AccMap()
