@@ -548,7 +548,7 @@ int main(int argc, char ** argv)
 	// Write out
 	fo -> cd();
 
-	const double data_ep = 4945.;
+	const double data_ep = 5561.;
 	const double data_epp = 359.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
 

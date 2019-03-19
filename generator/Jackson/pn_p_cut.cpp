@@ -96,7 +96,7 @@ bool acceptanceFunction(TVector3 v){
 
 int main(int argc, char ** argv)
 {
-  if (argc != 4)
+  if (argc < 4)
     {
       cerr << "Wrong number of arguments. Instead use:\n"
 	   << "\tpn_p_cut /path/to/gen/file /path/to/map/file /path/to/out/file\n";
@@ -108,6 +108,20 @@ int main(int argc, char ** argv)
   AccMap pMap(argv[2]);
   AccMap eMap(argv[2],"e");
   TFile * outfile = new TFile(argv[3],"RECREATE");
+
+  bool verbose = false;
+  bool rand_flag = false;
+  int c;
+  while ((c=getopt (argc-3, &argv[3], "vr")) != -1)
+    switch(c)
+      {
+      case 'v':
+	verbose = true;
+	break;
+      case 'r':
+	rand_flag = true;
+	break;
+      }
   
   // Input Tree
   TTree * inTree = (TTree*)infile->Get("genT");
@@ -159,12 +173,27 @@ int main(int argc, char ** argv)
   double a = 0.03;
   double b = 0.06;
   Cross_Sections myCS; 
+
+  if (rand_flag)
+    {
+      eSmearing = 0.0025 + myRand.Uniform()*0.001;
+      pSmearing = 0.008 + myRand.Uniform()*0.004;
+      Tp += myRand.Gaus(0,sig_Tp);
+      Tpp += myRand.Gaus(0,sig_Tpp);
+      if (verbose)
+	{
+	  cout << "Electron resolution selected as " << eSmearing*100 << "%.\n";
+	  cout << "Proton resolution selected as " << pSmearing*100 << "%.\n";
+	  cout << "Lead proton transparency selected as " << Tp << ".\n";
+	  cout << "Two-proton transparency selected as " << Tpp << ".\n";
+	}
+    }
   
   // Loop over all events
   const int nEvents = inTree->GetEntries(); // this is a key number for the weight
   for (int event=0 ; event < nEvents ; event++)
     {
-      if (event %100000==0)
+      if (event %100000==0 and verbose)
 	cerr << "Working on event " << event << " out of " << nEvents <<"\n";
       
       inTree->GetEvent(event);

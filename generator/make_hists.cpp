@@ -813,11 +813,11 @@ int main(int argc, char ** argv)
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
 	
-	const double data_ep = 5565.;
+	const double data_ep = 5561.;
 	const double data_ep_cor = 6077.;
-	const double data_epp = 363.;
+	const double data_epp = 350.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
-	const double ppnorm = pnorm;
+	const double ppnorm = data_epp/h2p_Pm->Integral();
 
 	h2p_pRecError->Scale(data_epp/h2p_Pm->Integral());
 	h2p_pRecError->Write();

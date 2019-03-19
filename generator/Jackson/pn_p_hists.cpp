@@ -55,40 +55,66 @@ int main(int argc, char ** argv)
 	h_list.push_back(hp_Emiss_fine);
 	TH1D * hpn_Emiss_fine = new TH1D("epn_Emiss_fine","epn;Emiss [GeV];Counts",160,-0.2,0.6);
 	h_list.push_back(hpn_Emiss_fine);
+	TH1D * hpn_omega = new TH1D("epn_omega","epn;omega [GeV];Counts",24,0.2,1.4);
+	h_list.push_back(hpn_omega);
 	TH1D * hpn_Emiss = new TH1D("epn_Emiss","epn;Emiss [GeV];Counts",20,-0.1,0.5);
 	h_list.push_back(hpn_Emiss);
-	TH1D * hpn_mom2 = new TH1D("epn_mom2","epp;Recoil Mom [GeV/c];Counts",17,0.35,1.2);
+	TH1D * hpn_mom2 = new TH1D("epn_mom2","epn;Recoil Mom [GeV/c];Counts",17,0.35,1.2);
 	h_list.push_back(hpn_mom2);
+	TH1D * hpn_theta2 = new TH1D("epn_theta2","epn;Theta_2 [deg];Counts",30,10.,130.);
+	h_list.push_back(hpn_theta2);
+	TH1D * hpn_phi2 = new TH1D("epn_phi2","epn;Phi_2 [deg];Counts",60,-30.,330.);
+	h_list.push_back(hpn_phi2);
 
 	TH1D * hpn_QSq_split[4];
 	TH1D * hpn_mMiss_split[4];
 	TH1D * hpn_xB_split[4];
 	TH1D * hpn_q_split[4];
+	TH1D * hpn_omega_split[4];
 	TH1D * hpn_Emiss_split[4];
+	TH1D * hpn_mom2_split[4];
+	TH1D * hpn_theta2_split[4];
+	TH1D * hpn_phi2_split[4];
 
 	for (int i=0; i<4; i++)
 	  {
 	    char temp[100];
 	    
 	    sprintf(temp,"epn_QSq_%d",i);
-	    hpn_QSq_split[i] = new TH1D(temp,"ep;QSq [GeV^2];Counts",20,1.,3.5);
+	    hpn_QSq_split[i] = new TH1D(temp,"epn;QSq [GeV^2];Counts",20,1.,3.5);
 	    h_list.push_back(hpn_QSq_split[i]);
 	    
 	    sprintf(temp,"epn_mMiss_%d",i);
-	    hpn_mMiss_split[i] = new TH1D(temp,"ep;mMiss [GeV];Counts",20,0.6,1.2);
+	    hpn_mMiss_split[i] = new TH1D(temp,"epn;mMiss [GeV];Counts",20,0.6,1.2);
 	    h_list.push_back(hpn_mMiss_split[i]);
 	    
 	    sprintf(temp,"epn_xB_%d",i);
-	    hpn_xB_split[i] = new TH1D(temp,"ep;xB;Counts",20,1.,2.5);
+	    hpn_xB_split[i] = new TH1D(temp,"epn;xB;Counts",20,1.,2.5);
 	    h_list.push_back(hpn_xB_split[i]);
 	    
 	    sprintf(temp,"epn_q_%d",i);
-	    hpn_q_split[i] = new TH1D(temp,"ep;q [GeV];Counts",20,1.,2.5);
+	    hpn_q_split[i] = new TH1D(temp,"epn;q [GeV];Counts",20,1.,2.5);
 	    h_list.push_back(hpn_q_split[i]);
+
+	    sprintf(temp,"epn_omega_%d",i);
+	    hpn_omega_split[i] = new TH1D(temp,"epn;omega [GeV];Counts",24,0.2,1.4);
+	    h_list.push_back(hpn_omega_split[i]);
 	    
 	    sprintf(temp,"epn_Emiss_%d",i);
-	    hpn_Emiss_split[i] = new TH1D(temp,"ep;Emiss [GeV];Counts",20,-0.1,0.5);
+	    hpn_Emiss_split[i] = new TH1D(temp,"epn;Emiss [GeV];Counts",20,-0.1,0.5);
 	    h_list.push_back(hpn_Emiss_split[i]);
+
+	    sprintf(temp,"epn_mom2_%d",i);
+	    hpn_mom2_split[i] = new TH1D(temp,"epn;Recoil Mom [GeV/c];Counts",17,0.35,1.2);
+	    h_list.push_back(hpn_mom2_split[i]);
+
+	    sprintf(temp,"epn_theta2_%d",i);
+	    hpn_theta2_split[i] = new TH1D(temp,"epn;Theta_2 [deg];Counts",30,10.,130.);
+	    h_list.push_back(hpn_theta2_split[i]);
+
+	    sprintf(temp,"epn_phi2_%d",i);
+	    hpn_phi2_split[i] = new TH1D(temp,"epn;Phi_2 [deg];Counts",60,-30.,330.);
+	    h_list.push_back(hpn_phi2_split[i]);
 	  }
 
 	for (int i=0; i<h_list.size(); i++)
@@ -154,7 +180,6 @@ int main(int argc, char ** argv)
 		hpn_Emiss_fine->Fill(Emiss,weightpn);
 		hpn_Emiss->Fill(Emiss,weightpn);
 
-
 		int Pmiss_region;
 		if (Pmiss_size[0] < pmiss_lo) Pmiss_region = 0;
 		else if (Pmiss_size[0] < pmiss_md) Pmiss_region = 1;
@@ -168,7 +193,20 @@ int main(int argc, char ** argv)
 		hpn_Emiss_split[Pmiss_region]->Fill(Emiss,weightpn);
 
 		hpn_mom2->Fill(vrec.Mag(),weightpn);
+		hpn_mom2_split[Pmiss_region]->Fill(vrec.Mag(),weightpn);
+
+		double phi2_deg = vrec.Phi() * 180./M_PI;
+		if (phi2_deg < -30.)
+		  phi2_deg += 360.;
+		double theta2_deg = vrec.Theta() * 180./M_PI;
 		
+		hpn_theta2->Fill(theta2_deg,weightpn);
+		hpn_phi2->Fill(phi2_deg,weightpn);
+		hpn_theta2_split[Pmiss_region]->Fill(theta2_deg,weightpn);
+		hpn_phi2_split[Pmiss_region]->Fill(phi2_deg,weightpn);
+		
+		hpn_omega->Fill(omega,weightpn);
+		hpn_omega_split[Pmiss_region]->Fill(omega,weightpn);
 	  }
 	
 	fi->Close();
