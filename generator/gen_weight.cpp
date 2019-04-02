@@ -24,7 +24,6 @@ const double Qmax=5.;
 const double Xmin=1.;
 const double Xmax=2.;
 
-
 double sigmaCC1(double E1, TVector3 k, TVector3 p, bool isProton);
 void do_SXC(int &lead_type, int &rec_type, double r);
 double deltaHard(double QSq);
@@ -120,8 +119,8 @@ int main(int argc, char ** argv)
   bool do_Cs = false;
   std::vector<double> Cs;
   double Estar = 0.;
-  double pRel_cut = 0.30;
-  double pRel_range = 0.10;
+  double pRel_cut = 0.25;//0.30;
+  double pRel_range = 0.04;//0.10;
   int pType = 1;
   csMethod csMeth=cc1;
   ffModel ffMod=kelly;
