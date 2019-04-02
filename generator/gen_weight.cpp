@@ -253,8 +253,14 @@ int main(int argc, char ** argv)
   //outtree->Branch("theta_pmq",&theta_pmq,"theta_pmq/D");
   //outtree->Branch("theta_prq",&theta_prq,"theta_prq/D");
 
+  // Set the random seed
+  unsigned int seed;
+  FILE *f=fopen("/dev/urandom","r");
+  fread(&seed,sizeof(unsigned int),1,f);
+  fclose(f);
+  TRandom3 myRand(seed);
+
   // Other chores
-  TRandom3 myRand(0);
   Nuclear_Info myInfo(Anum,pType);
   if (do_sCM)
     myInfo.set_sigmaCM(sCM);
