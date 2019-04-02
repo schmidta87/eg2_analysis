@@ -28,10 +28,12 @@ int main(int argc, char ** argv)
       double mom = 2.;
 
       TVector3 p(mom*sin(theta)*cos(phi), mom*sin(theta)*sin(phi), mom*cos(theta));
+      int p_fid_simple = accept_proton_simple(p)? 1: 0;
       int p_fid = accept_proton(p)? 1: 0;
       int e_fid = accept_electron(p)? 1: 0;
 
-      outfile << theta*180./M_PI << " " << phi*180./M_PI << " " << e_fid << " " << p_fid << "\n";
+
+      outfile << theta*180./M_PI << " " << phi*180./M_PI << " " << e_fid << " " << p_fid_simple << " " << p_fid << "\n";
     }
 
   outfile.close();
