@@ -79,8 +79,8 @@ double deltaPhi(double theta, double a, double b, double thetaMin)
   return a*(1. - 1./((theta-thetaMin)/b + 1.));
 }
 
-bool accept_proton(TVector3 p)
-{  
+bool gap_accept(TVector3 p)
+{ 
   double mom = p.Mag();  
   double theta = p.Theta() * 180./M_PI;
   double phi = p.Phi() * 180./M_PI;
@@ -106,6 +106,20 @@ bool accept_proton(TVector3 p)
 	return false;
     }
 
+  return true;
+
+}
+
+bool accept_proton_simple(TVector3 p)
+{  
+  double mom = p.Mag();  
+  double theta = p.Theta() * 180./M_PI;
+  double phi = p.Phi() * 180./M_PI;
+  if (phi < -30.) phi+= 360.;
+
+  int sector = (phi+30.)/60.;
+
+ 
   // Now that we have calculated the gaps, figure out if we are in the conventional
   // fiducial wedges.
 
@@ -150,6 +164,13 @@ bool accept_proton(TVector3 p)
   if ((phi < phiCentral + deltaPhiHigh) && (phi > phiCentral - deltaPhiLow))
     return true;
 
+  return false;
+}
+
+bool accept_proton(TVector3 p)
+{
+  if (gap_accept(p))
+    return accept_proton_simple(p);
   return false;
 }
 

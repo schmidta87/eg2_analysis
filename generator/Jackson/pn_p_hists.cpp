@@ -65,6 +65,8 @@ int main(int argc, char ** argv)
 	h_list.push_back(hpn_theta2);
 	TH1D * hpn_phi2 = new TH1D("epn_phi2","epn;Phi_2 [deg];Counts",60,-30.,330.);
 	h_list.push_back(hpn_phi2);
+	TH1D * hpn_Pmq = new TH1D("epn_Pmq","ep;Theta_Pmq [deg];Counts",40,100.,180.);
+	h_list.push_back(hpn_Pmq);
 
 	TH1D * hpn_QSq_split[4];
 	TH1D * hpn_mMiss_split[4];
@@ -75,6 +77,7 @@ int main(int argc, char ** argv)
 	TH1D * hpn_mom2_split[4];
 	TH1D * hpn_theta2_split[4];
 	TH1D * hpn_phi2_split[4];
+	TH1D * hpn_Pmq_split[4];
 
 	for (int i=0; i<4; i++)
 	  {
@@ -115,6 +118,10 @@ int main(int argc, char ** argv)
 	    sprintf(temp,"epn_phi2_%d",i);
 	    hpn_phi2_split[i] = new TH1D(temp,"epn;Phi_2 [deg];Counts",60,-30.,330.);
 	    h_list.push_back(hpn_phi2_split[i]);
+
+	    sprintf(temp,"epn_Pmq_%d",i);
+	    hpn_Pmq_split[i] = new TH1D(temp,"ep;Theta_Pmq [deg];Counts",40,100.,180.);
+	    h_list.push_back(hpn_Pmq_split[i]);
 	  }
 
 	for (int i=0; i<h_list.size(); i++)
@@ -207,6 +214,9 @@ int main(int argc, char ** argv)
 		
 		hpn_omega->Fill(omega,weightpn);
 		hpn_omega_split[Pmiss_region]->Fill(omega,weightpn);
+
+		hpn_Pmq->Fill(vmiss.Angle(vq)*180./M_PI,weightpn);
+		hpn_Pmq_split[Pmiss_region]->Fill(vmiss.Angle(vq)*180./M_PI,weightpn);
 	  }
 	
 	fi->Close();

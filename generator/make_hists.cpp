@@ -173,6 +173,22 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_pmiss_appEstar);
 	TH2D * h2p_pmiss_epsilon = new TH2D("epp_pmiss_epsilon","pmiss_epsilon;pmiss;epsilon;Counts",24,0.4,1.0,25,0.5,1.0);
 	h2p_list.push_back(h2p_pmiss_epsilon);
+
+	TH2D * h1p_pmiss_QSq = new TH2D("ep_pmiss_QSq","pmiss_epsilon;pmiss;Q^2;Counts",24,0.4,1.0,30,1.,4.);
+	h1p_list.push_back(h1p_pmiss_QSq);
+	TH2D * h2p_pmiss_QSq = new TH2D("epp_pmiss_QSq","pmiss_epsilon;pmiss;Q^2;Counts",24,0.4,1.0,30,1.,4.);
+	h2p_list.push_back(h2p_pmiss_QSq);
+	TH2D * h1p_pmiss_mom1 = new TH2D("ep_pmiss_mom1","pmiss_epsilon;pmiss;pLead;Counts",24,0.4,1.0,40,0.4,2.4);
+	h1p_list.push_back(h1p_pmiss_mom1);
+	TH2D * h2p_pmiss_mom1 = new TH2D("epp_pmiss_mom1","pmiss_epsilon;pmiss;pLead;Counts",24,0.4,1.0,40,0.4,2.4);
+	h2p_list.push_back(h2p_pmiss_mom1);
+	TH2D * h2p_pmiss_mom2 = new TH2D("epp_pmiss_mom2","pmiss_epsilon;pmiss;pRec;Counts",24,0.4,1.0,17,0.35,1.2);
+	h2p_list.push_back(h2p_pmiss_mom2);
+	TH2D * h2p_pmiss_momrat = new TH2D("epp_pmiss_momrat","pmiss_epsilon;pmiss;pLead/pRec;Counts",24,0.4,1.0,30,1.,4.);
+	h2p_list.push_back(h2p_pmiss_momrat);
+	TH2D * h2p_pmiss_momdiff = new TH2D("epp_pmiss_momdiff","pmiss_epsilon;pmiss;pLead-pRec;Counts",24,0.4,1.0,40,0.,2.);
+	h2p_list.push_back(h2p_pmiss_momdiff);
+
 	TH2D * h2p_pRec_epsilon = new TH2D("epp_pRec_epsilon","pRec_epsilon;pRec;epsilon;Counts",20,0.3,1.2,20,0.2,1.2);
 	h2p_list.push_back(h2p_pRec_epsilon);
 	TH1D * h2p_pRec_epsilon_mean = new TH1D("epp_pRec_epsilon_mean","pRec_epsilon_mean;pRec;epsilon_mean;Counts",20,0.3,1.2);
@@ -508,6 +524,9 @@ int main(int argc, char ** argv)
 		
 		h1p_pmiss_E1->Fill(Pmiss_size[0],epsilon,weight);
 		h1p_pmiss_epsilon->Fill(Pmiss_size[0],epsilon,weight);
+
+		h1p_pmiss_QSq->Fill(Pmiss_size[0],Q2,weight);
+		h1p_pmiss_mom1->Fill(Pmiss_size[0],Pp_size[0],weight);
 	}
 
 	// Loop over 2p tree
@@ -673,6 +692,8 @@ int main(int argc, char ** argv)
 		}
 		h1p_pmiss_epsilon->Fill(Pmiss_size[0],epsilon,weight);
 		
+		h1p_pmiss_QSq->Fill(Pmiss_size[0],Q2,weight);
+		h1p_pmiss_mom1->Fill(Pmiss_size[0],Pp_size[0],weight);
 		
 
 		if(doOtherCut){
@@ -693,7 +714,7 @@ int main(int argc, char ** argv)
 		}
 
                 double Erec = sqrt(vrec.Mag2() + mN*mN);
-                 TVector3 vcm = vmiss + vrec;
+		TVector3 vcm = vmiss + vrec;
 
                 // Find final light cone variables                                                          
                 double alphaRec = (Erec - vrec.Dot(vqUnit))/mN;
@@ -758,6 +779,15 @@ int main(int argc, char ** argv)
 		h2p_theta2_bySec[sector2]->Fill(theta2_deg,weight);
 		h2p_mom2->Fill(Pp_size[1],weight);
 
+		h2p_pmiss_QSq->Fill(Pmiss_size[0],Q2,weight);
+		h2p_pmiss_mom1->Fill(Pmiss_size[0],Pp_size[0],weight);
+		h2p_pmiss_mom2->Fill(Pmiss_size[0],Pp_size[1],weight);
+		h2p_pmiss_momrat->Fill(Pmiss_size[0],Pp_size[0]/Pp_size[1],weight);
+
+		TVector3 vdiff = vlead - vrec;
+
+		h2p_pmiss_momdiff->Fill(Pmiss_size[0],vdiff.Mag(),weight);
+
 		// Histogram for the "apparent E*"
 		double apparent_Estar = sqrt(sq(sqrt(sq(m_10B) + vcm.Mag2()) + Erec) -vlead.Mag2()) - m_11B;
 		h2p_pmiss_appEstar->Fill(Pmiss_size[0],apparent_Estar,weight);
@@ -817,7 +847,7 @@ int main(int argc, char ** argv)
 	const double data_ep_cor = 6077.;
 	const double data_epp = 350.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
-	const double ppnorm = data_epp/h2p_Pm->Integral();
+	const double ppnorm = pnorm;//data_epp/h2p_Pm->Integral();
 
 	h2p_pRecError->Scale(data_epp/h2p_Pm->Integral());
 	h2p_pRecError->Write();
