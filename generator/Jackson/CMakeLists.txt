@@ -14,6 +14,10 @@ target_link_libraries(pn_p_cut ${ROOT_LIBRARIES} AccMap Fid Cross_Sections)
 add_executable(prec_hists prec_hists.cpp )
 target_link_libraries(prec_hists ${ROOT_LIBRARIES} Fid)
 
+# pp_np_likelihood
+add_executable(pp_np_likelihood pp_np_likelihood.cpp )
+target_link_libraries(pp_np_likelihood ${ROOT_LIBRARIES} Fid)
+
 # pn_p
 add_executable(pn_p_hists pn_p_hists.cpp )
 target_link_libraries(pn_p_hists ${ROOT_LIBRARIES} Fid)

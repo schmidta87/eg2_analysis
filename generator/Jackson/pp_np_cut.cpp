@@ -118,9 +118,9 @@ int main(int argc, char ** argv)
       
       if (!accept_electron(ve))
 	continue;
-      if (!accept_proton(vlead))
+      if (!accept_proton_simple(vlead))
 	continue;
-      if (!accept_proton(vrec))
+      if (!accept_proton_simple(vrec))
 	continue;
       if (!accept_neutron(vlead))
 	continue;

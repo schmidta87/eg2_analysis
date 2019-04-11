@@ -124,7 +124,7 @@ int main(int argc, char ** argv)
 	TH1D * h2p_Pm =  new TH1D("epp_Pm" ,"epp;pMiss [GeV];Counts",30,0.4,1.0);
 	h2p_list.push_back(h2p_Pm );
 	TH1D * h2p_Pm_clas =  new TH1D("epp_Pm_clas" ,"epp;pMiss [GeV];Counts",18,0.4,1.0);
-	h2p_list.push_back(h2p_Pm_clas );
+	h2p_Pm_clas->Sumw2();
 	TH1D * h2p_Pm_coarse =  new TH1D("epp_Pm_coarse" ,"epp;pMiss [GeV];Counts",9,coarse_bin_edges_new);
 	h2p_list.push_back(h2p_Pm_coarse);
 	TH1D * h2p_Pmq = new TH1D("epp_Pmq","epp;Theta_Pmq [deg];Counts",20,100.,180.);
@@ -287,7 +287,6 @@ int main(int argc, char ** argv)
 		h1p_rE1_split[i][j][k] = new TH1D(temp,"ep;rE1;Counts",40,0,1);
 		h1p_list.push_back(h1p_rE1_split[i][j][k]);
 		
-		
 		sprintf(temp,"epp_Emiss_%d_%d_%d",i,j,k);
 		h2p_Emiss_split[i][j][k] = new TH1D(temp,"epp;Emiss [GeV];Counts",20,-0.2,0.6);
 		h2p_list.push_back(h2p_Emiss_split[i][j][k]);
@@ -358,6 +357,11 @@ int main(int argc, char ** argv)
 	  h1p_list[i]->Sumw2();
 	for (int i=0 ; i<h2p_list.size() ; i++)
 	  h2p_list[i]->Sumw2();
+
+	TH1D * h1p_Pm_6bin =  new TH1D("ep_Pm_6bin" ,"ep;pMiss [GeV];Counts",6,0.4,1.0);
+	h1p_Pm_6bin->Sumw2();
+	TH1D * h2p_Pm_6bin =  new TH1D("epp_Pm_6bin" ,"epp;pMiss [GeV];Counts",6,0.4,1.0);
+	h2p_Pm_6bin->Sumw2();
 
 	// pp2p graphs
 	TGraphAsymmErrors * pp_to_p = new TGraphAsymmErrors();
@@ -448,6 +452,7 @@ int main(int argc, char ** argv)
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
+		h1p_Pm_6bin ->Fill(Pmiss_size[0],weight);
 		h1p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
@@ -608,6 +613,7 @@ int main(int argc, char ** argv)
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
+		h1p_Pm_6bin ->Fill(Pmiss_size[0],weight);
 		h1p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
@@ -723,6 +729,7 @@ int main(int argc, char ** argv)
 		h2p_QSq->Fill(Q2,weight);
 		h2p_xB ->Fill(Xb,weight);
 		h2p_Pm ->Fill(Pmiss_size[0],weight);
+		h2p_Pm_6bin ->Fill(Pmiss_size[0],weight);
 		h2p_Pm_clas ->Fill(Pmiss_size[0],weight);
 		h2p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h2p_Pmq->Fill(Pmiss_q_angle[0],weight);
@@ -839,6 +846,9 @@ int main(int argc, char ** argv)
 	h2p_pRec_eMiss_mean->Write();
 	h2p_pRec_eMiss_std->Write();
 
+	h1p_Pm_6bin->Write();
+	h2p_Pm_6bin->Write();
+
 	pp_to_p->Write();
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
@@ -847,7 +857,7 @@ int main(int argc, char ** argv)
 	const double data_ep_cor = 6077.;
 	const double data_epp = 350.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
-	const double ppnorm = pnorm;//data_epp/h2p_Pm->Integral();
+	const double ppnorm = pnorm;
 
 	h2p_pRecError->Scale(data_epp/h2p_Pm->Integral());
 	h2p_pRecError->Write();
@@ -857,6 +867,9 @@ int main(int argc, char ** argv)
 	TVectorT<double> renorm_factor(1);
 	renorm_factor[0] = renorm;
 	renorm_factor.Write("factor");
+
+	h2p_Pm_clas->Scale(data_epp/h2p_Pm->Integral());
+	h2p_Pm_clas->Write();
 
 	// scale all the histograms, and write them out
 	for (int i=0 ; i<h1p_list.size() ; i++)

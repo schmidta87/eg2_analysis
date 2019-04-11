@@ -21,7 +21,7 @@ using namespace std;
 
 const double pmiss_cut=0.4;
 
-const double acc_thresh=0.9;
+const double acc_thresh=0.8;
 
 int main(int argc, char ** argv)
 {
@@ -41,16 +41,31 @@ int main(int argc, char ** argv)
 
 	TGraph * lead_fail = new TGraph();
 	lead_fail->SetNameTitle("lead_fail","lead_fail");
-	TGraph * lead_low = new TGraph();
-	lead_low->SetNameTitle("lead_low","lead_low");
 	TGraph * lead_pass = new TGraph();
 	lead_pass->SetNameTitle("lead_pass","lead_pass");
 	TGraph * rec_fail = new TGraph();
 	rec_fail->SetNameTitle("rec_fail","rec_fail");
-	TGraph * rec_low = new TGraph();
-	rec_low->SetNameTitle("rec_low","rec_low");
 	TGraph * rec_pass = new TGraph();
 	rec_pass->SetNameTitle("rec_pass","rec_pass");
+
+	TGraph * ep_theta_p_fail = new TGraph();
+	ep_theta_p_fail->SetNameTitle("ep_theta_p_fail","ep_theta_p_fail");
+	TGraph * ep_theta_p_pass = new TGraph();
+	ep_theta_p_pass->SetNameTitle("ep_theta_p_pass","ep_theta_p_pass");
+	TGraph * epp_theta_p_fail = new TGraph();
+	epp_theta_p_fail->SetNameTitle("epp_theta_p_fail","epp_theta_p_fail");
+	TGraph * epp_theta_p_pass = new TGraph();
+	epp_theta_p_pass->SetNameTitle("epp_theta_p_pass","epp_theta_p_pass");
+	TGraph * epp_theta_p_fail_rec = new TGraph();
+	epp_theta_p_fail_rec->SetNameTitle("epp_theta_p_fail_rec","epp_theta_p_fail_rec");
+	TGraph * epp_theta_p_pass_rec = new TGraph();
+	epp_theta_p_pass_rec->SetNameTitle("epp_theta_p_pass_rec","epp_theta_p_pass_rec");
+
+	TH1D * ep_pmiss = new TH1D("ep_pmiss","ep;pmiss;Counts",6,0.4,1.0);
+	TH1D * epp_pmiss = new TH1D("epp_pmiss","epp;pmiss;Counts",6,0.4,1.0);
+
+	ep_pmiss->Sumw2();
+	epp_pmiss->Sumw2();
 
 	// Loop over 1p tree
 	cerr << " Looping over 1p tree...\n";
@@ -73,7 +88,6 @@ int main(int argc, char ** argv)
 	{
 		t1p->SetBranchAddress("weight",&weight);
 	}
-
 	for (int event =0 ; event < t1p->GetEntries() ; event++)
 	{
 		t1p->GetEvent(event);
@@ -99,14 +113,14 @@ int main(int argc, char ** argv)
 		if (!accept_proton(vp))
 		  {
 		    lead_fail->SetPoint(lead_fail->GetN(),theta1_deg,phi1_deg);
-		    continue;
-		  }
-		if ( proton_map.accept(vp) < acc_thresh)
-		  {
-		    lead_low->SetPoint(lead_low->GetN(),theta1_deg,phi1_deg);
+		    ep_theta_p_fail->SetPoint(ep_theta_p_fail->GetN(),theta1_deg,vp.Mag());
 		    continue;
 		  }
 		lead_pass->SetPoint(lead_pass->GetN(),theta1_deg,phi1_deg);
+		ep_theta_p_pass->SetPoint(ep_theta_p_pass->GetN(),theta1_deg,vp.Mag());
+
+		if ( proton_map.accept(vp) > acc_thresh )
+		  ep_pmiss->Fill(Pmiss_size[0]);
 
 	}
 
@@ -154,14 +168,16 @@ int main(int argc, char ** argv)
 		if (!accept_proton(vlead))
 		  {
 		    lead_fail->SetPoint(lead_fail->GetN(),theta1_deg,phi1_deg);
-		    continue;
-		  }
-		if ( proton_map.accept(vlead) < acc_thresh)
-		  {
-		    lead_low->SetPoint(lead_low->GetN(),theta1_deg,phi1_deg);
+		    epp_theta_p_fail->SetPoint(epp_theta_p_fail->GetN(),theta1_deg,vlead.Mag());
 		    continue;
 		  }
 		lead_pass->SetPoint(lead_pass->GetN(),theta1_deg,phi1_deg);
+		epp_theta_p_pass->SetPoint(epp_theta_p_pass->GetN(),theta1_deg,vlead.Mag());
+
+		if ( proton_map.accept(vlead) > acc_thresh )
+		  {
+		    ep_pmiss->Fill(Pmiss_size[0]);
+		  }
 
 		// Make a check on the recoils
 		if (fabs(Rp[1][2]+22.25)>2.25)
@@ -179,15 +195,17 @@ int main(int argc, char ** argv)
 		if (!accept_proton(vrec))
 		  {
 		    rec_fail->SetPoint(rec_fail->GetN(),theta2_deg,phi2_deg);
-		    continue;
-		  }
-		if ( proton_map.accept(vrec) < acc_thresh)
-		  {
-		    rec_low->SetPoint(rec_low->GetN(),theta1_deg,phi1_deg);
+		    epp_theta_p_fail_rec->SetPoint(epp_theta_p_fail_rec->GetN(),theta2_deg,vrec.Mag());
 		    continue;
 		  }
 		rec_pass->SetPoint(rec_pass->GetN(),theta2_deg,phi2_deg);
+		epp_theta_p_pass_rec->SetPoint(epp_theta_p_pass_rec->GetN(),theta2_deg,vrec.Mag());
 		
+		if ( proton_map.accept(vlead) > acc_thresh and proton_map.accept(vrec) > acc_thresh )
+		  {
+		    epp_pmiss->Fill(Pmiss_size[0]);
+		  }
+
 	}
 	f1p->Close();
 	f2p->Close();
@@ -197,13 +215,21 @@ int main(int argc, char ** argv)
 	fo -> cd();
 	
 	lead_fail->Write();
-	lead_low->Write();
 	lead_pass->Write();
 	rec_fail->Write();
-	rec_low->Write();
 	rec_pass->Write();
+	ep_theta_p_fail->Write();
+	ep_theta_p_pass->Write();
+	epp_theta_p_fail->Write();
+	epp_theta_p_pass->Write();
+	epp_theta_p_fail_rec->Write();
+	epp_theta_p_pass_rec->Write();
+
+	ep_pmiss->Write();
+	epp_pmiss->Write();
 
 	fo->Close();
-
+	cerr << "The ep and epp integrals are: " << ep_pmiss->Integral() << " "  << epp_pmiss->Integral() << "\n";
+	
 	return 0;
 }
