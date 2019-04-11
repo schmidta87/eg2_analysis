@@ -18,8 +18,10 @@
 
 using namespace std;
 
-double eSmearing=0.003;
+double eSmearing=0.0125;
+double delta_eSmearing=0.005;
 double pSmearing=0.01;
+double delta_pSmearing=0.004;
 double Tp = 0.53;
 double sig_Tp = 0.05;
 double Tpp = 0.44;
@@ -108,8 +110,8 @@ int main(int argc, char ** argv)
 
   if (rand_flag)
     {
-      eSmearing = 0.0025 + myRand.Uniform()*0.001;
-      pSmearing = 0.008 + myRand.Uniform()*0.004;
+      eSmearing = eSmearing + (myRand.Uniform() - 0.5) * delta_eSmearing;
+      pSmearing = pSmearing + (myRand.Uniform() - 0.5) * delta_pSmearing;
       Tp += myRand.Gaus(0,sig_Tp);
       Tpp += myRand.Gaus(0,sig_Tpp);
       if (verbose)
