@@ -18,7 +18,7 @@
 
 using namespace std;
 
-double eSmearing=0.003;
+double eSmearing=0.0125;
 double pSmearing=0.01;
 double Tp = 0.53;
 double sig_Tp = 0.05;
@@ -148,12 +148,12 @@ int main(int argc, char ** argv)
       // Smearing
       if (doSmearing)
 	{
-	  ve *= (1. + eSmearing * myRand.Gaus() * ve.Mag());
+	  ve *= (1. + eSmearing * myRand.Gaus());
 	  gen_pe[0] = ve.X();
 	  gen_pe[1] = ve.Y();
 	  gen_pe[2] = ve.Z();
 
-	  vlead *= (1. + pSmearing * myRand.Gaus() * vlead.Mag());
+	  vlead *= (1. + pSmearing * myRand.Gaus());
 	  gen_pLead[0] = vlead.X();
 	  gen_pLead[1] = vlead.Y();
 	  gen_pLead[2] = vlead.Z();
