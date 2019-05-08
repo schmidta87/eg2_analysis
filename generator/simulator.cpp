@@ -20,8 +20,8 @@ using namespace std;
 
 double eSmearing=0.0125;
 double delta_eSmearing=0.005;
-double pSmearing=0.01;
-double delta_pSmearing=0.004;
+double pSmearing=0.02;
+double delta_pSmearing=0.008;
 double Tp = 0.53;
 double sig_Tp = 0.05;
 double Tpp = 0.44;
@@ -48,8 +48,9 @@ int main(int argc, char ** argv)
   bool doMaps = true;
   bool doFCuts = true;
   bool doSCuts = true;
+  bool doGaps = true;
   int c;
-  while ((c=getopt (argc-4, &argv[4], "vre:p:OoMCS")) != -1)
+  while ((c=getopt (argc-4, &argv[4], "vre:p:OoMCSg")) != -1)
     switch(c)
       {
       case 'v':
@@ -78,6 +79,9 @@ int main(int argc, char ** argv)
 	break;
       case 'S':
 	doSCuts = false;
+	break;
+      case 'g':
+	doGaps = false;
 	break;
       case '?':
 	return -1;
@@ -247,9 +251,15 @@ int main(int argc, char ** argv)
       if (rec_type == pCode)
 	{
 	  h_rec_p_all->Fill(gen_pMiss_Mag,weight);
+
+	  bool rec_acc;
+	  if (doGaps)
+	    rec_acc = accept_proton(vrec);
+	  else
+	    rec_acc = accept_proton_simple(vrec);
 	  
 	  // Test if the recoil was in the fiducial region and above threshold
-	  if (!(!accept_proton(vrec) && doFCuts) && (vrec.Mag() > 0.35))
+	  if (!(!rec_acc && doFCuts) && (vrec.Mag() > 0.35))
 	    h_rec_p_acc->Fill(gen_pMiss_Mag,weight*recoil_accept);
 	}
 
