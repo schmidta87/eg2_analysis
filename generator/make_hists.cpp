@@ -30,7 +30,7 @@ const double sCutOff=0;
 const double sigmaCM=0.143;
 const double Estar=0.03;
 
-const double acc_thresh=0.8;
+const double acc_thresh=0.0;
 
 int main(int argc, char ** argv)
 {
@@ -48,8 +48,9 @@ int main(int argc, char ** argv)
 	bool doSWeight = false;
 	bool doCut = true;
 	bool doOtherCut = true;
+	bool doGaps = true;
 	int c;
-	while((c=getopt (argc-4, &argv[4], "SCO")) != -1)
+	while((c=getopt (argc-4, &argv[4], "SCOg")) != -1)
 	  switch(c)
 	    {
 	    case 'S':
@@ -60,6 +61,9 @@ int main(int argc, char ** argv)
 	      break;
 	    case 'O':
 	      doOtherCut = false;
+	      break;
+	    case 'g':
+	      doGaps = false;
 	      break;
 	    case '?':
 	      return -1;
@@ -358,10 +362,10 @@ int main(int argc, char ** argv)
 	for (int i=0 ; i<h2p_list.size() ; i++)
 	  h2p_list[i]->Sumw2();
 
-	TH1D * h1p_Pm_6bin =  new TH1D("ep_Pm_6bin" ,"ep;pMiss [GeV];Counts",6,0.4,1.0);
-	h1p_Pm_6bin->Sumw2();
-	TH1D * h2p_Pm_6bin =  new TH1D("epp_Pm_6bin" ,"epp;pMiss [GeV];Counts",6,0.4,1.0);
-	h2p_Pm_6bin->Sumw2();
+	TH1D * h1p_Pm_30bin =  new TH1D("ep_Pm_30bin" ,"ep;pMiss [GeV];Counts",30,0.4,1.0);
+	h1p_Pm_30bin->Sumw2();
+	TH1D * h2p_Pm_30bin =  new TH1D("epp_Pm_30bin" ,"epp;pMiss [GeV];Counts",30,0.4,1.0);
+	h2p_Pm_30bin->Sumw2();
 
 	// pp2p graphs
 	TGraphAsymmErrors * pp_to_p = new TGraphAsymmErrors();
@@ -418,8 +422,16 @@ int main(int argc, char ** argv)
 		  // Apply fiducial cuts
 		  if (!accept_electron(ve))
 		    continue;
-		  if (!accept_proton(vp))
-		    continue;
+		  if (doGaps)
+		    {
+		      if (!accept_proton(vp))
+			continue;
+		    }
+		  else
+		    {
+		      if (!accept_proton_simple(vp))
+			continue;
+		    }
 
 		  // Apply an additional fiducial cut that the map acc must be > acc_thresh
 		  if ( proton_map.accept(vp) < acc_thresh)
@@ -452,7 +464,7 @@ int main(int argc, char ** argv)
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
-		h1p_Pm_6bin ->Fill(Pmiss_size[0],weight);
+		h1p_Pm_30bin ->Fill(Pmiss_size[0],weight);
 		h1p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
@@ -578,8 +590,16 @@ int main(int argc, char ** argv)
 		  // Apply fiducial cuts
 		  if (!accept_electron(ve))
 		    continue;
-		  if (!accept_proton(vlead))
-		    continue;
+		  if (doGaps)
+		    {
+		      if (!accept_proton(vlead))
+			continue;
+		    }
+		  else
+		    {
+		      if (!accept_proton_simple(vlead))
+			continue;
+		    }
 
 		  // Apply an additional fiducial cut that the map acc must be > acc_thresh
 		  if ( proton_map.accept(vlead) < acc_thresh)
@@ -613,7 +633,7 @@ int main(int argc, char ** argv)
 		h1p_QSq->Fill(Q2,weight);
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
-		h1p_Pm_6bin ->Fill(Pmiss_size[0],weight);
+		h1p_Pm_30bin ->Fill(Pmiss_size[0],weight);
 		h1p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
@@ -711,8 +731,18 @@ int main(int argc, char ** argv)
 		}
 		
 		if(doCut){
-		  if (!accept_proton(vrec))
-		    continue;
+
+		  if (doGaps)
+		    {
+		      if (!accept_proton(vrec))
+			continue;
+		    }
+		  else
+		    {
+		      if (!accept_proton_simple(vrec))
+			continue;
+		    }
+
 
 		  // Apply an additional fiducial cut that the map acc must be > acc_thresh
 		  if ( proton_map.accept(vrec) < acc_thresh)
@@ -729,7 +759,7 @@ int main(int argc, char ** argv)
 		h2p_QSq->Fill(Q2,weight);
 		h2p_xB ->Fill(Xb,weight);
 		h2p_Pm ->Fill(Pmiss_size[0],weight);
-		h2p_Pm_6bin ->Fill(Pmiss_size[0],weight);
+		h2p_Pm_30bin ->Fill(Pmiss_size[0],weight);
 		h2p_Pm_clas ->Fill(Pmiss_size[0],weight);
 		h2p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h2p_Pmq->Fill(Pmiss_q_angle[0],weight);
@@ -846,8 +876,8 @@ int main(int argc, char ** argv)
 	h2p_pRec_eMiss_mean->Write();
 	h2p_pRec_eMiss_std->Write();
 
-	h1p_Pm_6bin->Write();
-	h2p_Pm_6bin->Write();
+	h1p_Pm_30bin->Write();
+	h2p_Pm_30bin->Write();
 
 	pp_to_p->Write();
 	pp_to_p_coarse->Write();
@@ -857,7 +887,7 @@ int main(int argc, char ** argv)
 	const double data_ep_cor = 6077.;
 	const double data_epp = 350.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
-	const double ppnorm = pnorm;
+	const double ppnorm = pnorm;//data_epp/h2p_Pm->Integral();
 
 	h2p_pRecError->Scale(data_epp/h2p_Pm->Integral());
 	h2p_pRecError->Write();
