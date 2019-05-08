@@ -883,9 +883,9 @@ int main(int argc, char ** argv)
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
 	
-	const double data_ep = 5561.;
+	const double data_ep = 5604.;
 	const double data_ep_cor = 6077.;
-	const double data_epp = 350.;
+	const double data_epp = 364.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
 	const double ppnorm = pnorm;//data_epp/h2p_Pm->Integral();
 
