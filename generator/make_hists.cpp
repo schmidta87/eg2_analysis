@@ -74,6 +74,11 @@ int main(int argc, char ** argv)
 	// We'll need to get acceptance maps in order to do a fiducial cut on minimum acceptance
 	AccMap proton_map(argv[3], "p");
 
+	// Create some directories so that the output file isn't so crowded in a browser
+	TDirectory * dir_by_sec = fo->mkdir("by_sec");
+	TDirectory * dir_sub_bins = fo->mkdir("sub_bins");
+	fo->cd();
+
 	// Let's create a vector of all the histogram pointers so we can loop over them, save hassles
 	vector<TH1*> h1p_list;
 	vector<TH1*> h2p_list;
@@ -247,7 +252,7 @@ int main(int argc, char ** argv)
 	TH1D * h2p_dE1_split[4][3][3];
 	TH1D * h2p_rE1_split[4][3][3];
 	
-	
+	dir_sub_bins->cd();
 	for (int i=0 ; i<4 ; i++)
 	  {
 	    for(int j=0; j<3 ; j++){
@@ -331,6 +336,7 @@ int main(int argc, char ** argv)
 	    }
 	  }
 
+	dir_by_sec->cd();
 	TH1D * h1p_thetae_bySec[6];
 	TH1D * h1p_theta1_bySec[6];
 	TH1D * h2p_theta1_bySec[6];
@@ -356,16 +362,21 @@ int main(int argc, char ** argv)
 	    h2p_list.push_back(h2p_theta2_bySec[i]);
 	  }
 
+	fo->cd();
+
 	// Now that all histograms have been defined, set them to Sumw2
 	for (int i=0 ; i<h1p_list.size() ; i++)
 	  h1p_list[i]->Sumw2();
 	for (int i=0 ; i<h2p_list.size() ; i++)
 	  h2p_list[i]->Sumw2();
 
+	// For data and bin-centering
 	TH1D * h1p_Pm_30bin =  new TH1D("ep_Pm_30bin" ,"ep;pMiss [GeV];Counts",30,0.4,1.0);
 	h1p_Pm_30bin->Sumw2();
 	TH1D * h2p_Pm_30bin =  new TH1D("epp_Pm_30bin" ,"epp;pMiss [GeV];Counts",30,0.4,1.0);
 	h2p_Pm_30bin->Sumw2();
+	TH1D * h1p_Pm_30bin_bins =  new TH1D("ep_Pm_30bin_bins" ,"ep;pMiss [GeV];Sum pMiss [GeV]",30,0.4,1.0);
+	TH1D * h2p_Pm_30bin_bins =  new TH1D("epp_Pm_30bin_bins" ,"epp;pMiss [GeV];Sum pMiss [GeV]",30,0.4,1.0);
 
 	// pp2p graphs
 	TGraphAsymmErrors * pp_to_p = new TGraphAsymmErrors();
@@ -465,6 +476,7 @@ int main(int argc, char ** argv)
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
 		h1p_Pm_30bin ->Fill(Pmiss_size[0],weight);
+		h1p_Pm_30bin_bins ->Fill(Pmiss_size[0],weight*Pmiss_size[0]);
 		h1p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
@@ -634,6 +646,7 @@ int main(int argc, char ** argv)
 		h1p_xB ->Fill(Xb,weight);
 		h1p_Pm ->Fill(Pmiss_size[0],weight);
 		h1p_Pm_30bin ->Fill(Pmiss_size[0],weight);
+		h1p_Pm_30bin_bins ->Fill(Pmiss_size[0],weight*Pmiss_size[0]);
 		h1p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
@@ -760,6 +773,7 @@ int main(int argc, char ** argv)
 		h2p_xB ->Fill(Xb,weight);
 		h2p_Pm ->Fill(Pmiss_size[0],weight);
 		h2p_Pm_30bin ->Fill(Pmiss_size[0],weight);
+		h2p_Pm_30bin_bins ->Fill(Pmiss_size[0],Pmiss_size[0]*weight);
 		h2p_Pm_clas ->Fill(Pmiss_size[0],weight);
 		h2p_Pm_coarse->Fill(Pmiss_size[0],weight);
 		h2p_Pmq->Fill(Pmiss_q_angle[0],weight);
@@ -844,18 +858,82 @@ int main(int argc, char ** argv)
 	f1p->Close();
 	f2p->Close();
 
+	// Do the bin centering
+	TGraphAsymmErrors * g1p_Pm = new TGraphAsymmErrors(30);
+	g1p_Pm->SetName("ep_Pm_graph");
+	g1p_Pm->SetTitle("ep;p_miss [GeV];Counts");
+	for (int i=1 ; i<= 30 ; i++)
+	  {
+	    // e'p
+	    double sumN = h1p_Pm_30bin->GetBinContent(i);
+	    double sumPm = h1p_Pm_30bin_bins->GetBinContent(i);
+	    double avgPm = h1p_Pm_30bin->GetBinLowEdge(i) + 0.5 *h1p_Pm_30bin->GetBinWidth(i);
+	    if (sumN > 0) avgPm = (sumPm/sumN);
+	    h1p_Pm_30bin_bins->SetBinContent(i,avgPm);
+
+	    // Fill out the TGraph
+	    g1p_Pm->SetPoint(i,avgPm,sumN);
+	    g1p_Pm->SetPointError(i,avgPm - h1p_Pm_30bin->GetBinLowEdge(i),
+					h1p_Pm_30bin->GetBinLowEdge(i) + h1p_Pm_30bin->GetBinWidth(i) - avgPm,
+					h1p_Pm_30bin->GetBinError(i), h1p_Pm_30bin->GetBinError(i));
+	  }
+	g1p_Pm->Write();
+	
+	TGraphAsymmErrors * g2p_Pm = new TGraphAsymmErrors(24);
+	g2p_Pm->SetName("epp_Pm_graph");
+	g2p_Pm->SetTitle("epp;p_miss [GeV];Counts");
+	// The binning is non-uniform, so we have to be careful
+	const int startBins[24]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,25,27};
+	const int stopBins[24] ={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,24,26,30};
+	for (int i=0 ; i< 24 ; i++)
+	  {
+	    // e'pp
+	    double sumN = h2p_Pm_30bin->Integral(startBins[i],stopBins[i]);
+	    double sumPm = h2p_Pm_30bin_bins->Integral(startBins[i],stopBins[i]);
+	    double avgPm = 0.5*(h2p_Pm_30bin->GetBinLowEdge(startBins[i]) + h2p_Pm_30bin->GetXaxis()->GetBinUpEdge(stopBins[i]));
+	    if (sumN > 0) avgPm = (sumPm / sumN);
+
+	    // Fill out the TGraph
+	    //	    cout << startBins[i] << " " << stopBins[i] << "       " 
+	    //	 << avgPm << " - " << avgPm - h2p_Pm_30bin->GetBinLowEdge(startBins[i]) << " + "
+	    // << h2p_Pm_30bin->GetXaxis()->GetBinUpEdge(stopBins[i]) -avgPm << "         "
+	    // << sumN << " - " << sqrt(sumN) << "  + " << sumN << "\n";
+	    
+	    double binScale = (0.02)/(h2p_Pm_30bin->GetXaxis()->GetBinUpEdge(stopBins[i]) - h2p_Pm_30bin->GetBinLowEdge(startBins[i]));
+	    g2p_Pm->SetPoint(i,avgPm,sumN * binScale);
+	    g2p_Pm->SetPointError(i,avgPm - h2p_Pm_30bin->GetBinLowEdge(startBins[i]),
+				  h2p_Pm_30bin->GetXaxis()->GetBinUpEdge(stopBins[i]) -avgPm,
+				  binScale * sqrt(sumN),binScale * sqrt(sumN));
+	  }
+	g2p_Pm->Write();
+
 	cerr << "The ep and epp integrals are: " << h1p_Pm->Integral() << " "  << h2p_Pm->Integral() << "\n";
 	cerr << "Broken down by pmiss range...\n\n";
-	for (int j=5 ; j<=30 ; j+=5)
+	for (int j=1 ; j<=30 ; j+=1)
 	  {
-	    double min=0.4 + 0.1*(j-5)/5.;
-	    double max=0.4 + 0.1*j/5.;
-	    cerr << min << " < pmiss < " << max << " : " << h1p_Pm->Integral(j-4,j) << " " << h2p_Pm->Integral(j-4,j) << "\n";
+	    cerr << h1p_Pm->GetBinCenter(j) << " " 
+		 << h1p_Pm->GetBinContent(j)
+		 << " " 
+		 << h2p_Pm->GetBinContent(j)
+		 << "\n"; 
 	  }
+	cerr << "\n\n";
 
 	// pp-to-p
 	pp_to_p->BayesDivide(h2p_Pm,h1p_Pm);
 	pp_to_p_coarse->BayesDivide(h2p_Pm_coarse,h1p_Pm_coarse);
+	for (int j=1 ; j<=9 ; j++)
+	  {
+	    cerr << h1p_Pm_coarse->GetBinContent(j)
+		 << " & " 
+		 << h2p_Pm_coarse->GetBinContent(j)
+		 << " & "
+		 << pp_to_p_coarse->GetY()[j-1]
+		 << " & \n";
+	  }
+	cerr << "\n\n";
+
+	// 2d pp-to-p
   	for (int binX=1 ; binX<=pp_to_p_2d->GetNbinsX() ; binX++)
 	  for (int binY=1 ; binY<=pp_to_p_2d->GetNbinsY() ; binY++)
 	    {
@@ -871,18 +949,10 @@ int main(int argc, char ** argv)
 	// Write out
 	fo -> cd();
 
-	h2p_pRec_epsilon_mean->Write();
-	h2p_pRec_epsilon_std->Write();
-	h2p_pRec_eMiss_mean->Write();
-	h2p_pRec_eMiss_std->Write();
-
-	h1p_Pm_30bin->Write();
-	h2p_Pm_30bin->Write();
-
 	pp_to_p->Write();
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
-	
+
 	const double data_ep = 5604.;
 	const double data_ep_cor = 6077.;
 	const double data_epp = 364.;
@@ -890,29 +960,23 @@ int main(int argc, char ** argv)
 	const double ppnorm = pnorm;//data_epp/h2p_Pm->Integral();
 
 	h2p_pRecError->Scale(data_epp/h2p_Pm->Integral());
-	h2p_pRecError->Write();
 	
-	// Including a factor if we watn to rescale data to match epp luminosity
+	// Including a factor if we want to rescale data to match epp luminosity
 	const double renorm = data_epp/h2p_Pm->Integral()/(data_ep/h1p_Pm->Integral());
 	TVectorT<double> renorm_factor(1);
 	renorm_factor[0] = renorm;
 	renorm_factor.Write("factor");
 
 	h2p_Pm_clas->Scale(data_epp/h2p_Pm->Integral());
-	h2p_Pm_clas->Write();
 
-	// scale all the histograms, and write them out
+	// scale all the histograms
 	for (int i=0 ; i<h1p_list.size() ; i++)
-	  {
-	    h1p_list[i]->Scale(pnorm);
-	    h1p_list[i]->Write();
-	  }
+	  h1p_list[i]->Scale(pnorm);
 	for (int i=0 ; i<h2p_list.size() ; i++)
-	  {
-	    h2p_list[i]->Scale(ppnorm);
-	    h2p_list[i]->Write();
-	  }
+	  h2p_list[i]->Scale(ppnorm);
 
+	// Write all the histograms and close the file.
+	fo->Write();
 	fo->Close();
 
 	return 0;
