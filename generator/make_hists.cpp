@@ -872,8 +872,8 @@ int main(int argc, char ** argv)
 	    h1p_Pm_30bin_bins->SetBinContent(i,avgPm);
 
 	    // Fill out the TGraph
-	    g1p_Pm->SetPoint(i,avgPm,sumN);
-	    g1p_Pm->SetPointError(i,avgPm - h1p_Pm_30bin->GetBinLowEdge(i),
+	    g1p_Pm->SetPoint(i-1,avgPm,sumN);
+	    g1p_Pm->SetPointError(i-1,avgPm - h1p_Pm_30bin->GetBinLowEdge(i),
 					h1p_Pm_30bin->GetBinLowEdge(i) + h1p_Pm_30bin->GetBinWidth(i) - avgPm,
 					h1p_Pm_30bin->GetBinError(i), h1p_Pm_30bin->GetBinError(i));
 	  }
