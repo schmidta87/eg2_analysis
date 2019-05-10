@@ -377,6 +377,8 @@ int main(int argc, char ** argv)
 	h2p_Pm_30bin->Sumw2();
 	TH1D * h1p_Pm_30bin_bins =  new TH1D("ep_Pm_30bin_bins" ,"ep;pMiss [GeV];Sum pMiss [GeV]",30,0.4,1.0);
 	TH1D * h2p_Pm_30bin_bins =  new TH1D("epp_Pm_30bin_bins" ,"epp;pMiss [GeV];Sum pMiss [GeV]",30,0.4,1.0);
+	TH1D * h1p_Pm_coarse_bins =  new TH1D("ep_Pm_coarse_bins" ,"ep;pMiss [GeV];Sum pMiss [GeV]",9,coarse_bin_edges_new);
+	TH1D * h2p_Pm_coarse_bins =  new TH1D("epp_Pm_coarse_bins" ,"epp;pMiss [GeV];Sum pMiss [GeV]",9,coarse_bin_edges_new);
 
 	// pp2p graphs
 	TGraphAsymmErrors * pp_to_p = new TGraphAsymmErrors();
@@ -478,6 +480,7 @@ int main(int argc, char ** argv)
 		h1p_Pm_30bin ->Fill(Pmiss_size[0],weight);
 		h1p_Pm_30bin_bins ->Fill(Pmiss_size[0],weight*Pmiss_size[0]);
 		h1p_Pm_coarse->Fill(Pmiss_size[0],weight);
+		h1p_Pm_coarse_bins->Fill(Pmiss_size[0],weight*Pmiss_size[0]);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
 
@@ -648,6 +651,7 @@ int main(int argc, char ** argv)
 		h1p_Pm_30bin ->Fill(Pmiss_size[0],weight);
 		h1p_Pm_30bin_bins ->Fill(Pmiss_size[0],weight*Pmiss_size[0]);
 		h1p_Pm_coarse->Fill(Pmiss_size[0],weight);
+		h1p_Pm_coarse_bins->Fill(Pmiss_size[0],weight*Pmiss_size[0]);
 		h1p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h1p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
 
@@ -776,6 +780,7 @@ int main(int argc, char ** argv)
 		h2p_Pm_30bin_bins ->Fill(Pmiss_size[0],Pmiss_size[0]*weight);
 		h2p_Pm_clas ->Fill(Pmiss_size[0],weight);
 		h2p_Pm_coarse->Fill(Pmiss_size[0],weight);
+		h2p_Pm_coarse_bins->Fill(Pmiss_size[0],weight*Pmiss_size[0]);
 		h2p_Pmq->Fill(Pmiss_q_angle[0],weight);
 		h2p_Pmr->Fill(vmiss.Angle(vrec)*180./M_PI,weight);
 		h2p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
@@ -919,11 +924,19 @@ int main(int argc, char ** argv)
 	  }
 	cerr << "\n\n";
 
-	// pp-to-p
+	// pp-to-p, including bin centering
 	pp_to_p->BayesDivide(h2p_Pm,h1p_Pm);
 	pp_to_p_coarse->BayesDivide(h2p_Pm_coarse,h1p_Pm_coarse);
 	for (int j=1 ; j<=9 ; j++)
 	  {
+	    double sumPm = h1p_Pm_coarse_bins->GetBinContent(j);
+	    double sumN = h1p_Pm_coarse->GetBinContent(j);
+	    double avgPm = sumPm / sumN;
+	    double pp2p = pp_to_p_coarse->GetY()[j-1];
+	    pp_to_p_coarse->SetPoint(j-1,avgPm,pp2p);
+	    pp_to_p_coarse->SetPointEXlow(j-1,avgPm - h1p_Pm_coarse->GetBinLowEdge(j));
+	    pp_to_p_coarse->SetPointEXhigh(j-1,h1p_Pm_coarse->GetXaxis()->GetBinUpEdge(j) - avgPm);
+
 	    cerr << h1p_Pm_coarse->GetBinContent(j)
 		 << " & " 
 		 << h2p_Pm_coarse->GetBinContent(j)
