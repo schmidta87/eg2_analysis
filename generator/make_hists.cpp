@@ -898,11 +898,7 @@ int main(int argc, char ** argv)
 	    double avgPm = 0.5*(h2p_Pm_30bin->GetBinLowEdge(startBins[i]) + h2p_Pm_30bin->GetXaxis()->GetBinUpEdge(stopBins[i]));
 	    if (sumN > 0) avgPm = (sumPm / sumN);
 
-	    // Fill out the TGraph
-	    //	    cout << startBins[i] << " " << stopBins[i] << "       " 
-	    //	 << avgPm << " - " << avgPm - h2p_Pm_30bin->GetBinLowEdge(startBins[i]) << " + "
-	    // << h2p_Pm_30bin->GetXaxis()->GetBinUpEdge(stopBins[i]) -avgPm << "         "
-	    // << sumN << " - " << sqrt(sumN) << "  + " << sumN << "\n";
+	    cerr << avgPm << "\n";
 	    
 	    double binScale = (0.02)/(h2p_Pm_30bin->GetXaxis()->GetBinUpEdge(stopBins[i]) - h2p_Pm_30bin->GetBinLowEdge(startBins[i]));
 	    g2p_Pm->SetPoint(i,avgPm,sumN * binScale);
@@ -911,6 +907,8 @@ int main(int argc, char ** argv)
 				  binScale * sqrt(sumN),binScale * sqrt(sumN));
 	  }
 	g2p_Pm->Write();
+
+	return 0;
 
 	cerr << "The ep and epp integrals are: " << h1p_Pm->Integral() << " "  << h2p_Pm->Integral() << "\n";
 	cerr << "Broken down by pmiss range...\n\n";
@@ -937,7 +935,8 @@ int main(int argc, char ** argv)
 	    pp_to_p_coarse->SetPointEXlow(j-1,avgPm - h1p_Pm_coarse->GetBinLowEdge(j));
 	    pp_to_p_coarse->SetPointEXhigh(j-1,h1p_Pm_coarse->GetXaxis()->GetBinUpEdge(j) - avgPm);
 
-	    cerr << h1p_Pm_coarse->GetBinContent(j)
+	    cerr << avgPm << " "
+		 << h1p_Pm_coarse->GetBinContent(j)
 		 << " & " 
 		 << h2p_Pm_coarse->GetBinContent(j)
 		 << " & "
