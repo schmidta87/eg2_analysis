@@ -162,6 +162,8 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_mom2);
 	TH1D * h2p_mom1 = new TH1D("epp_mom1","epp;Mom_1 [GeV/c];Counts",40,0.4,2.4);
 	h2p_list.push_back(h2p_mom1);
+	TH1D * h2p_momdiff = new TH1D("epp_momdiff","epp;Delta_mom [GeV/c];Counts",40,0.0,2.0);
+	h2p_list.push_back(h2p_momdiff);
 	TH1D * h2p_alphaq = new TH1D("epp_alphaq","ep;alphaq;Counts",30,-1.5,-0.5);
         h2p_list.push_back(h2p_alphaq);
         TH1D * h2p_alphaLead = new TH1D("epp_alphaLead","ep;alphaLead;Counts",30,0.1,0.6);
@@ -252,7 +254,7 @@ int main(int argc, char ** argv)
 	TH1D * h2p_dE1_split[4][3][3];
 	TH1D * h2p_rE1_split[4][3][3];
 	
-	dir_sub_bins->cd();
+	//dir_sub_bins->cd();
 	for (int i=0 ; i<4 ; i++)
 	  {
 	    for(int j=0; j<3 ; j++){
@@ -842,6 +844,7 @@ int main(int argc, char ** argv)
 
 		TVector3 vdiff = vlead - vrec;
 
+		h2p_momdiff->Fill(vdiff.Mag(),weight);
 		h2p_pmiss_momdiff->Fill(Pmiss_size[0],vdiff.Mag(),weight);
 
 		// Histogram for the "apparent E*"
@@ -970,7 +973,7 @@ int main(int argc, char ** argv)
 	const double data_ep_cor = 6077.;
 	const double data_epp = 364.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
-	const double ppnorm = pnorm;//data_epp/h2p_Pm->Integral();
+	const double ppnorm = data_epp/h2p_Pm->Integral();
 
 	h2p_pRecError->Scale(data_epp/h2p_Pm->Integral());
 	
