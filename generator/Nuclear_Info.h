@@ -12,7 +12,7 @@
  const double m_8Be = 8.00530510 * mU;
  const double m_10B = 10.0129370 * mU;
  const double m_11B = 11.0093054 * mU;
- const double m_12C = 12.*mU;
+ const double m_12C = 12.*mU - 6*me;
  const double m_14N = 14.0030740048*mU;
  const double m_16O = 15.99491461956*mU;
 

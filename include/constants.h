@@ -28,9 +28,9 @@ const double eg2beam_set = 5.014;
 // Things for calculating cross sections, etc.
 const double me = 0.000511;
 const double mN = 0.93892;
-const double mU=0.931;
-const double GeVfm=0.1973;
-const double alpha=0.0072973525664;
+const double mU = 0.9314941;
+const double GeVfm = 0.1973;
+const double alpha = 0.0072973525664;
 const double cmSqGeVSq = GeVfm*GeVfm*1.E-26;
 
 #endif
