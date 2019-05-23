@@ -42,6 +42,10 @@ int main(int argc, char ** argv)
 	}
 	
 	TFile * f1p = new TFile(argv[1]);
+	// Pulling acceptance ratio from 1p file
+	TGraphAsymmErrors * rec_p_rat;
+	gDirectory->GetObject("rec_p_rat",rec_p_rat);
+
 	TFile * f2p = new TFile(argv[2]);
 	TFile * fo = new TFile(argv[4],"RECREATE");
 	Cross_Sections myCS(cc1,kelly);
@@ -911,8 +915,6 @@ int main(int argc, char ** argv)
 	  }
 	g2p_Pm->Write();
 
-	return 0;
-
 	cerr << "The ep and epp integrals are: " << h1p_Pm->Integral() << " "  << h2p_Pm->Integral() << "\n";
 	cerr << "Broken down by pmiss range...\n\n";
 	for (int j=1 ; j<=30 ; j+=1)
@@ -967,6 +969,8 @@ int main(int argc, char ** argv)
 	pp_to_p->Write();
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
+
+	rec_p_rat->Write();
 
 	const double data_ep = 5604.;
 	const double data_ep_cor = 6077.;
