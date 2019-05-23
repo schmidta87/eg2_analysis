@@ -10,8 +10,10 @@
  const double m_4He = 4.00260325415 * mU - 2*me;
  const double m_6Li = 6.015122795 * mU - 3*me;
  const double m_8Be = 8.00530510 * mU - 4*me;
+ const double m_10Be = 10.013534 * mU - 4*me;
  const double m_10B = 10.0129370 * mU - 5*me;
  const double m_11B = 11.0093054 * mU - 5*me;
+ const double m_10C = 10.016853 * mU - 6*me;
  const double m_12C = 12.*mU - 6*me;
  const double m_14N = 14.0030740048*mU - 7*me;
  const double m_16O = 15.99491461956*mU - 8*me;
@@ -45,7 +47,10 @@
    double get_pn0(double k_rel);
    double get_pn1(double k_rel);
    double get_mA();
-   double get_mAm2();
+   //double get_mAm2();
+   double get_mAmpp();
+   double get_mAmnp();
+   double get_mAmnn();
    double get_sigmaCM();
    void do_SXC(int &lead_type, int &rec_type, double r);
    std::vector<double> get_SCX_Ps();
@@ -54,7 +59,10 @@
   int A;
   int u;
   double mA;
-  double mAm2;
+  //double mAm2;
+  double mAmpp;
+  double mAmnp;
+  double mAmnn;
   double Estar;
   double sigmaCM;
   double d_sigmaCM;

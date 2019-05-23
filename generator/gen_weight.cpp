@@ -315,7 +315,9 @@ int main(int argc, char ** argv)
 
   Cross_Sections myCS(csMeth,ffMod);
   const double mA = myInfo.get_mA();
-  const double mAm2 = myInfo.get_mAm2(); // this includes the effect of Estar
+  const double mAmpp = myInfo.get_mAmpp(); // this includes the effect of Estar
+  const double mAmnp = myInfo.get_mAmnp();
+  const double mAmnn = myInfo.get_mAmnn();
   const double sigCM = myInfo.get_sigmaCM();
 
   // Prepare vector of parameters to be output
@@ -357,6 +359,15 @@ int main(int argc, char ** argv)
       lead_type = (myRand.Rndm() > 0.5) ? pCode:nCode;
       rec_type = (myRand.Rndm() > 0.5) ? pCode:nCode;
       weight *= 4.;
+
+      // Determine mass of A-2 system
+      double mAm2;
+      if (lead_type == pCode and rec_type == pCode)
+	mAm2 = mAmpp;
+      else if (lead_type == nCode and rec_type == nCode)
+	mAm2 = mAmnn;
+      else
+	mAm2 = mAmnp;
 
       // Start with the radiation off the incoming electron
       double DeltaEi = doRad ? pow(myRand.Rndm(),1./lambda_ei) * Ebeam : 0.;
