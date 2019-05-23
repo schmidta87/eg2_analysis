@@ -32,6 +32,8 @@ const double Estar=0.03;
 
 const double acc_thresh=0.0;
 
+const bool bin_center = false;
+
 int main(int argc, char ** argv)
 {
 	if (argc < 5)
@@ -930,25 +932,29 @@ int main(int argc, char ** argv)
 	// pp-to-p, including bin centering
 	pp_to_p->BayesDivide(h2p_Pm,h1p_Pm);
 	pp_to_p_coarse->BayesDivide(h2p_Pm_coarse,h1p_Pm_coarse);
-	for (int j=1 ; j<=9 ; j++)
-	  {
-	    double sumPm = h1p_Pm_coarse_bins->GetBinContent(j);
-	    double sumN = h1p_Pm_coarse->GetBinContent(j);
-	    double avgPm = sumPm / sumN;
-	    double pp2p = pp_to_p_coarse->GetY()[j-1];
-	    pp_to_p_coarse->SetPoint(j-1,avgPm,pp2p);
-	    pp_to_p_coarse->SetPointEXlow(j-1,avgPm - h1p_Pm_coarse->GetBinLowEdge(j));
-	    pp_to_p_coarse->SetPointEXhigh(j-1,h1p_Pm_coarse->GetXaxis()->GetBinUpEdge(j) - avgPm);
 
-	    cerr << avgPm << " "
-		 << h1p_Pm_coarse->GetBinContent(j)
-		 << " & " 
-		 << h2p_Pm_coarse->GetBinContent(j)
-		 << " & "
-		 << pp_to_p_coarse->GetY()[j-1]
-		 << " & \n";
+	if (bin_center)
+	  {
+	    for (int j=1 ; j<=9 ; j++)
+	      {
+		double sumPm = h1p_Pm_coarse_bins->GetBinContent(j);
+		double sumN = h1p_Pm_coarse->GetBinContent(j);
+		double avgPm = sumPm / sumN;
+		double pp2p = pp_to_p_coarse->GetY()[j-1];
+		pp_to_p_coarse->SetPoint(j-1,avgPm,pp2p);
+		pp_to_p_coarse->SetPointEXlow(j-1,avgPm - h1p_Pm_coarse->GetBinLowEdge(j));
+		pp_to_p_coarse->SetPointEXhigh(j-1,h1p_Pm_coarse->GetXaxis()->GetBinUpEdge(j) - avgPm);
+		
+		cerr << avgPm << " "
+		     << h1p_Pm_coarse->GetBinContent(j)
+		     << " & " 
+		     << h2p_Pm_coarse->GetBinContent(j)
+		     << " & "
+		     << pp_to_p_coarse->GetY()[j-1]
+		     << " & \n";
+	      }
+	    cerr << "\n\n";
 	  }
-	cerr << "\n\n";
 
 	// 2d pp-to-p
   	for (int binX=1 ; binX<=pp_to_p_2d->GetNbinsX() ; binX++)
