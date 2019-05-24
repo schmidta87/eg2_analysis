@@ -47,6 +47,8 @@ int main(int argc, char ** argv)
 	// Pulling acceptance ratio from 1p file
 	TGraphAsymmErrors * rec_p_rat;
 	gDirectory->GetObject("rec_p_rat",rec_p_rat);
+	TGraphAsymmErrors * rec_p_rat_coarse;
+	gDirectory->GetObject("rec_p_rat_coarse",rec_p_rat_coarse);
 
 	TFile * f2p = new TFile(argv[2]);
 	TFile * fo = new TFile(argv[4],"RECREATE");
@@ -977,12 +979,13 @@ int main(int argc, char ** argv)
 	pp_to_p_2d->Write();
 
 	rec_p_rat->Write();
+	rec_p_rat_coarse->Write();
 
 	const double data_ep = 5604.;
 	const double data_ep_cor = 6077.;
 	const double data_epp = 364.;
 	const double pnorm = data_ep/h1p_Pm->Integral();
-	const double ppnorm = data_epp/h2p_Pm->Integral();
+	const double ppnorm = pnorm;//data_epp/h2p_Pm->Integral();
 
 	h2p_pRecError->Scale(data_epp/h2p_Pm->Integral());
 	

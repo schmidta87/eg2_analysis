@@ -94,8 +94,15 @@ int main(int argc, char ** argv)
   h_rec_p_all->Sumw2();
   TH1D * h_rec_p_acc = new TH1D("rec_p_acc","Accepted recoil protons;pMiss [GeV];Counts",28,0.3,1.0);
   h_rec_p_acc->Sumw2();
+  TH1D * h_rec_p_all_coarse = new TH1D("rec_p_all_coarse","All recoil protons;pMiss [GeV];Counts",9,coarse_bin_edges_new);
+  h_rec_p_all_coarse->Sumw2();
+  TH1D * h_rec_p_acc_coarse = new TH1D("rec_p_acc_coarse","Accepted recoil protons;pMiss [GeV];Counts",9,coarse_bin_edges_new);
+  h_rec_p_acc_coarse->Sumw2();
   TGraphAsymmErrors * rec_p_rat = new TGraphAsymmErrors();
   rec_p_rat->SetName("rec_p_rat");
+  rec_p_rat->SetTitle("Acceptance Ratio;p_miss [GeV];Acceptance Ratio");
+  TGraphAsymmErrors * rec_p_rat_coarse = new TGraphAsymmErrors();
+  rec_p_rat->SetName("rec_p_rat_coarse");
   rec_p_rat->SetTitle("Acceptance Ratio;p_miss [GeV];Acceptance Ratio");
 
   // Input Tree
@@ -251,6 +258,7 @@ int main(int argc, char ** argv)
       if (rec_type == pCode)
 	{
 	  h_rec_p_all->Fill(gen_pMiss_Mag,weight);
+	  h_rec_p_all_coarse->Fill(gen_pMiss_Mag,weight);
 
 	  bool rec_acc;
 	  if (doGaps)
@@ -261,6 +269,7 @@ int main(int argc, char ** argv)
 	  // Test if the recoil was in the fiducial region and above threshold
 	  if (!(!rec_acc && doFCuts) && (vrec.Mag() > 0.35))
 	    h_rec_p_acc->Fill(gen_pMiss_Mag,weight*recoil_accept);
+	    h_rec_p_acc_coarse->Fill(gen_pMiss_Mag,weight*recoil_accept);
 	}
 
       if (rec_type == pCode)
@@ -308,12 +317,16 @@ int main(int argc, char ** argv)
   // Take the acceptance ratio
   //rec_p_rat->BayesDivide(h_rec_p_acc,h_rec_p_all);
   rec_p_rat->BayesDivide(h_rec_p_acc,h_rec_p_all,"cl=0.683 b(1,1) mode");
+  rec_p_rat_coarse->BayesDivide(h_rec_p_acc_coarse,h_rec_p_all_coarse,"cl=0.683 b(1,1) mode");
 
   outfile1p->cd();
   T1p->Write();
   rec_p_rat->Write();
   h_rec_p_all->Write();
   h_rec_p_acc->Write();
+  rec_p_rat_coarse->Write();
+  h_rec_p_all_coarse->Write();
+  h_rec_p_acc_coarse->Write();
   outfile1p->Close();
 
   TFile * outfile2p = new TFile(argv[4],"RECREATE");
@@ -470,6 +483,9 @@ int main(int argc, char ** argv)
   rec_p_rat->Write();
   h_rec_p_all->Write();
   h_rec_p_acc->Write();
+  rec_p_rat_coarse->Write();
+  h_rec_p_all_coarse->Write();
+  h_rec_p_acc_coarse->Write();
   outfile2p->Close();
 
   infile->Close();
