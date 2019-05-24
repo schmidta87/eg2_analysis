@@ -82,6 +82,7 @@
   void fill_arrays_chiral();
   void fill_arrays_chiral_n3lo();
   void fill_arrays_chiral_R12();
+  void fill_arrays_AV4Pc();
 
   double pPP2NP;
   double d_pPP2NP;
