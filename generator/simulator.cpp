@@ -268,8 +268,10 @@ int main(int argc, char ** argv)
 	  
 	  // Test if the recoil was in the fiducial region and above threshold
 	  if (!(!rec_acc && doFCuts) && (vrec.Mag() > 0.35))
-	    h_rec_p_acc->Fill(gen_pMiss_Mag,weight*recoil_accept);
-	    h_rec_p_acc_coarse->Fill(gen_pMiss_Mag,weight*recoil_accept);
+	    {
+	      h_rec_p_acc->Fill(gen_pMiss_Mag,weight*recoil_accept);
+	      h_rec_p_acc_coarse->Fill(gen_pMiss_Mag,weight*recoil_accept);
+	    }
 	}
 
       if (rec_type == pCode)
