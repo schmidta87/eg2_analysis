@@ -102,8 +102,8 @@ int main(int argc, char ** argv)
   rec_p_rat->SetName("rec_p_rat");
   rec_p_rat->SetTitle("Acceptance Ratio;p_miss [GeV];Acceptance Ratio");
   TGraphAsymmErrors * rec_p_rat_coarse = new TGraphAsymmErrors();
-  rec_p_rat->SetName("rec_p_rat_coarse");
-  rec_p_rat->SetTitle("Acceptance Ratio;p_miss [GeV];Acceptance Ratio");
+  rec_p_rat_coarse->SetName("rec_p_rat_coarse");
+  rec_p_rat_coarse->SetTitle("Acceptance Ratio;p_miss [GeV];Acceptance Ratio");
 
   // Input Tree
   TTree * inTree = (TTree*)infile->Get("genT");
