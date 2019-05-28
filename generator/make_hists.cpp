@@ -44,12 +44,6 @@ int main(int argc, char ** argv)
 	}
 	
 	TFile * f1p = new TFile(argv[1]);
-	// Pulling acceptance ratio from 1p file
-	TGraphAsymmErrors * rec_p_rat;
-	gDirectory->GetObject("rec_p_rat",rec_p_rat);
-	TGraphAsymmErrors * rec_p_rat_coarse;
-	gDirectory->GetObject("rec_p_rat_coarse",rec_p_rat_coarse);
-
 	TFile * f2p = new TFile(argv[2]);
 	TFile * fo = new TFile(argv[4],"RECREATE");
 	Cross_Sections myCS(cc1,kelly);
@@ -78,6 +72,18 @@ int main(int argc, char ** argv)
 	    default:
 	      abort();
 	    }
+
+	// Attempt to pull the acceptance ratio from 1p file, if we had a simulation file.
+	TGraphAsymmErrors * rec_p_rat = NULL;
+	TGraphAsymmErrors * rec_p_rat_coarse = NULL;
+	rec_p_rat = (TGraphAsymmErrors*) f1p->Get("rec_p_rat");
+	rec_p_rat_coarse = (TGraphAsymmErrors*) f1p->Get("rec_p_rat_coarse");
+	if (rec_p_rat)
+	  {
+	    fo->cd();
+	    rec_p_rat->Write();
+	    rec_p_rat_coarse->Write();
+	  }
 
 	// We'll need to get acceptance maps in order to do a fiducial cut on minimum acceptance
 	AccMap proton_map(argv[3], "p");
@@ -262,7 +268,7 @@ int main(int argc, char ** argv)
 	TH1D * h2p_dE1_split[4][3][3];
 	TH1D * h2p_rE1_split[4][3][3];
 	
-	//dir_sub_bins->cd();
+	dir_sub_bins->cd();
 	for (int i=0 ; i<4 ; i++)
 	  {
 	    for(int j=0; j<3 ; j++){
@@ -978,9 +984,6 @@ int main(int argc, char ** argv)
 	pp_to_p_coarse->Write();
 	pp_to_p_2d->Write();
 
-	rec_p_rat->Write();
-	rec_p_rat_coarse->Write();
-
 	const double data_ep = 5604.;
 	const double data_ep_cor = 6077.;
 	const double data_epp = 364.;
@@ -996,6 +999,7 @@ int main(int argc, char ** argv)
 	renorm_factor.Write("factor");
 
 	h2p_Pm_clas->Scale(data_epp/h2p_Pm->Integral());
+
 
 	// scale all the histograms
 	for (int i=0 ; i<h1p_list.size() ; i++)
