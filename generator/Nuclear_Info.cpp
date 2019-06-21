@@ -76,15 +76,46 @@ Nuclear_Info::Nuclear_Info(int thisA, int uType)
       //Cpn1 = 16.;
       //mA = m_12C;
       //mAm2 = m_10B;
-      
+
       sigmaCM=0.15;
       d_sigmaCM = 0.02;
-      Cpp0 = 1.3;
-      d_Cpp0 = 0.2;
-      Cpn0 = 1.4;
-      d_Cpn0 = 0.2;
-      Cpn1 = 16.8;
-      d_Cpn1 = 0.8;
+
+      if (u == 2)
+	{
+	  Cpn1 = 10.643;
+	  d_Cpn1 = 1.094;
+	  Cpp0 = 0.870;
+	  d_Cpp0 = 0.095;
+	  Cpn0 = 0.988;
+	  d_Cpn0 = 0.161;
+	}
+      else if (u == 4)
+	{
+	  Cpn1 = 0.681738;
+	  d_Cpn1 = 0.06821999;
+	  Cpp0 = 0.127444;
+	  d_Cpp0 = 0.01414939;
+	  Cpn0 = 0.127444;
+	  d_Cpn0 = 0.01414939;
+	}
+      else if (u == 5)
+	{
+	  Cpn1 = 2.911;
+	  d_Cpn1 = 0.307;
+	  Cpp0 = 0.784;
+	  d_Cpp0 = 0.084;
+	  Cpn0 = 0.702;
+	  d_Cpn0 = 0.086;
+	}
+      else
+	{
+	  Cpn1 = 15.876;
+	  d_Cpn1 = 1.770;
+	  Cpp0 = 1.140;
+	  d_Cpp0 = 0.210;
+	  Cpn0 = 1.244;
+	  d_Cpn0 = 0.319;
+	}
       mA = m_12C;
       mAmpp = m_10Be;
       mAmnp = m_10B;
