@@ -268,7 +268,7 @@ int main(int argc, char ** argv)
 	TH1D * h2p_dE1_split[4][3][3];
 	TH1D * h2p_rE1_split[4][3][3];
 	
-	dir_sub_bins->cd();
+	//dir_sub_bins->cd();
 	for (int i=0 ; i<4 ; i++)
 	  {
 	    for(int j=0; j<3 ; j++){

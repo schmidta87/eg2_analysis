@@ -132,7 +132,7 @@ int main(int argc, char ** argv)
   bool doSCX = true;
   
   int c;  
-  while ((c=getopt (argc-2, &argv[2], "hvzA:s:C:E:k:u:f:c:rpRIOo")) != -1) // First two arguments are not optional flags.
+  while ((c=getopt (argc-2, &argv[2], "hvzA:s:C:E:k:u:f:c:rpRIOol")) != -1) // First two arguments are not optional flags.
     switch(c)
       {
       case 'h':
@@ -315,6 +315,7 @@ int main(int argc, char ** argv)
 
   Cross_Sections myCS(csMeth,ffMod);
   const double mA = myInfo.get_mA();
+  const double mbar = mA/Anum;
   const double mAmpp = myInfo.get_mAmpp(); // this includes the effect of Estar
   const double mAmnp = myInfo.get_mAmnp();
   const double mAmnn = myInfo.get_mAmnn();
@@ -420,6 +421,7 @@ int main(int argc, char ** argv)
       q[1]=vq.Y();
       q[2]=vq.Z();
       q_Mag = vq.Mag();
+      TVector3 qhat = vq.Unit();
 
       // Pick random CM motion
       TVector3 vCM_eff(myRand.Gaus(0.,sigCM),myRand.Gaus(0.,sigCM),myRand.Gaus(0.,sigCM));
@@ -493,8 +495,8 @@ int main(int argc, char ** argv)
 	      pLead_Mag = vLead.Mag();
 	      TVector3 vMiss = vLead - vq; // This is the apparent pmiss
 	      pMiss[0] = vMiss.X();
-	      pMiss[0] = vMiss.Y();
-	      pMiss[0] = vMiss.Z();
+	      pMiss[1] = vMiss.Y();
+	      pMiss[2] = vMiss.Z();
 	      pMiss_Mag = vMiss.Mag();
 	      TVector3 vRel_eff = 0.5*(vMiss_eff - vRec); // This is the true pRel
 	      double pRel_eff_Mag = vRel_eff.Mag();
