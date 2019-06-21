@@ -37,3 +37,12 @@ target_link_libraries(sim_w_farm ${ROOT_LIBRARIES} AccMap Fid)
 # sim_wo_farm
 add_executable(sim_wo_farm sim_wo_farm.cpp )
 target_link_libraries(sim_wo_farm ${ROOT_LIBRARIES} AccMap Fid)
+
+# R2I
+add_executable(R2I R2I.cpp )
+target_link_libraries(R2I ${ROOT_LIBRARIES})
+
+# R2I
+add_executable(recombine recombine.cpp )
+target_link_libraries(recombine ${ROOT_LIBRARIES})
+
