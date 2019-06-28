@@ -100,12 +100,12 @@ Nuclear_Info::Nuclear_Info(int thisA, int uType)
 	}
       else if (u == 5)
 	{
-	  Cpn1 = 2.911;
-	  d_Cpn1 = 0.307;
-	  Cpp0 = 0.784;
-	  d_Cpp0 = 0.084;
-	  Cpn0 = 0.702;
-	  d_Cpn0 = 0.086;
+	  Cpn1 = 2.676;
+	  d_Cpn1 = 0.272;
+	  Cpp0 = 0.653;
+	  d_Cpp0 = 0.067;
+	  Cpn0 = 0.558;
+	  d_Cpn0 = 0.069;
 	}
       else
 	{
@@ -116,6 +116,7 @@ Nuclear_Info::Nuclear_Info(int thisA, int uType)
 	  Cpn0 = 1.244;
 	  d_Cpn0 = 0.319;
 	}
+
       mA = m_12C;
       mAmpp = m_10Be;
       mAmnp = m_10B;
