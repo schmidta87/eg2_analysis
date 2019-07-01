@@ -226,7 +226,7 @@ int main(int argc, char ** argv)
   // Set up the tree
   TTree * outtree = new TTree("genT","Generator Tree");
   Double_t pe[3], q[3], pLead[3], pRec[3], pMiss[3], pCM[3], pRel[3];
-  Double_t QSq, xB, nu, pe_Mag, q_Mag, pLead_Mag, pRec_Mag, pMiss_Mag, pCM_Mag, pRel_Mag, theta_pmq, theta_prq, weight;
+  Double_t QSq, xB, nu, pe_Mag, q_Mag, pLead_Mag, pRec_Mag, pMiss_Mag, pCM_Mag, pRel_Mag, theta_pmq, theta_prq, weight, lcweight;
   Int_t lead_type, rec_type;
   outtree->Branch("lead_type",&lead_type,"lead_type/I");
   outtree->Branch("rec_type",&rec_type,"rec_type/I");
@@ -234,6 +234,7 @@ int main(int argc, char ** argv)
   outtree->Branch("pLead",pLead,"pLead[3]/D");
   outtree->Branch("pRec",pRec,"pRec[3]/D");
   outtree->Branch("weight",&weight,"weight/D");
+  outtree->Branch("lcweight",&lcweight,"lcweight/D");
   // Pare down the branches that are not strictly needed
   //outtree->Branch("q",q,"q[3]/D");
   //outtree->Branch("pMiss",pMiss,"pMiss[3]/D");
@@ -355,11 +356,13 @@ int main(int argc, char ** argv)
 
       // Start with weight 1. Only multiply terms to weight. If trouble, set weight=0
       weight =1.;
+      lcweight =1.;
 
       // Decide what kind of proton or neutron pair we are dealing with
       lead_type = (myRand.Rndm() > 0.5) ? pCode:nCode;
       rec_type = (myRand.Rndm() > 0.5) ? pCode:nCode;
       weight *= 4.;
+      lcweight *= 4.;
 
       // Determine mass of A-2 system
       double mAm2;
@@ -382,14 +385,20 @@ int main(int argc, char ** argv)
       double pe_Mag_eff = Ebeam_eff - nu_eff;
 
        if (pe_Mag_eff < 0.)
-	weight=0.;
+	 {
+	   weight=0.;
+	   lcweight=0.;
+	 }
       else
 	{
 
       // The outgoing electron angle won't change in the peaking approximation
       double cosTheta3 = 1. - QSq_eff/(2.*Ebeam_eff*pe_Mag_eff);
       if (fabs(cosTheta3) > 1.)
-	weight=0.;
+	{
+	  weight=0.;
+	  lcweight=0.;
+	}
       else
       {
       
@@ -454,6 +463,7 @@ int main(int argc, char ** argv)
       if (D<0)
 	{
 	  weight=0.;
+	  lcweight=0.;
 	}
       else
 	{
@@ -466,6 +476,7 @@ int main(int argc, char ** argv)
 	  if ( (!momRec1Valid) && (!momRec2Valid))
 	    {
 	      weight=0.;
+	      lcweight=0.;
 	    }
 	  else
 	    {
@@ -477,6 +488,7 @@ int main(int argc, char ** argv)
 		{
 		  pRec_Mag = (gRandom->Rndm()>0.5)? momRec1 : momRec2;
 		  weight*=2.; // because the solution we picked is half as likely
+		  lcweight*=2.; 
 		}
 
 	      // Define the recoil vector
@@ -501,10 +513,28 @@ int main(int argc, char ** argv)
 	      TVector3 vRel_eff = 0.5*(vMiss_eff - vRec); // This is the true pRel
 	      double pRel_eff_Mag = vRel_eff.Mag();
 
+	      double Elead = sqrt(sq(mN) + vLead.Mag2()); // True values
+	      double Erec = sqrt(sq(mN) + vRec.Mag2());
+
+	      // Calculate some lightcone quantities
+	      double alpha2 = (Erec - vRec.Dot(qhat))/mbar;
+	      double alpha1 = (Elead - nu_eff - vMiss_eff.Dot(qhat))/mbar;
+	      double alphaCM = alpha1 + alpha2;
+	      double alpharel = 2*alpha2/alphaCM;
+	      double alphaAm2 = Anum - alphaCM;
+
+	      TVector3 vMiss_eff_perp = vMiss_eff - vMiss_eff.Dot(qhat)*qhat;
+	      TVector3 vRec_perp = vRec - vRec.Dot(qhat)*qhat;
+	      TVector3 k_perp = alpha1/alphaCM*vRec_perp - alpha2/alphaCM*vMiss_eff_perp;
+	      double kSq = (sq(mN) + k_perp.Mag2())/(alpharel*(2-alpharel)) - sq(mN);
+	      double k = sqrt(kSq);
+
 	      // Do a safeguard cut
 	      if (pRel_eff_Mag < pRel_cut)
-		weight=0.;
-	      
+		  weight=0.;
+	      if (k < pRel_cut)
+		  lcweight=0.;
+
 	      pRel[0] = 0.5*(pMiss[0] - pRec[0]); // This is the apparent pRel;
 	      pRel[1] = 0.5*(pMiss[1] - pRec[1]);
 	      pRel[2] = 0.5*(pMiss[2] - pRec[2]);
@@ -521,8 +551,6 @@ int main(int argc, char ** argv)
 	      theta_pmq = acos((pMiss[0]*q[0] + pMiss[1]*q[1] + pMiss[2]*q[2])/pMiss_Mag /q_Mag);
 	      theta_prq = acos((pRec[0]*q[0] + pRec[1]*q[1] + pRec[2]*q[2])/pRec_Mag /q_Mag);
 
-	      double Elead = sqrt(sq(mN) + vLead.Mag2()); // True values
-	      double Erec = sqrt(sq(mN) + vRec.Mag2());
 
 	      // Calculate the weight
 	      weight *= myCS.sigma_eN(Ebeam_eff, v3_eff, vLead, (lead_type==pCode)) // eN cross section
@@ -531,6 +559,23 @@ int main(int argc, char ** argv)
 		* 1./(4.*sq(M_PI)) // Angular terms
 		* ((lead_type==rec_type) ? myInfo.get_pp(pRel_eff_Mag) : myInfo.get_pn(pRel_eff_Mag)) // Contacts
 		* vRec.Mag2() * Erec * Elead / fabs(Erec*(pRec_Mag - Z*cosThetaZRec) + Elead*pRec_Mag); // Jacobian for delta fnc.
+
+	      if (kSq < 0)
+		lcweight = 0;
+	      else
+		{
+		  // Calculate the lightcone weight
+		  lcweight *= myCS.sigma_eN(Ebeam_eff, v3_eff, vLead, (lead_type==pCode)) // eN cross section
+		    * nu_eff/(2.*xB_eff*Ebeam_eff*pe_Mag_eff) * (Qmax-Qmin) * (Xmax-Xmin) // Jacobian for QSq,xB
+		    * (doRad ? (1. - deltaHard(QSq_eff)) * pow(Ebeam/sqrt(Ebeam*pe_Mag),lambda_ei) * pow(pe_Mag_eff/sqrt(Ebeam*pe_Mag),lambda_ef) : 1.) // Radiative weights
+		    * 1./(4.*sq(M_PI)) // Angular terms
+		    * sqrt(mN*mN + kSq)/Erec * 1/(2-alpharel) * ((lead_type==rec_type) ? myInfo.get_pp(k) : myInfo.get_pn(k)) // Contacts
+		    * vRec.Mag2() * Erec * Elead / fabs(Erec*(pRec_Mag - Z*cosThetaZRec) + Elead*pRec_Mag) // Jacobian for delta fnc.
+		    * mbar*alphaAm2/EAm2 * exp((sq(vCM_eff.Dot(qhat))-sq(mbar*(2.-alphaCM)))/(2.*sq(sigCM))); // Change in center-of-mass motion in lightcone picture
+
+		  //cout << alphaCM << "\n";
+		  //cout << (sq(vCM.Dot(qhat))-sq(mbar*(2-alphaCM)))/(2*sq(sigCM)) << "\n";
+		}
 	    }
 	}
 	}
@@ -542,7 +587,7 @@ int main(int argc, char ** argv)
        }
        
       // Fill the tree
-      if ((weight > 0.) || print_zeros)
+      if ((weight > 0.) || (lcweight > 0.) || print_zeros)
 	outtree->Fill();      
     }
 

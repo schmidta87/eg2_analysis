@@ -51,8 +51,9 @@ int main(int argc, char ** argv)
 	bool doCut = true;
 	bool doOtherCut = true;
 	bool doGaps = true;
+	bool lc_weight = false;
 	int c;
-	while((c=getopt (argc-4, &argv[4], "SCOg")) != -1)
+	while((c=getopt (argc-4, &argv[4], "SCOgl")) != -1)
 	  switch(c)
 	    {
 	    case 'S':
@@ -66,6 +67,9 @@ int main(int argc, char ** argv)
 	      break;
 	    case 'g':
 	      doGaps = false;
+	      break;
+	    case 'l':
+	      lc_weight = true;
 	      break;
 	    case '?':
 	      return -1;
@@ -423,8 +427,11 @@ int main(int argc, char ** argv)
 	// See if there is a weight branch
 	TBranch * weight_branch = t1p->GetBranch("weight");
 	if (weight_branch)
-	{
-		t1p->SetBranchAddress("weight",&weight);
+	  {
+	  if (lc_weight)
+	    t1p->SetBranchAddress("lcweight",&weight);
+	  else
+	    t1p->SetBranchAddress("weight",&weight);
 	}
 	else resetto1 = true;
 	
@@ -595,7 +602,10 @@ int main(int argc, char ** argv)
 	weight_branch = t2p->GetBranch("weight");
 	if (weight_branch)
 	{
-		t2p->SetBranchAddress("weight",&weight);
+	  if (lc_weight)
+	    t2p->SetBranchAddress("lcweight",&weight);
+	  else
+	    t2p->SetBranchAddress("weight",&weight);
 	}
 	else resetto1 = true;
 	for (int event =0 ; event < t2p->GetEntries() ; event++)

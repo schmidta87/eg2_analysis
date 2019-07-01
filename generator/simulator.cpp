@@ -107,11 +107,12 @@ int main(int argc, char ** argv)
 
   // Input Tree
   TTree * inTree = (TTree*)infile->Get("genT");
-  Double_t gen_pe[3], gen_pLead[3], gen_pRec[3], gen_weight;
+  Double_t gen_pe[3], gen_pLead[3], gen_pRec[3], gen_weight, gen_lcweight;
   Int_t lead_type, rec_type;
   inTree->SetBranchAddress("lead_type",&lead_type);
   inTree->SetBranchAddress("rec_type",&rec_type);
   inTree->SetBranchAddress("weight",&gen_weight);
+  inTree->SetBranchAddress("lcweight",&gen_lcweight);
   inTree->SetBranchAddress("pe",gen_pe);
   inTree->SetBranchAddress("pLead",gen_pLead);
   inTree->SetBranchAddress("pRec",gen_pRec);
@@ -149,7 +150,7 @@ int main(int argc, char ** argv)
   Float_t Pmiss_q_angle[2], Pmiss_size[2], Pmiss[2][3];
   Float_t z = 0.;
   Float_t Rp[2][3]={{0.,0.,-22.25},{0.,0.,-22.25}};
-  Double_t weight;
+  Double_t weight, lcweight;
 
   T1p->Branch("Q2",&Q2,"Q2/F");
   T1p->Branch("Xb",&Xb,"Xb/F");
@@ -170,6 +171,7 @@ int main(int argc, char ** argv)
   T1p->Branch("Pmiss",Pmiss,"Pmiss[1][3]/F");
   T1p->Branch("Rp",Rp,"Rp[1][3]/F");
   T1p->Branch("weight",&weight,"weight/D");
+  T1p->Branch("lcweight",&lcweight,"lcweight/D");
 
   // Loop over all events (1p)
   if (verbose)
@@ -229,8 +231,9 @@ int main(int argc, char ** argv)
       //weight = gen_weight * eMap.accept(ve) * pMap.accept(vlead) * 1.E33; // put it in nb to make it macroscopic
       double lead_accept = doMaps ? pMap.accept(vlead) : 1;
       weight = gen_weight * lead_accept * Tp * 1.E33; // put it in nb to make it macroscopic
+      lcweight = gen_lcweight * lead_accept * Tp * 1.E33;
       
-      if (weight <= 0.)
+      if (weight <= 0. and lcweight <= 0.)
 	continue;
 
       if (doSCuts){
@@ -275,8 +278,11 @@ int main(int argc, char ** argv)
 	}
 
       if (rec_type == pCode)
-	weight *= (1. - recoil_accept * Tpp / Tp);
-
+	{
+	  weight *= (1. - recoil_accept * Tpp / Tp);
+	  lcweight *= (1. - recoil_accept * Tpp / Tp);
+	}
+      
       // Load up tree
       Q2 = gen_QSq;
       Xb = gen_xB;
@@ -354,6 +360,7 @@ int main(int argc, char ** argv)
   T2p->Branch("Pmiss",Pmiss,"Pmiss[2][3]/F");
   T2p->Branch("Rp",Rp,"Rp[2][3]/F");
   T2p->Branch("weight",&weight,"weight/D");
+  T2p->Branch("lcweight",&lcweight,"lcweight/D");
 
   // Loop over all events (2p)
   if (verbose)
@@ -412,8 +419,9 @@ int main(int argc, char ** argv)
       //weight = gen_weight * eMap.accept(ve) * pMap.accept(vlead) * 1.E33; // put it in nb to make it macroscopic
       double lead_accept = doMaps ? pMap.accept(vlead) : 1;
       weight = gen_weight * lead_accept * Tp * 1.E33; // put it in nb to make it macroscopic
+      lcweight = gen_lcweight * lead_accept * Tp * 1.E33; // put it in nb to make it macroscopic
 
-      if (weight <= 0.)
+      if (weight <= 0. and lcweight <= 0.)
 	continue;
 
       if (doSCuts){
@@ -437,9 +445,15 @@ int main(int argc, char ** argv)
 	continue;
       const double recoil_accept = doMaps ? pMap.accept(vrec) : 1;
       if (rec_type == pCode)
-	weight *= recoil_accept*Tpp/Tp;
+	{
+	  weight *= recoil_accept*Tpp/Tp;
+	  lcweight *= recoil_accept*Tpp/Tp;
+	}
       else
-	weight = 0.;
+	{
+	  weight = 0.;
+	  lcweight = 0.;
+	}
 
       // Load up tree
       Q2 = gen_QSq;
