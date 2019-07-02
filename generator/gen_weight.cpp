@@ -407,6 +407,7 @@ int main(int argc, char ** argv)
       TVector3 v3_eff;
       v3_eff.SetMagThetaPhi(pe_Mag_eff, theta3, phi3);
       TVector3 vq_eff = TVector3(0.,0.,Ebeam_eff) - v3_eff;
+      TVector3 vqhat_eff = vq_eff.Unit();
 
       // Sample radiation off the outgoing electron
       double lambda_ef = alpha/M_PI * (log( 4.*pe_Mag_eff*pe_Mag_eff/(me*me)) - 1.);
@@ -430,7 +431,6 @@ int main(int argc, char ** argv)
       q[1]=vq.Y();
       q[2]=vq.Z();
       q_Mag = vq.Mag();
-      TVector3 qhat = vq.Unit();
 
       // Pick random CM motion
       TVector3 vCM_eff(myRand.Gaus(0.,sigCM),myRand.Gaus(0.,sigCM),myRand.Gaus(0.,sigCM));
@@ -517,16 +517,18 @@ int main(int argc, char ** argv)
 	      double Erec = sqrt(sq(mN) + vRec.Mag2());
 
 	      // Calculate some lightcone quantities
-	      double alpha2 = (Erec - vRec.Dot(qhat))/mbar;
-	      double alpha1 = (Elead - nu_eff - vMiss_eff.Dot(qhat))/mbar;
+	      // These are EFFECTIVE quantities, using momenta carried by the electron within the diagram
+	      double alpha2 = (Erec - vRec.Dot(vqhat_eff))/mbar;
+	      double alpha1 = (Elead - nu_eff - vMiss_eff.Dot(vqhat_eff))/mbar;
 	      double alphaCM = alpha1 + alpha2;
 	      double alpharel = 2*alpha2/alphaCM;
 	      double alphaAm2 = Anum - alphaCM;
 
-	      TVector3 vMiss_eff_perp = vMiss_eff - vMiss_eff.Dot(qhat)*qhat;
-	      TVector3 vRec_perp = vRec - vRec.Dot(qhat)*qhat;
+	      // Perpendicular components are also EFFECTIVE quantities
+	      TVector3 vMiss_eff_perp = vMiss_eff - vMiss_eff.Dot(vqhat_eff)*vqhat_eff;
+	      TVector3 vRec_perp = vRec - vRec.Dot(vqhat_eff)*vqhat_eff;
 	      TVector3 k_perp = alpha1/alphaCM*vRec_perp - alpha2/alphaCM*vMiss_eff_perp;
-	      double kSq = (sq(mN) + k_perp.Mag2())/(alpharel*(2-alpharel)) - sq(mN);
+	      double kSq = (sq(mN) + k_perp.Mag2())/(alpharel*(2.-alpharel)) - sq(mN);   // DOUBLE CHECK: mN or mbar in this expression? -Axel 02/7/2019
 	      double k = sqrt(kSq);
 
 	      // Do a safeguard cut
@@ -569,12 +571,12 @@ int main(int argc, char ** argv)
 		    * nu_eff/(2.*xB_eff*Ebeam_eff*pe_Mag_eff) * (Qmax-Qmin) * (Xmax-Xmin) // Jacobian for QSq,xB
 		    * (doRad ? (1. - deltaHard(QSq_eff)) * pow(Ebeam/sqrt(Ebeam*pe_Mag),lambda_ei) * pow(pe_Mag_eff/sqrt(Ebeam*pe_Mag),lambda_ef) : 1.) // Radiative weights
 		    * 1./(4.*sq(M_PI)) // Angular terms
-		    * sqrt(mN*mN + kSq)/Erec * 1/(2-alpharel) * ((lead_type==rec_type) ? myInfo.get_pp(k) : myInfo.get_pn(k)) // Contacts
+		    * sqrt(mN*mN + kSq)/Erec * 1./(2.-alpharel) * ((lead_type==rec_type) ? myInfo.get_pp(k) : myInfo.get_pn(k)) // Contacts
 		    * vRec.Mag2() * Erec * Elead / fabs(Erec*(pRec_Mag - Z*cosThetaZRec) + Elead*pRec_Mag) // Jacobian for delta fnc.
-		    * mbar*alphaAm2/EAm2 * exp((sq(vCM_eff.Dot(qhat))-sq(mbar*(2.-alphaCM)))/(2.*sq(sigCM))); // Change in center-of-mass motion in lightcone picture
+		    * mbar*alphaAm2/EAm2 * exp((sq(vCM_eff.Dot(vqhat_eff))-sq(mbar*(2.-alphaCM)))/(2.*sq(sigCM))); // Change in center-of-mass motion in lightcone picture
 
 		  //cout << alphaCM << "\n";
-		  //cout << (sq(vCM.Dot(qhat))-sq(mbar*(2-alphaCM)))/(2*sq(sigCM)) << "\n";
+		  //cout << (sq(vCM.Dot(vqhat_eff))-sq(mbar*(2-alphaCM)))/(2*sq(sigCM)) << "\n";
 		}
 	    }
 	}
