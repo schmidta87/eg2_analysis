@@ -271,6 +271,9 @@ int main(int argc, char ** argv)
 	TH1D * h2p_PmTq_split[4][3][3]; 
 	TH1D * h2p_dE1_split[4][3][3];
 	TH1D * h2p_rE1_split[4][3][3];
+	TH1D * h2p_Pcmzq_split[4][3][3]; 
+	TH1D * h2p_PcmTq_split[4][3][3];
+	TH1D * h2p_alphaD_split[4][3][3];
 	
 	//dir_sub_bins->cd();
 	for (int i=0 ; i<4 ; i++)
@@ -351,6 +354,18 @@ int main(int argc, char ** argv)
 		sprintf(temp,"epp_rE1_%d_%d_%d",i,j,k);
 		h2p_rE1_split[i][j][k] = new TH1D(temp,"epp;rE1;Counts",40,0,1);
 		h2p_list.push_back(h2p_rE1_split[i][j][k]); 
+
+		sprintf(temp,"epp_Pcmzq_%d_%d_%d",i,j,k);
+		h2p_Pcmzq_split[i][j][k] = new TH1D(temp,"epp;Pcmzq [GeV];Counts",30,-1.0,1.0);
+		h2p_list.push_back(h2p_Pcmzq_split[i][j][k]);
+		
+		sprintf(temp,"epp_PcmTq_%d_%d_%d",i,j,k);
+		h2p_PcmTq_split[i][j][k] = new TH1D(temp,"epp;PcmTq [GeV];Counts",30,0.0,1.0);
+		h2p_list.push_back(h2p_PcmTq_split[i][j][k]);
+
+		sprintf(temp,"epp_alphaD_%d_%d_%d",i,j,k);
+		h2p_alphaD_split[i][j][k] = new TH1D(temp,"epp;alphaD;Counts",30,1.6,2.6);
+		h2p_list.push_back(h2p_alphaD_split[i][j][k]);
 
 	      }
 	    }
@@ -847,6 +862,9 @@ int main(int argc, char ** argv)
 		    h2p_PmTq_split[Pmiss_region_pp][j][k]->Fill(vmiss.Perp(vqUnit),weight);
 		    h2p_dE1_split[Pmiss_region_pp][j][k]->Fill(dE1,weight);
 		    h2p_rE1_split[Pmiss_region_pp][j][k]->Fill(rE1,weight);
+		    h2p_Pcmzq_split[Pmiss_region_pp][j][k]->Fill(vcm.Dot(vqUnit),weight);
+		    h2p_PcmTq_split[Pmiss_region_pp][j][k]->Fill(vcm.Perp(vqUnit),weight);
+		    h2p_alphaD_split[Pmiss_region_pp][j][k]->Fill(alphaD,weight);
 		  }
 		}
 		// Let's make a sanitized phi and sector
