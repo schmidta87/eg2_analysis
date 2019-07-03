@@ -112,8 +112,9 @@ int main(int argc, char ** argv)
 
   bool verbose = false;
   bool rand_flag = false;
+  bool doGaps = true;
   int c;
-  while ((c=getopt (argc-3, &argv[3], "vr")) != -1)
+  while ((c=getopt (argc-3, &argv[3], "vrg")) != -1)
     switch(c)
       {
       case 'v':
@@ -121,6 +122,9 @@ int main(int argc, char ** argv)
 	break;
       case 'r':
 	rand_flag = true;
+	break;
+      case 'g':
+	doGaps = false;
 	break;
       }
   
@@ -251,8 +255,16 @@ int main(int argc, char ** argv)
       // Fiducial cuts
       if (!accept_electron(ve))
 	continue;
-      if (!accept_proton(vlead))
-	continue;
+      if (doGaps)
+	{
+	  if (!accept_proton(vlead))
+	    continue;
+	}
+      else
+	{
+	  if (!accept_proton_simple(vlead))
+	    continue;
+	}
 
       // Require a recoil neutron, with fiducial cuts
       ndet = 1;
