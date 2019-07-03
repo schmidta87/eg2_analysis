@@ -34,6 +34,8 @@ double Cross_Sections::sigma_eN(double Ebeam,TVector3 k, TVector3 p, bool isProt
       return sigmaCC1(Ebeam,k,p,isProton);
     case cc2:
       return sigmaCC2(Ebeam,k,p,isProton);
+    case onshellQSq:
+      return sigma_onShell_by_EQSq(Ebeam,k,isProton);
     default:
       {
 	std::cerr << "Invalid cross section method! Double check and fix!\n";
@@ -209,4 +211,24 @@ double Cross_Sections::Gkelly(double QSq,double a1, double b1, double b2, double
   double denom = 1. + b1*tau + b2*tau*tau + b3*tau*tau*tau;
   double numer = 1. + a1*tau;
   return numer/denom;
+}
+
+double Cross_Sections::sigma_onShell_by_EQSq(double Ebeam, TVector3 k, bool isProton)
+{
+  // First define QSq, from which all other variables will be derived
+  double QSq = (TVector3(0.,0.,Ebeam) - k).Mag2() - sq(Ebeam - k.Mag());
+
+  // Now, define secondary variables
+  double cosTheta = 1. - QSq*mN/(2.*Ebeam*Ebeam*mN - QSq*Ebeam);
+  double theta=acos(cos(theta));
+  double E3 = Ebeam * mN/ (mN + Ebeam*(1.-cosTheta));
+  double tau = QSq/(4.*mN*mN);
+  double GE = isProton ? GEp(QSq) : GEn(QSq);
+  double GM = isProton ? GMp(QSq) : GMn(QSq);
+  double epsilon = epsilon = 1./(1.+2.*(1.+tau)*sq(tan(theta/2.)));
+
+  double sigmaMott = cmSqGeVSq * sq(2.*alpha*E3 * cos(theta/2.)/QSq) * (E3/Ebeam);
+  
+  double sigmaRosenbluth = sigmaMott * (sq(GE) + tau/epsilon * sq(GM))/(1. + tau);
+  return sigmaRosenbluth * Ebeam / (E3 * (2.*tau + 1.));
 }

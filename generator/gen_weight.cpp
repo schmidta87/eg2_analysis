@@ -171,6 +171,8 @@ int main(int argc, char ** argv)
 	  csMeth=cc1;
 	else if (strcmp(optarg,"cc2")==0)
 	  csMeth=cc2;
+	else if (strcmp(optarg,"onshellQSq")==0)
+	  csMeth=onshellQSq;
 	else if (atoi(optarg)==1)
 	  csMeth=cc1;
 	else if (atoi(optarg)==2)
