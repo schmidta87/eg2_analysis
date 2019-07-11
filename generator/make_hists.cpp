@@ -132,6 +132,8 @@ int main(int argc, char ** argv)
         h1p_list.push_back(h1p_alphaLead);
         TH1D * h1p_alphaM = new TH1D("ep_alphaM","ep;alphaM;Counts",30,1.1,1.7);
 	h1p_list.push_back(h1p_alphaM);
+	TH1D * h1p_km =  new TH1D("ep_km" ,"epp;kmiss [GeV];Counts",30,0.2,0.8);
+	h1p_list.push_back(h1p_km);
 	TH1D * h1p_dE1 = new TH1D("ep_dE1","ep;dE1;Counts",40,-0.2,1);
 	h1p_list.push_back(h1p_dE1);
 	TH1D * h1p_rE1 = new TH1D("ep_rE1","ep;rE1;Counts",40,0,1);
@@ -188,6 +190,8 @@ int main(int argc, char ** argv)
         h2p_list.push_back(h2p_alphaLead);
         TH1D * h2p_alphaM = new TH1D("epp_alphaM","ep;alphaM;Counts",30,1.1,1.7);
         h2p_list.push_back(h2p_alphaM);
+	TH1D * h2p_km =  new TH1D("epp_km" ,"epp;kmiss [GeV];Counts",30,0.2,0.8);
+	h2p_list.push_back(h2p_km);
         TH1D * h2p_alphaRec = new TH1D("epp_alphaRec","ep;alphaRec;Counts",30,0.4,1.3);
         h2p_list.push_back(h2p_alphaRec);
         TH1D * h2p_alphaD = new TH1D("epp_alphaD","ep;alphaD;Counts",30,1.6,2.6);
@@ -225,12 +229,12 @@ int main(int argc, char ** argv)
 	TH1D * h2p_pRec_epsilon_std = new TH1D("epp_pRec_epsilon_std","pRec_epsilon_std;pRec;epsilon_std;Counts",20,0.3,1.2);
 	h2p_pRec_epsilon_std->Sumw2();
 	TH2D * h2p_pRec_eMiss = new TH2D("epp_pRec_eMiss","pRec_eMiss;pRec;eMiss;Counts",10,0.35,0.9,10,0,0.5);
-	h2p_list.push_back(h2p_pRec_eMiss);
+ 	h2p_list.push_back(h2p_pRec_eMiss);
 	TH1D * h2p_pRec_eMiss_mean = new TH1D("epp_pRec_eMiss_mean","pRec_eMiss_mean;pRec;eMiss_mean;Counts",20,0.3,1.2);
 	h2p_pRec_eMiss_mean->Sumw2();
 	TH1D * h2p_pRec_eMiss_std = new TH1D("epp_pRec_eMiss_std","pRec_eMiss_std;pRec;eMiss_std;Counts",20,0.3,1.2);
 	h2p_pRec_eMiss_std->Sumw2();
-	TH1D * h2p_pRecError = new TH1D("epp_pRecError","epp;pRecError;Counts",40,-1,1);
+  	TH1D * h2p_pRecError = new TH1D("epp_pRecError","epp;pRecError;Counts",40,-1,1);
 	h2p_pRecError->Sumw2();
 	TH2D * pp_to_p_2d = new TH2D("pp_to_p_2d","2d ratio;pmiss [GeV];E1 [GeV];pp/p",28,0.35,1.0,20,0.5,0.9);
 	
@@ -250,6 +254,12 @@ int main(int argc, char ** argv)
 	h2p_list.push_back(h2p_e1);
 	TH1D * h2p_emiss = new TH1D("epp_emiss","epp;emiss [GeV];Counts",160,0.0,1.5);
 	h2p_list.push_back(h2p_emiss);
+	TH1D * h2p_k =  new TH1D("epp_k" ,"epp;k [GeV];Counts",30,0.2,0.8);
+	h2p_list.push_back(h2p_k);
+	TH2D * h2p_pmiss_k = new TH2D("epp_pmiss_k","pmiss_k;pmiss;k;Counts",24,0.4,1.0,30,0.2,0.8);
+	h2p_list.push_back(h2p_pmiss_k);
+	TH2D * h2p_prec_k = new TH2D("epp_prec_k","prec_k;prec;k;Counts",20,0.35,1.15,30,0.2,0.8);
+	h2p_list.push_back(h2p_prec_k);
 
 	//The first element is pmiss bin, second is xB bin, third is QSq bin
 	TH1D * h1p_Emiss_split[4][3][3]; 
@@ -272,7 +282,13 @@ int main(int argc, char ** argv)
 	TH1D * h2p_dE1_split[4][3][3];
 	TH1D * h2p_rE1_split[4][3][3];
 	TH1D * h2p_Pcmzq_split[4][3][3]; 
+	TH1D * h2p_Pcmn1q_split[4][3][3];
+	TH1D * h2p_Pcmn2q_split[4][3][3]; 
 	TH1D * h2p_PcmTq_split[4][3][3];
+	TH1D * h2p_Pcmzm_split[4][3][3]; 
+	TH1D * h2p_Pcmn1m_split[4][3][3];
+	TH1D * h2p_Pcmn2m_split[4][3][3]; 
+	TH1D * h2p_PcmTm_split[4][3][3];
 	TH1D * h2p_alphaD_split[4][3][3];
 	
 	//dir_sub_bins->cd();
@@ -362,6 +378,30 @@ int main(int argc, char ** argv)
 		sprintf(temp,"epp_PcmTq_%d_%d_%d",i,j,k);
 		h2p_PcmTq_split[i][j][k] = new TH1D(temp,"epp;PcmTq [GeV];Counts",30,0.0,1.0);
 		h2p_list.push_back(h2p_PcmTq_split[i][j][k]);
+
+		sprintf(temp,"epp_Pcmn1q_%d_%d_%d",i,j,k);
+		h2p_Pcmn1q_split[i][j][k] = new TH1D(temp,"epp;Pcmn1q [GeV];Counts",30,-1.0,1.0);
+		h2p_list.push_back(h2p_Pcmn1q_split[i][j][k]);
+
+		sprintf(temp,"epp_Pcmn2q_%d_%d_%d",i,j,k);
+		h2p_Pcmn2q_split[i][j][k] = new TH1D(temp,"epp;Pcmn2q [GeV];Counts",30,-1.0,1.0);
+		h2p_list.push_back(h2p_Pcmn2q_split[i][j][k]);
+
+		sprintf(temp,"epp_Pcmzm_%d_%d_%d",i,j,k);
+		h2p_Pcmzm_split[i][j][k] = new TH1D(temp,"epp;Pcmzm [GeV];Counts",30,-1.0,1.0);
+		h2p_list.push_back(h2p_Pcmzm_split[i][j][k]);
+		
+		sprintf(temp,"epp_PcmTm_%d_%d_%d",i,j,k);
+		h2p_PcmTm_split[i][j][k] = new TH1D(temp,"epp;PcmTm [GeV];Counts",30,0.0,1.0);
+		h2p_list.push_back(h2p_PcmTm_split[i][j][k]);
+
+		sprintf(temp,"epp_Pcmn1m_%d_%d_%d",i,j,k);
+		h2p_Pcmn1m_split[i][j][k] = new TH1D(temp,"epp;Pcmn1m [GeV];Counts",30,-1.0,1.0);
+		h2p_list.push_back(h2p_Pcmn1m_split[i][j][k]);
+
+		sprintf(temp,"epp_Pcmn2m_%d_%d_%d",i,j,k);
+		h2p_Pcmn2m_split[i][j][k] = new TH1D(temp,"epp;Pcmn2m [GeV];Counts",30,-1.0,1.0);
+		h2p_list.push_back(h2p_Pcmn2m_split[i][j][k]);
 
 		sprintf(temp,"epp_alphaD_%d_%d_%d",i,j,k);
 		h2p_alphaD_split[i][j][k] = new TH1D(temp,"epp;alphaD;Counts",30,1.6,2.6);
@@ -533,10 +573,14 @@ int main(int argc, char ** argv)
                 double alphaq= (omega - vq.Mag()) / mN;
                 double alphaLead = (Ep - vp.Dot(vqUnit)) / mN;
                 double alphaM = alphaLead - alphaq;
+		TVector3 vm_perp = vm - vm.Dot(vqUnit)*vqUnit;
+		double kmSq = (sq(mN) + vm_perp.Mag2())/(alphaM*(2-alphaM))-sq(mN);
+		double km = sqrt(kmSq);
 
                 h1p_alphaq->Fill(alphaq,weight);
                 h1p_alphaLead->Fill(alphaLead,weight);
                 h1p_alphaM->Fill(alphaM,weight);
+                h1p_km->Fill(km,weight);
 		h1p_dE1->Fill(dE1,weight);
 		h1p_rE1->Fill(rE1,weight);
 		
@@ -672,7 +716,10 @@ int main(int argc, char ** argv)
                 // A few more vectors                                                       
                 TVector3 vq(q[0],q[1],q[2]);
                 TVector3 vqUnit = vq.Unit();
+		TVector3 nUnit = vqUnit.Orthogonal().Unit();
                 TVector3 vmiss = vlead - vq;
+                TVector3 vmUnit = vmiss.Unit();
+		TVector3 nmUnit = vmUnit.Orthogonal().Unit();
 		TVector3 vrec(Pp[1][0],Pp[1][1],Pp[1][2]);      
 
 		double omega = Q2/(2.*mN*Xb);
@@ -714,12 +761,16 @@ int main(int argc, char ** argv)
                 double alphaq= (omega - vq.Mag()) / mN;
                 double alphaLead = (Elead - vlead.Dot(vqUnit)) / mN;
                 double alphaM = alphaLead - alphaq;
+		TVector3 vmiss_perp = vmiss - vmiss.Dot(vqUnit)*vqUnit;
+		double kmSq = (sq(mN) + vmiss_perp.Mag2())/(alphaM*(2-alphaM))-sq(mN);
+		double km = sqrt(kmSq);
 
-                h2p_alphaq->Fill(alphaq,weight);
-                h2p_alphaLead->Fill(alphaLead,weight);
-                h2p_alphaM->Fill(alphaM,weight);
-		h2p_dE1->Fill(dE1,weight);
-		h2p_rE1->Fill(rE1,weight);
+                h1p_alphaq->Fill(alphaq,weight);
+                h1p_alphaLead->Fill(alphaLead,weight);
+                h1p_alphaM->Fill(alphaM,weight);
+		h1p_dE1->Fill(dE1,weight);
+		h1p_rE1->Fill(rE1,weight);
+                h1p_km->Fill(km,weight);
 		
 		// Let's make a sanitized phi and sector
 		double phie_deg = ve.Phi() * 180./M_PI;
@@ -813,6 +864,12 @@ int main(int argc, char ** argv)
                 // Find final light cone variables                                                          
                 double alphaRec = (Erec - vrec.Dot(vqUnit))/mN;
                 double alphaD = alphaM + alphaRec;
+		double alphaRel = 2*alphaRec/alphaD;
+		
+		TVector3 vrec_perp = vrec - vrec.Dot(vqUnit)*vqUnit;
+		TVector3 k_perp = alphaM/alphaD*vrec_perp - alphaRec/alphaD*vmiss_perp;
+		double kSq = (sq(mN) + k_perp.Mag2())/(alphaRel*(2-alphaRel))-sq(mN);
+		double k = sqrt(kSq);
 
 		h2p_QSq->Fill(Q2,weight);
 		h2p_xB ->Fill(Xb,weight);
@@ -826,7 +883,14 @@ int main(int argc, char ** argv)
 		h2p_Pmr->Fill(vmiss.Angle(vrec)*180./M_PI,weight);
 		h2p_cPmq->Fill(cos(Pmiss_q_angle[0]*M_PI/180.),weight);
 		h2p_cPmr->Fill(cos(vmiss.Angle(vrec)),weight);
-
+		
+                h2p_alphaq->Fill(alphaq,weight);
+                h2p_alphaLead->Fill(alphaLead,weight);
+                h2p_alphaM->Fill(alphaM,weight);
+		h2p_dE1->Fill(dE1,weight);
+		h2p_rE1->Fill(rE1,weight);
+                h2p_km->Fill(km,weight);
+		
                 h2p_alphaRec->Fill(alphaRec,weight);
                 h2p_alphaD->Fill(alphaD,weight);
 
@@ -838,6 +902,7 @@ int main(int argc, char ** argv)
 		h2p_theta1->Fill(theta1_deg,weight);
 		h2p_theta1_bySec[sector]->Fill(theta1_deg,weight);
 		h2p_mom1->Fill(Pp_size[0],weight);
+		h2p_k->Fill(k,weight);
 
 		h2p_Emiss->Fill(Emiss,weight);
 		h2p_Emiss_fine->Fill(Emiss,weight);
@@ -863,7 +928,13 @@ int main(int argc, char ** argv)
 		    h2p_dE1_split[Pmiss_region_pp][j][k]->Fill(dE1,weight);
 		    h2p_rE1_split[Pmiss_region_pp][j][k]->Fill(rE1,weight);
 		    h2p_Pcmzq_split[Pmiss_region_pp][j][k]->Fill(vcm.Dot(vqUnit),weight);
+		    h2p_Pcmn1q_split[Pmiss_region_pp][j][k]->Fill(vcm.Dot(nUnit),weight);
+		    h2p_Pcmn2q_split[Pmiss_region_pp][j][k]->Fill(vcm.Dot(vqUnit.Cross(nUnit)),weight);
 		    h2p_PcmTq_split[Pmiss_region_pp][j][k]->Fill(vcm.Perp(vqUnit),weight);
+		    h2p_Pcmzm_split[Pmiss_region_pp][j][k]->Fill(vcm.Dot(vmUnit),weight);
+		    h2p_Pcmn1m_split[Pmiss_region_pp][j][k]->Fill(vcm.Dot(nmUnit),weight);
+		    h2p_Pcmn2m_split[Pmiss_region_pp][j][k]->Fill(vcm.Dot(vmUnit.Cross(nmUnit)),weight);
+		    h2p_PcmTm_split[Pmiss_region_pp][j][k]->Fill(vcm.Perp(vmUnit),weight);
 		    h2p_alphaD_split[Pmiss_region_pp][j][k]->Fill(alphaD,weight);
 		  }
 		}
@@ -882,6 +953,8 @@ int main(int argc, char ** argv)
 		h2p_pmiss_QSq->Fill(Pmiss_size[0],Q2,weight);
 		h2p_pmiss_mom1->Fill(Pmiss_size[0],Pp_size[0],weight);
 		h2p_pmiss_mom2->Fill(Pmiss_size[0],Pp_size[1],weight);
+		h2p_pmiss_k->Fill(Pmiss_size[0],k,weight);
+		h2p_prec_k->Fill(Pp_size[1],k,weight);
 		h2p_pmiss_momrat->Fill(Pmiss_size[0],Pp_size[0]/Pp_size[1],weight);
 
 		TVector3 vdiff = vlead - vrec;
