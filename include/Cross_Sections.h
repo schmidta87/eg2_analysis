@@ -7,7 +7,7 @@ const double mu_p=2.79;
 const double mu_n=-1.91;
 
 enum ffModel {dipole, kelly};
-enum csMethod {onshell, cc1, cc2};
+enum csMethod {onshell, cc1, cc2,onshellQSq};
 
 class Cross_Sections
 {
@@ -20,6 +20,7 @@ class Cross_Sections
   double sigmaCC1(double Ebeam, TVector3 k, TVector3 p, bool isProton);
   double sigmaCC2(double Ebeam, TVector3 k, TVector3 p, bool isProton);
   double sigma_onShell_by_Etheta(double Ebeam, TVector3 k, bool isProton);
+  double sigma_onShell_by_EQSq(double Ebeam, TVector3 k, bool isProton);
   double GEp(double QSq);
   double GEn(double QSq);
   double GMp(double QSq);
