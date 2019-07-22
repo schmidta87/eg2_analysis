@@ -11,3 +11,6 @@ target_link_libraries(${LIBNAME} ${ROOT_LIBRARIES} Helpers)
 # Cross Section test executable
 add_executable(cs_query cs_query.cpp)
 target_link_libraries(cs_query ${ROOT_LIBRARIES} Cross_Sections )
+
+# Misak Lib
+add_subdirectory(misak_lib)

@@ -22,3 +22,8 @@ target_link_libraries(fid_recoil_test ${ROOT_LIBRARIES} Fid)
 # Show fiducial cut results on electrons
 add_executable(fid_e_test fid_e_test.cpp)
 target_link_libraries(fid_e_test ${ROOT_LIBRARIES} Fid)
+
+
+# Show fiducial cut results on protons
+add_executable(fid_p_test fid_p_test.cpp)
+target_link_libraries(fid_p_test ${ROOT_LIBRARIES} Fid)
