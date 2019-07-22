@@ -1,24 +1,23 @@
-      program test
-      pi = acos(-1.0)
-      icon = 0
-      call  sigma_en_bound(icon,nuc_id,ei,q2,p_ini,th_i,phi_i,
-     & sigma_en_df1,sigma_en_st,sigma_en_free,sigma_en_lc,eta,ifl)
-
-      icon = 1
-      nuc_id = 1
-      q2 = 2.0
-      ei = 5.76
-      p_ini = 0.7
-      th_i  = 170.0*pi/180.0
-      phi_i = 0.0*pi/180.0 
-      
-      call  sigma_en_bound(icon,nuc_id,ei,q2,p_ini,th_i,phi_i,
-     &     sigma_en_df1,sigma_en_st,sigma_en_free,sigma_en_lc,eta,ifl)
-
-      print *,p_ini,sigma_en_df1,sigma_en_st,sigma_en_free,sigma_en_lc,
-     &        eta
-      end
-
+c      program test
+c      pi = acos(-1.0)
+c      icon = 0
+c      call  sigma_en_bound(icon,nuc_id,ei,q2,p_ini,th_i,phi_i,
+c     & sigma_en_df1,sigma_en_st,sigma_en_free,sigma_en_lc,eta,ifl)
+c
+c      icon = 1
+c      nuc_id = 1
+c      q2 = 2.0
+c      ei = 5.76
+c      p_ini = 0.7
+c      th_i  = 170.0*pi/180.0
+c      phi_i = 0.0*pi/180.0 
+c      
+c      call  sigma_en_bound(icon,nuc_id,ei,q2,p_ini,th_i,phi_i,
+c    &     sigma_en_df1,sigma_en_st,sigma_en_free,sigma_en_lc,eta,ifl)
+c
+c      print *,p_ini,sigma_en_df1,sigma_en_st,sigma_en_free,sigma_en_lc,
+c     &        eta
+c      end
       
       subroutine sigma_en_bound(icon,nuc_id,ei,q2,p_ini,th_i,phi_i,
      & sigma_en_df1,sigma_en_st,sigma_en_free,sigma_en_lc,eta,ifl)

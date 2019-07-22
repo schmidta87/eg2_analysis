@@ -7,7 +7,7 @@ const double mu_p=2.79;
 const double mu_n=-1.91;
 
 enum ffModel {dipole, kelly};
-enum csMethod {onshell, cc1, cc2,onshellQSq};
+enum csMethod {onshell, cc1, cc2,onshellQSq, misak_df1, misak_st, misak_free, misak_lc};
 
 class Cross_Sections
 {

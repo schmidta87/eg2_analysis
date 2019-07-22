@@ -173,6 +173,14 @@ int main(int argc, char ** argv)
 	  csMeth=cc2;
 	else if (strcmp(optarg,"onshellQSq")==0)
 	  csMeth=onshellQSq;
+	else if (strcmp(argv[1],"misak_df1")==0)
+	  csMeth=misak_df1;
+	else if (strcmp(argv[1],"misak_st")==0)
+	  csMeth=misak_st;
+	else if (strcmp(argv[1],"misak_free")==0)
+	  csMeth=misak_free;
+	else if (strcmp(argv[1],"misak_lc")==0)
+	  csMeth=misak_lc;
 	else if (atoi(optarg)==1)
 	  csMeth=cc1;
 	else if (atoi(optarg)==2)
