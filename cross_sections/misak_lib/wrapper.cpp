@@ -24,6 +24,8 @@ extern"C"{
 // ifl           - 0 - ok, 1 - kinematically forbidden
 // ************************************************************
 
+const double conversion_factor=1.E-33;
+
 void misak_init()
 {
   // Prepare arguments
@@ -81,26 +83,26 @@ double sigma_misak_df1(double Ebeam, TVector3 k, TVector3 p, bool isProton)
 {
   float sigma_en_df1, sigma_en_st, sigma_en_free, sigma_en_lc;
   call_misak(Ebeam, k, p, isProton, sigma_en_df1, sigma_en_st, sigma_en_free, sigma_en_lc);
-  return sigma_en_df1;
+  return conversion_factor*sigma_en_df1;
 }
 
 double sigma_misak_st(double Ebeam, TVector3 k, TVector3 p, bool isProton)
 {
   float sigma_en_df1, sigma_en_st, sigma_en_free, sigma_en_lc;
   call_misak(Ebeam, k, p, isProton, sigma_en_df1, sigma_en_st, sigma_en_free, sigma_en_lc);
-  return sigma_en_st;
+  return conversion_factor*sigma_en_st;
 }
 
 double sigma_misak_free(double Ebeam, TVector3 k, TVector3 p, bool isProton)
 {
   float sigma_en_df1, sigma_en_st, sigma_en_free, sigma_en_lc;
   call_misak(Ebeam, k, p, isProton, sigma_en_df1, sigma_en_st, sigma_en_free, sigma_en_lc);
-  return sigma_en_free;
+  return conversion_factor*sigma_en_free;
 }
 
 double sigma_misak_lc(double Ebeam, TVector3 k, TVector3 p, bool isProton)
 {
   float sigma_en_df1, sigma_en_st, sigma_en_free, sigma_en_lc;
   call_misak(Ebeam, k, p, isProton, sigma_en_df1, sigma_en_st, sigma_en_free, sigma_en_lc);
-  return sigma_en_lc;
+  return conversion_factor*sigma_en_lc;
 }

@@ -113,7 +113,7 @@ c      end
         ei_i = ei
         q2_i = q2
 
-        print *,ei,pr,thr,phir,q2
+*        print *,ei,pr,thr,phir,q2
         
 ************************************************************************
 *       definition q0 by the QE condition of q+d --> pf + pr scattering
@@ -1260,7 +1260,7 @@ c****************************************************************
 	pin2 = PFIN**2 - 2.*PFIN*QV*COS(GAMMA) + QV**2
 	if(pin2.le.0.0)pin2 = 0.0
       	PIN  = SQRT(pin2)
-	print *,"piiin",pin
+*	print *,"piiin",pin
         EFIN = SQRT(PM**2 + PFIN**2)
 	EIN  = SQRT(PM**2 + PIN**2)
 	Q2_A = QV**2 - (EFIN-EIN)**2  

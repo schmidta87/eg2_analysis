@@ -14,7 +14,7 @@ int main(int argc, char **argv)
   if (argc!=3)
     {
       cerr << "Wrong number of arguments. Instead use:\n"
-	   << "  cs_query [csMethod: onshell, cc1, cc2, onshellQSq] [ffModel: dipole, kelly]\n";
+	   << "  cs_query [csMethod: onshell, cc1, cc2, onshellQSq, misak_df1, misak_st, misak_free, misak_lc] [ffModel: dipole, kelly]\n";
       return -1;
     }
 
