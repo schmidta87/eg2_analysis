@@ -261,6 +261,11 @@ int main(int argc, char ** argv)
 	TH2D * h2p_prec_k = new TH2D("epp_prec_k","prec_k;prec;k;Counts",20,0.35,1.15,30,0.2,0.8);
 	h2p_list.push_back(h2p_prec_k);
 
+	TH1D * h2p_rat1 = new TH1D("epp_rat1","Eq. (53);JIF/LF;Counts",20,0.9,1.3);
+	h2p_list.push_back(h2p_rat1);
+	TH1D * h2p_rat2 = new TH1D("epp_rat2","rat2;rat2;Counts",20,0.8,1.6);
+	h2p_list.push_back(h2p_rat2);
+
 	//The first element is pmiss bin, second is xB bin, third is QSq bin
 	TH1D * h1p_Emiss_split[4][3][3]; 
 	TH1D * h1p_Emiss_fine_split[4][3][3]; 
@@ -957,6 +962,12 @@ int main(int argc, char ** argv)
 		h2p_prec_k->Fill(Pp_size[1],k,weight);
 		h2p_pmiss_momrat->Fill(Pmiss_size[0],Pp_size[0]/Pp_size[1],weight);
 
+		double xlc = 0.5 + 0.5*sqrt(kSq - k_perp.Mag2())/sqrt(kSq + mN*mN);
+		h2p_rat1->Fill(sqrt(1/(2*mN)*sqrt((k_perp.Mag2() + mN*mN)/(xlc*(1-xlc)))),weight);
+		h2p_rat2->Fill(2/(8*mN*mN*mN)*xlc*(1-xlc)/(1-abs(1-2*xlc))
+			       *sqrt((k_perp.Mag2() + mN*mN)/(xlc*(1-xlc)))
+			       *((k_perp.Mag2() + mN*mN)/(xlc*(1-xlc))+4*mN*mN
+				 -sqrt((k_perp.Mag2() + mN*mN)/(xlc*(1-xlc))) * sqrt((k_perp.Mag2() + mN*mN)/(xlc*(1-xlc))-4*mN*mN)),weight);
 		TVector3 vdiff = vlead - vrec;
 
 		h2p_momdiff->Fill(vdiff.Mag(),weight);

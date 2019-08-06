@@ -312,8 +312,8 @@ int main(int argc, char ** argv)
     }
   if (rand_flag)
     {
-    myInfo.randomize();
-    pRel_cut = pRel_cut + (myRand.Uniform() - 0.5)*pRel_range;
+      myInfo.randomize();
+      pRel_cut = pRel_cut + (myRand.Uniform() - 0.5)*pRel_range;
     }
 
   Cross_Sections myCS(csMeth,ffMod);
@@ -569,14 +569,14 @@ int main(int argc, char ** argv)
 	      else
 		{
 		  // Calculate the lightcone weight
-		  lcweight *= myCS.sigma_eN(Ebeam_eff, v3_eff, vLead, (lead_type==pCode)) // eN cross section
+		  lcweight *= myCS.sigma_eN(Ebeam_eff, v3_eff, vLead, (lead_type==pCode))/alpha1 // eN cross section
 		    * nu_eff/(2.*xB_eff*Ebeam_eff*pe_Mag_eff) * (Qmax-Qmin) * (Xmax-Xmin) // Jacobian for QSq,xB
 		    * (doRad ? (1. - deltaHard(QSq_eff)) * pow(Ebeam/sqrt(Ebeam*pe_Mag),lambda_ei) * pow(pe_Mag_eff/sqrt(Ebeam*pe_Mag),lambda_ef) : 1.) // Radiative weights
 		    * 1./(4.*sq(M_PI)) // Angular terms
 		    * sqrt(mN*mN + kSq)/Erec * 1./(2.-alpharel) * ((lead_type==rec_type) ? myInfo.get_pp(k) : myInfo.get_pn(k)) // Contacts
 		    * vRec.Mag2() * Erec * Elead / fabs(Erec*(pRec_Mag - Z*cosThetaZRec) + Elead*pRec_Mag) // Jacobian for delta fnc.
 		    * mbar*alphaAm2/EAm2 * exp((sq(vCM_eff.Dot(vqhat_eff))-sq(mbar*(2.-alphaCM)))/(2.*sq(sigCM))); // Change in center-of-mass motion in lightcone picture
-
+		  
 		  //cout << alphaCM << "\n";
 		  //cout << (sq(vCM.Dot(vqhat_eff))-sq(mbar*(2-alphaCM)))/(2*sq(sigCM)) << "\n";
 		}
