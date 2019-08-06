@@ -8,11 +8,13 @@
 
 #include "constants.h"
 #include "helpers.h"
+#include "misak.h"
 
 Cross_Sections::Cross_Sections()
 {
   myModel=kelly;
   myMethod=cc1;
+  misak_init(); // Might as well initialize misak, so as not to worry about it later
 }
 
 Cross_Sections::Cross_Sections(csMethod thisMeth, ffModel thisMod)
@@ -20,6 +22,7 @@ Cross_Sections::Cross_Sections(csMethod thisMeth, ffModel thisMod)
   std::cerr << "Cross_Sections: you have selected configuration: " << thisMeth << " " << thisMod <<"\n";
   myModel=thisMod;
   myMethod=thisMeth;
+  misak_init(); // Might as well initialize misak, so as not to worry about it later
 }
 
 Cross_Sections::~Cross_Sections(){}
@@ -36,6 +39,14 @@ double Cross_Sections::sigma_eN(double Ebeam,TVector3 k, TVector3 p, bool isProt
       return sigmaCC2(Ebeam,k,p,isProton);
     case onshellQSq:
       return sigma_onShell_by_EQSq(Ebeam,k,isProton);
+    case misak_df1:
+      return sigma_misak_df1(Ebeam, k, p, isProton);
+    case misak_st:
+      return sigma_misak_st(Ebeam, k, p, isProton);
+    case misak_free:
+      return sigma_misak_free(Ebeam, k, p, isProton);
+    case misak_lc:
+      return sigma_misak_lc(Ebeam, k, p, isProton);
     default:
       {
 	std::cerr << "Invalid cross section method! Double check and fix!\n";

@@ -14,7 +14,7 @@ int main(int argc, char **argv)
   if (argc!=3)
     {
       cerr << "Wrong number of arguments. Instead use:\n"
-	   << "  cs_query [csMethod: onshell, cc1, cc2, onshellQSq] [ffModel: dipole, kelly]\n";
+	   << "  cs_query [csMethod: onshell, cc1, cc2, onshellQSq, misak_df1, misak_st, misak_free, misak_lc] [ffModel: dipole, kelly]\n";
       return -1;
     }
 
@@ -30,6 +30,14 @@ int main(int argc, char **argv)
     csMeth=cc2;
   else if (strcmp(argv[1],"onshellQSq")==0)
     csMeth=onshellQSq;
+  else if (strcmp(argv[1],"misak_df1")==0)
+    csMeth=misak_df1;
+  else if (strcmp(argv[1],"misak_st")==0)
+    csMeth=misak_st;
+  else if (strcmp(argv[1],"misak_free")==0)
+    csMeth=misak_free;
+  else if (strcmp(argv[1],"misak_lc")==0)
+    csMeth=misak_lc;
   else
     {
       cerr << "Invalid cs method!\n";

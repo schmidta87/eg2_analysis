@@ -7,3 +7,6 @@ include_directories( ${CMAKE_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR} ${R
 add_executable(mistaken_recoils mistaken_recoils.cpp )
 target_link_libraries(mistaken_recoils ${ROOT_LIBRARIES} Fid AccMap)
 
+# Program for testing LC weights on a2
+add_executable(lc_a2_test lc_a2_test.cpp )
+target_link_libraries(lc_a2_test ${ROOT_LIBRARIES})

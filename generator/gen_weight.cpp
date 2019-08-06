@@ -173,6 +173,14 @@ int main(int argc, char ** argv)
 	  csMeth=cc2;
 	else if (strcmp(optarg,"onshellQSq")==0)
 	  csMeth=onshellQSq;
+	else if (strcmp(argv[1],"misak_df1")==0)
+	  csMeth=misak_df1;
+	else if (strcmp(argv[1],"misak_st")==0)
+	  csMeth=misak_st;
+	else if (strcmp(argv[1],"misak_free")==0)
+	  csMeth=misak_free;
+	else if (strcmp(argv[1],"misak_lc")==0)
+	  csMeth=misak_lc;
 	else if (atoi(optarg)==1)
 	  csMeth=cc1;
 	else if (atoi(optarg)==2)
@@ -575,7 +583,7 @@ int main(int argc, char ** argv)
 		    * 1./(4.*sq(M_PI)) // Angular terms
 		    * sqrt(mN*mN + kSq)/Erec * 1./(2.-alpharel) * ((lead_type==rec_type) ? myInfo.get_pp(k) : myInfo.get_pn(k)) // Contacts
 		    * vRec.Mag2() * Erec * Elead / fabs(Erec*(pRec_Mag - Z*cosThetaZRec) + Elead*pRec_Mag) // Jacobian for delta fnc.
-		    * mbar*alphaAm2/EAm2 * exp((sq(vCM_eff.Dot(vqhat_eff))-sq(mbar*(2.-alphaCM)))/(2.*sq(sigCM))); // Change in center-of-mass motion in lightcone picture
+		    * mbar*((Anum>2)?(alphaAm2/EAm2 * exp((sq(vCM_eff.Dot(vqhat_eff))-sq(mbar*(2.-alphaCM)))/(2.*sq(sigCM)))):1.); // Change in center-of-mass motion in lightcone picture
 		  
 		  //cout << alphaCM << "\n";
 		  //cout << (sq(vCM.Dot(vqhat_eff))-sq(mbar*(2-alphaCM)))/(2*sq(sigCM)) << "\n";
