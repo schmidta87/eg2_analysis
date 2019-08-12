@@ -19,8 +19,8 @@
 using namespace std;
 
 // Probability windows
-const double Qmin=1.;
-const double Qmax=5.;
+double Qmin=1.;
+double Qmax=5.;
 const double Xmin=1.;
 const double Xmax=2.;
 
@@ -38,6 +38,9 @@ void help_mess()
        << "-A <Nucleus number>==<12>\n"
        << "-s <Sigma_CM [GeV]>\n"
        << "-C <Nuclear Contact [%]> (Use for Cpp0, Cpn0, Cpn1)\n"
+       << "-q <minimum value of Q^2 [GeV^2]>\n"
+       << "-Q <maximum value of Q^2 [GeV^2]>\n"
+       << "-B <Beam Energy [GeV]>\n"
        << "-E <E* [GeV]>\n"
        << "-k <kRel cutoff [GeV]==0.3>\n"
        << "-u <Nuclear potential>==<1> (1=AV18, 2=N2LO, 3=N3LO)\n"
@@ -130,9 +133,10 @@ int main(int argc, char ** argv)
   bool print_zeros=false;
   bool doRad = true;
   bool doSCX = true;
+  double Ebeam=eg2beam;
   
   int c;  
-  while ((c=getopt (argc-2, &argv[2], "hvzA:s:C:E:k:u:f:c:rpRIOol")) != -1) // First two arguments are not optional flags.
+  while ((c=getopt (argc-2, &argv[2], "hvzA:s:C:q:Q:B:E:k:u:f:c:rpRIOol")) != -1) // First two arguments are not optional flags.
     switch(c)
       {
       case 'h':
@@ -154,6 +158,15 @@ int main(int argc, char ** argv)
       case 'C':
 	do_Cs = true;
 	Cs.push_back(atof(optarg));
+	break;
+      case 'q':
+	Qmin=atof(optarg);
+	break;
+      case 'Q':
+	Qmax=atof(optarg);
+	break;
+      case 'B':
+	Ebeam=atof(optarg);
 	break;
       case 'E':
 	Estar = atof(optarg);
@@ -225,8 +238,6 @@ int main(int argc, char ** argv)
 	abort();
       }
 
-
-  const double Ebeam=eg2beam;
   const TVector3 v1(0.,0.,Ebeam);
   const double lambda_ei = alpha/M_PI * (log( 4.*Ebeam*Ebeam/(me*me)) - 1.);
 
@@ -418,6 +429,9 @@ int main(int argc, char ** argv)
       v3_eff.SetMagThetaPhi(pe_Mag_eff, theta3, phi3);
       TVector3 vq_eff = TVector3(0.,0.,Ebeam_eff) - v3_eff;
       TVector3 vqhat_eff = vq_eff.Unit();
+
+      //cerr << "Incoming electron: mom = " << Ebeam_eff << "\n"
+      //   << "Outgoing electron: mom = " << pe_Mag_eff << "   theta = " << theta3*180./M_PI << " deg\n\n";
 
       // Sample radiation off the outgoing electron
       double lambda_ef = alpha/M_PI * (log( 4.*pe_Mag_eff*pe_Mag_eff/(me*me)) - 1.);

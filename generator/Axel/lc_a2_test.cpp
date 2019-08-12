@@ -22,6 +22,10 @@ int main(int argc, char **argv)
       return -1;
     }
 
+  // Helper constants
+  const double Ebeam=eg2beam;
+  //const double Ebeam=10.;
+
   // Set up the input branches
   TFile * infile = new TFile(argv[1]);
   TTree * inT = (TTree*)infile->Get("genT");
@@ -51,10 +55,12 @@ int main(int argc, char **argv)
 
       // Assemble variables.
       TVector3 ve(pe[0],pe[1],pe[2]);
-      TVector3 q = TVector3(0.,0.,eg2beam) - ve;
-      double omega = eg2beam - ve.Mag();
+      TVector3 q = TVector3(0.,0.,Ebeam) - ve;
+      double omega = Ebeam - ve.Mag();
       double QSq = q.Mag2() - omega*omega;
       double xB = QSq/(2.*mN*omega);
+
+      //cerr << "xB: " << xB << "   QSq = " << QSq << "\n";
 
       // Cut on Q2
       if (QSq < QSqcut)
